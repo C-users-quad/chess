@@ -8,12 +8,18 @@ class Game:
         pygame.init()
         self.display = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
         self.clock = pygame.time.Clock()
-        self.font = pygame.font.Font(
-            asset_path(join('assets', 'fonts', 'MerriweatherSans-Medium.ttf')),
-            FONT_SIZE)
+        self.fonts = {}
+        """dict of font size (int) : font (pygame.Font)"""
         self.dt = 0
         self.state_stack = []
         self.on = True
+
+    def get_font(self, size):
+        if size not in self.fonts:
+            self.fonts[size] = pygame.Font(
+                asset_path(join('assets', 'fonts', 'MerriweatherSans-Medium.ttf')),
+                size)
+        return self.fonts[size]
 
     def push_state(self, state):
         self.state_stack.append(state)

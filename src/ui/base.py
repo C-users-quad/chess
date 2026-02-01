@@ -19,7 +19,7 @@ class UIElement:
         pygame.draw.rect( # draw border
             self.image, border_color, self.image.get_rect(), BORDER_WIDTH, ROUNDING)
         # draw text
-        text_surf = GameContext.game.font.render(self.text, ANTIALIAS, text_color)
+        text_surf = GameContext.game.get_font(FONT_SIZES['text']).render(self.text, ANTIALIAS, text_color)
         text_rect = text_surf.get_rect(center=self.image.get_rect().center)
         self.image.blit(text_surf, text_rect)
 
