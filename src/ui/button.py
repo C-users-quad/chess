@@ -1,10 +1,11 @@
 from core.settings import *
-from ui.base import UIElement
+from core.utils import get_tui_text_box
+from ui.text_box import UITextBox
 
-class Button(UIElement):
+class UIButton(UITextBox):
     """button that when clicked executes click_action"""
-    def __init__(self, size, pos, text, click_action, anchor="topleft"):
-        super().__init__(size, pos, text, anchor)
+    def __init__(self, pos, size, anchor, text, font_size, click_action):
+        super().__init__(pos, size, anchor, text, font_size)
         self.click_action = click_action
         self.hover = False
         self.prev_hover = False
@@ -17,8 +18,10 @@ class Button(UIElement):
         if self.hover == self.prev_hover:
             return
         if not self.hover:
+            # re-render without highlight
             self.render_element()
         else:
+            # re-render with highlight
             self.render_element(bg_color=COLORS['button-highlight'])
 
     def do_click_action(self):
@@ -29,3 +32,16 @@ class Button(UIElement):
         self.detect_hovering()
         self.highlight_button()
         self.do_click_action()
+
+    def __str__(self):
+        text = (
+            f"Button {hex(id(self))}\n"
+            f"Size: {self.rect.size}\n"
+            f"Topleft: {self.rect.topleft}\n"
+            f"Center: {self.rect.center}\n"
+            f"Bottomright: {self.rect.bottomright}\n"
+            f"Text: {self.text}\n"
+            f"Font size: {self.font_size}\n"
+            f"Mouse hovering: {self.hover}"
+        )
+        return get_tui_text_box(text)
