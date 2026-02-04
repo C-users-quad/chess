@@ -4,8 +4,9 @@ from ui.text_box import UITextBox
 
 class UIButton(UITextBox):
     """button that when clicked executes click_action"""
-    def __init__(self, pos, size, anchor, text, font_size, click_action):
-        super().__init__(pos, size, anchor, text, font_size)
+    def __init__(self, pos, anchor, text, font_size,
+            click_action, auto_size=False, size=(0,0)):
+        super().__init__(pos, anchor, text, font_size, auto_size, size)
         self.click_action = click_action
         self.hover = False
         self.prev_hover = False

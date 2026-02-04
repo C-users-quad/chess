@@ -2,6 +2,7 @@ import pygame
 from os.path import join
 import sys
 from pathlib import Path
+from typing import Literal
 
 class GameContext:
     """container for game object so that it can be globally accessed"""
@@ -11,38 +12,56 @@ WINDOW_SIZE = (800, 600)
 FPS = 60
 
 # ui-related stuff. colors, sizes, etc.
-ROUNDING = 10
-BORDER_WIDTH = 10
+BASE_WIDTH, BASE_HEIGHT = (1256, 750)
+"""the window height i used when making the ui, used for scaling"""
 ANTIALIAS = True
-PADDING = 5
-SPACING = 10
 COLORS = {
     'clear': "#68f66a",
     'text': "#FFFFFF",
     'ui-bg': "#220A0A",
     'ui-border': "#32c38b",
     'button-highlight': "#1F6F78",
+    'board-border': "#6F3110",
+    'white-square': "#F1E1D8",
+    'black-square': "#311201"
 }
 """
-dicitonary for colors. current keys are:
+dicitonary for colors.
+### current keys are:
 ```
 'clear' - color used to clear the screen
 'text' - text color
 'ui-bg' - main background color for ui elements
 'ui-border' - main color for ui elements' borders
 'button-highlight' - color used if button is highlighted
+'board-border' - color used for the chess boards sides
+'white-square' - color used for the white squares
+'black-square' - color used for the black squares
 ```
 """
-FONT_SIZES = {
-    'title': 50,
-    'subtitle': 25,
-    'text': 15
+SIZE_RATIOS = {
+    'board': 600 / BASE_HEIGHT,
+    'rounding': 10 / BASE_HEIGHT,
+    'border-width': 10 / BASE_HEIGHT,
+    'padding': 10 / BASE_HEIGHT,
+    'spacing': 15 / BASE_HEIGHT,
+    'title': 75 / BASE_HEIGHT,
+    'subtitle': 50 / BASE_HEIGHT,
+    'text': 25 / BASE_HEIGHT
 }
 """
-dictionary for font sizes. current keys are:
+ratios used in order to determine size of elements drawn
+relative to current window height.
+ex. SIZE_RATIOS['board'] * window_height = the side length of the board
+### the current keys are:
 ```
-'title' - largest font size
-'subtitle' - medium font size
-'text' - smallest font size
+'board' - the side length of the board
+'rounding' - the rounding of corners
+'border-width' - border width on cetain parts of the ui
+'padding' - distance between parts inside of a particular ui element
+'spacing' - distance between ui elements
+'title' - title font size
+'subtitle' - subtitle font size
+'text' - text font size
 ```
 """

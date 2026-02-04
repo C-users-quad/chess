@@ -1,6 +1,7 @@
 from core.settings import *
 from core.utils import get_tui_text_box, asset_path
 from states.main_menu import MainMenu
+from chess.board import Board
 
 class Game:
     """Central game object containing essential game components"""
@@ -13,6 +14,7 @@ class Game:
         self.dt = 0
         self.state_stack = []
         self.on = True
+        # self.board = Board()
 
     def get_font(self, size):
         if size not in self.fonts:
@@ -31,7 +33,11 @@ class Game:
         self.on = False
 
     def __str__(self):
-        text = f"Game object {hex(id(self))}"
+        text = (
+            f"Game object {hex(id(self))}\n"
+            f"Display size: {self.display.get_size()}\n"
+            f"State stack: {self.state_stack}"
+        )
 
         return get_tui_text_box(text)
 

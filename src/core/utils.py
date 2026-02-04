@@ -1,6 +1,6 @@
 from core.settings import *
 
-def get_tui_text_box(text: str):
+def get_tui_text_box(text: object):
     """
     Bundles up lines of text in a neat box. Mainly used for printing and debugging.
     Args:
@@ -20,7 +20,7 @@ def get_tui_text_box(text: str):
     Returns:
         str : the completed and bundled-up string, ready for printing.
     """
-    lines = text.split("\n")
+    lines = str(text).split("\n")
     width = max(len(line) for line in lines)
     top = "┌" + "─" * (width + 2) + "┐"
     bottom = "└" + "─" * (width + 2) + "┘"
@@ -37,3 +37,8 @@ def asset_path(relative):
     else:
         base = Path(__file__).resolve().parent.parent.parent  # go up one directory
     return base / relative
+
+def get_ui_elem(element):
+    """used to get ui elements that are scaled to the window size"""
+    window_width, window_height = GameContext.game.display.get_size()
+    return int(window_height * SIZE_RATIOS[element])
