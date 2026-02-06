@@ -1,6 +1,7 @@
 from core.settings import *
 from core.utils import get_tui_text_box, asset_path
 from states.main_menu import MainMenu
+from states.chess import Chess
 from chess.board import Board
 
 class Game:
@@ -12,9 +13,21 @@ class Game:
         self.fonts = {}
         """dict of font size (int) : font (pygame.Font)"""
         self.dt = 0
+        self.states = {
+            'main-menu': lambda: MainMenu(),
+            'chess': lambda: Chess()
+        }
+        """
+        dict of every state, used to push states to state stack
+        current keys:
+        ```
+        'main-menu' - the main menu
+        'chess' - the game itself
+        ```
+        """
         self.state_stack = []
         self.on = True
-        # self.board = Board()
+        self.board = None
 
     def get_font(self, size):
         if size not in self.fonts:
@@ -24,10 +37,14 @@ class Game:
         return self.fonts[size]
 
     def push_state(self, state):
-        self.state_stack.append(state)
+        self.state_stack.append(self.states[state]())
 
     def pop_state(self):
         self.state_stack.pop()
+
+    def swap_state(self, state):
+        """swaps the top state with state specified by argument"""
+        self.state_stack[-1] = self.states[state]()
 
     def power_off(self):
         self.on = False
@@ -36,7 +53,7 @@ class Game:
         text = (
             f"Game object {hex(id(self))}\n"
             f"Display size: {self.display.get_size()}\n"
-            f"State stack: {self.state_stack}"
+            f"State stack: {self.state_stack[:]}"
         )
 
         return get_tui_text_box(text)
@@ -49,8 +66,10 @@ class Game:
 def main():
     # create game context
     game = GameContext.game = Game()
+    game.board = Board()
     # push initial state
-    game.push_state(MainMenu())
+    game.push_state('chess')
+    game.push_state('main-menu')
 
     while game.on:
         # get delta time

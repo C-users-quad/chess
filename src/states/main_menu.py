@@ -3,6 +3,7 @@ from states.base import GameState
 from core.utils import get_tui_text_box, get_ui_elem
 from ui.button import UIButton
 from ui.text_box import UITextBox
+from ui.base import UIElement
 
 def make_ui(ui):
     # reset ui and get needed data from game
@@ -16,20 +17,28 @@ def make_ui(ui):
     padding = get_ui_elem('padding')
     title_font_size = get_ui_elem('title')
     subtitle_font_size = get_ui_elem('subtitle')
+    sidebar_width = get_ui_elem('sidebar-width')
 
     # make title
     title = UITextBox((win_w/2, spacing),
         "midtop", "CHESS", title_font_size, True)
     ui.append(title)
 
+    # make sidebars
+    sidebar_size = (sidebar_width, win_h)
+    bar1 = UIElement((0,0), sidebar_size, "topleft", COLORS['white-square'])
+    ui.append(bar1)
+    bar2 = UIElement((win_w, 0), sidebar_size, "topright", COLORS['black-square'])
+    ui.append(bar2)
+
     # make buttons
     menu_button_size = (
-        win_w/3 - 2*spacing,
+        (win_w - 4*spacing - 2*sidebar_width) / 3,
         subtitle_font_size + border_width * 2 + padding * 2
     )
-    play_game = UIButton((spacing, win_h - spacing),
+    play_game = UIButton((spacing + sidebar_width, win_h - spacing),
         "bottomleft", "Play Game", subtitle_font_size,
-        lambda: print(play_game.__str__()), size=menu_button_size)
+        lambda: game.pop_state(), size=menu_button_size)
     ui.append(play_game)
 
     settings = UIButton((win_w / 2, win_h - spacing),
@@ -37,9 +46,9 @@ def make_ui(ui):
         lambda: print(settings.__str__()), size=menu_button_size)
     ui.append(settings)
 
-    quit_game = UIButton((win_w - spacing, win_h - spacing),
+    quit_game = UIButton((win_w - spacing - sidebar_width, win_h - spacing),
         "bottomright", "Quit Game", subtitle_font_size,
-        lambda: print(quit_game.__str__()), size=menu_button_size)
+        lambda: game.power_off(), size=menu_button_size)
     ui.append(quit_game)
 
 class MainMenu(GameState):
@@ -49,16 +58,17 @@ class MainMenu(GameState):
         make_ui(self.ui)
 
     def handle_events(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.game.power_off()
+        events = pygame.event.get()
+        super().handle_events(events)
+        for event in events:
             if event.type == pygame.VIDEORESIZE:
                 make_ui(self.ui)
+            if event.type == pygame.QUIT:
+                self.game.power_off()
 
     def update(self):
         for element in self.ui:
             element.update()
-        print(self.game)
 
     def draw(self):
         for element in self.ui:

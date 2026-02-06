@@ -6,14 +6,16 @@ class UIButton(UITextBox):
     """button that when clicked executes click_action"""
     def __init__(self, pos, anchor, text, font_size,
             click_action, auto_size=False, size=(0,0)):
-        super().__init__(pos, anchor, text, font_size, auto_size, size)
+        super().__init__(pos, anchor, text, font_size,
+            auto_size, size)
         self.click_action = click_action
         self.hover = False
         self.prev_hover = False
 
     def detect_hovering(self):
         self.prev_hover = self.hover
-        self.hover = self.rect.collidepoint(pygame.mouse.get_pos())
+        self.hover = self.rect.collidepoint(
+            pygame.mouse.get_pos())
 
     def highlight_button(self):
         if self.hover == self.prev_hover:
@@ -23,7 +25,8 @@ class UIButton(UITextBox):
             self.render_element()
         else:
             # re-render with highlight
-            self.render_element(bg_color=COLORS['button-highlight'])
+            self.render_element(
+                bg_color=COLORS['button-highlight'])
 
     def do_click_action(self):
         if self.hover and pygame.mouse.get_just_released()[0]:
@@ -43,6 +46,7 @@ class UIButton(UITextBox):
             f"Bottomright: {self.rect.bottomright}\n"
             f"Text: {self.text}\n"
             f"Font size: {self.font_size}\n"
-            f"Mouse hovering: {self.hover}"
+            f"Mouse hovering: {self.hover}\n"
+            f"Click action: {self.click_action}"
         )
         return get_tui_text_box(text)

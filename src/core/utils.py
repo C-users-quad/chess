@@ -9,11 +9,11 @@ def get_tui_text_box(text: object):
             __str__ method:
             ```
             text = (
-                f"Button {hex(id(self))}\n"
-                f"Size: {self.rect.size}\n"
-                f"Topleft: {self.rect.topleft}\n"
-                f"Center: {self.rect.center}\n"
-                f"Bottomright: {self.rect.bottomright}\n"
+                f"Button {hex(id(self))}\\n"
+                f"Size: {self.rect.size}\\n"
+                f"Topleft: {self.rect.topleft}\\n"
+                f"Center: {self.rect.center}\\n"
+                f"Bottomright: {self.rect.bottomright}"
             )
             return get_tui_text_box(lines)
             ```
@@ -35,10 +35,15 @@ def asset_path(relative):
     if getattr(sys, "frozen", False):
         base = Path(sys._MEIPASS)
     else:
-        base = Path(__file__).resolve().parent.parent.parent  # go up one directory
+        base = Path(__file__).resolve().parent.parent.parent
     return base / relative
 
-def get_ui_elem(element):
+def get_ui_elem(element, get_exact=False):
     """used to get ui elements that are scaled to the window size"""
     window_width, window_height = GameContext.game.display.get_size()
-    return int(window_height * SIZE_RATIOS[element])
+    ratio, scale_axis = SIZE_RATIOS[element]
+    scale = window_width if scale_axis is 'width' else window_height
+    scaled_ui_elem = scale * ratio
+    max_size = min(window_width, window_height)
+    scaled_ui_elem = min(max_size, scaled_ui_elem) # ensures elements stay on screen
+    return scaled_ui_elem if get_exact else int(scaled_ui_elem)

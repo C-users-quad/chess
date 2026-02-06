@@ -13,7 +13,7 @@ FPS = 60
 
 # ui-related stuff. colors, sizes, etc.
 BASE_WIDTH, BASE_HEIGHT = (1256, 750)
-"""the window height i used when making the ui, used for scaling"""
+"""the window sizes i used when making the ui, used for scaling"""
 ANTIALIAS = True
 COLORS = {
     'clear': "#68f66a",
@@ -23,10 +23,10 @@ COLORS = {
     'button-highlight': "#1F6F78",
     'board-border': "#6F3110",
     'white-square': "#F1E1D8",
-    'black-square': "#311201"
+    'black-square': "#311201",
 }
 """
-dicitonary for colors.
+## dicitonary for colors.
 ### current keys are:
 ```
 'clear' - color used to clear the screen
@@ -37,22 +37,32 @@ dicitonary for colors.
 'board-border' - color used for the chess boards sides
 'white-square' - color used for the white squares
 'black-square' - color used for the black squares
+'sidebar' - color of the sidebar used in the main menu
 ```
 """
 SIZE_RATIOS = {
-    'board': 600 / BASE_HEIGHT,
-    'rounding': 10 / BASE_HEIGHT,
-    'border-width': 10 / BASE_HEIGHT,
-    'padding': 10 / BASE_HEIGHT,
-    'spacing': 15 / BASE_HEIGHT,
-    'title': 75 / BASE_HEIGHT,
-    'subtitle': 50 / BASE_HEIGHT,
-    'text': 25 / BASE_HEIGHT
+    'board': (600 / BASE_HEIGHT, 'height'),
+    'rounding': (10 / BASE_HEIGHT, 'height'),
+    'border-width': (10 / BASE_HEIGHT, 'height'),
+    'padding': (10 / BASE_HEIGHT, 'height'),
+    'spacing': (15 / BASE_HEIGHT, 'height'),
+    'title': (75 / BASE_HEIGHT, 'height'),
+    'subtitle': (50 / BASE_HEIGHT, 'height'),
+    'text': (25 / BASE_HEIGHT, 'height'),
+    'sidebar-width': (50 / BASE_WIDTH, 'width'),
+    'board-border': (50 / BASE_HEIGHT, 'height')
 }
 """
-ratios used in order to determine size of elements drawn
-relative to current window height.
-ex. SIZE_RATIOS['board'] * window_height = the side length of the board
+## ratios used in order to determine size of elements drawn
+## relative to current window height.
+### key/value pair is organized as such:
+key:
+ - str representing ui element.
+
+value:
+ - a tuple with the first index being the ratio and
+ - the second index containing whether the ratio is
+   with respect to the base width/height of the window.
 ### the current keys are:
 ```
 'board' - the side length of the board
@@ -63,5 +73,7 @@ ex. SIZE_RATIOS['board'] * window_height = the side length of the board
 'title' - title font size
 'subtitle' - subtitle font size
 'text' - text font size
+'sidebar-width' - width of sidebar in main menu
+'board-border' - width of the board's border
 ```
 """

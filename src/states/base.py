@@ -13,7 +13,14 @@ class GameState:
     def game(self):
         return GameContext.game
 
-    def handle_events(self):
+    def handle_events(self, events):
+        for event in events:
+            if event.type == pygame.QUIT:
+                self.game.power_off()
+            elif event.type == pygame.VIDEORESIZE:
+                self.game.board.render()
+
+    def handle_input(self):
         pass
 
     def update(self):
