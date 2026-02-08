@@ -41,9 +41,8 @@ def asset_path(relative):
 def get_ui_elem(element, get_exact=False):
     """used to get ui elements that are scaled to the window size"""
     window_width, window_height = GameContext.game.display.get_size()
-    ratio, scale_axis = SIZE_RATIOS[element]
-    scale = window_width if scale_axis is 'width' else window_height
-    scaled_ui_elem = scale * ratio
+    ratio = SIZE_RATIOS[element]
     max_size = min(window_width, window_height)
+    scaled_ui_elem = ratio * max_size
     scaled_ui_elem = min(max_size, scaled_ui_elem) # ensures elements stay on screen
     return scaled_ui_elem if get_exact else int(scaled_ui_elem)

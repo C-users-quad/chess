@@ -58,16 +58,12 @@ class Game:
 
         return get_tui_text_box(text)
 
-# the pattern:
-# you have a state stack, and in it are objects that represent game states.
-# for example, for the game you have the game state class and you import it here
-# and here in the main menu class when the player presses the button that opens the
-# game, you would append the game object to the state stack and yea
 def main():
     # create game context
     game = GameContext.game = Game()
     game.board = Board()
-    # push initial state
+
+    # push initial states
     game.push_state('chess')
     game.push_state('main-menu')
 

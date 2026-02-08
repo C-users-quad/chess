@@ -1,21 +1,19 @@
 from core.settings import *
 from core.utils import get_tui_text_box
 from ui.text_box import UITextBox
+from ui.clickable import Clickable
 
-class UIButton(UITextBox):
+class UIButton(UITextBox, Clickable):
     """button that when clicked executes click_action"""
     def __init__(self, pos, anchor, text, font_size,
-            click_action, auto_size=False, size=(0,0)):
-        super().__init__(pos, anchor, text, font_size,
-            auto_size, size)
+            click_action, auto_size=False, size=(0,0), **kwargs):
+        super().__init__(
+            pos=pos, anchor=anchor, text=text,
+            font_size=font_size,
+            auto_size=auto_size, size=size,
+            **kwargs
+        )
         self.click_action = click_action
-        self.hover = False
-        self.prev_hover = False
-
-    def detect_hovering(self):
-        self.prev_hover = self.hover
-        self.hover = self.rect.collidepoint(
-            pygame.mouse.get_pos())
 
     def highlight_button(self):
         if self.hover == self.prev_hover:
@@ -29,8 +27,7 @@ class UIButton(UITextBox):
                 bg_color=COLORS['button-highlight'])
 
     def do_click_action(self):
-        if self.hover and pygame.mouse.get_just_released()[0]:
-            self.click_action()
+        if self.detect_click(): self.click_action()
 
     def update(self):
         self.detect_hovering()
@@ -46,7 +43,6 @@ class UIButton(UITextBox):
             f"Bottomright: {self.rect.bottomright}\n"
             f"Text: {self.text}\n"
             f"Font size: {self.font_size}\n"
-            f"Mouse hovering: {self.hover}\n"
-            f"Click action: {self.click_action}"
+            f"Mouse hovering: {self.hover}"
         )
         return get_tui_text_box(text)

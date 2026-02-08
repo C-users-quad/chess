@@ -3,18 +3,13 @@ from core.utils import get_tui_text_box
 
 class UIElement:
     """parent ui class that stores a surface and rect combo with a size and pos."""
-    def __init__(self, pos, size, anchor, color=None, image_path=None):
+    def __init__(self, pos, size, anchor, color=None, **kwargs):
         # initialize basic sprite attributes
         self.image = pygame.Surface(size, pygame.SRCALPHA)
         self.rect = pygame.Rect(pos, size)
         setattr(self.rect, anchor, pos)
-        if color and image_path:
-            raise Exception("cant use color and image at the same time")
-        if color:
-            self.image.fill(color)
-        if image_path:
-            image = pygame.image.load(image_path)
-            self.image = pygame.transform.smoothscale(image, size)
+        if color: self.image.fill(color)
+        super().__init__(**kwargs)
 
     def update(self):
         pass
@@ -31,5 +26,3 @@ class UIElement:
             f"Bottomright: {self.rect.bottomright}"
         )
         return get_tui_text_box(text)
-
-

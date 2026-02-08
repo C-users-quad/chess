@@ -24,6 +24,8 @@ COLORS = {
     'board-border': "#6F3110",
     'white-square': "#F1E1D8",
     'black-square': "#311201",
+    'board-highlight': "#ffee008e",
+    'move-circle': "#22202EA1"
 }
 """
 ## dicitonary for colors.
@@ -38,32 +40,23 @@ COLORS = {
 'white-square' - color used for the white squares
 'black-square' - color used for the black squares
 'sidebar' - color of the sidebar used in the main menu
+'move-circle' - color of circle drawn on squares that a piece can move to
 ```
 """
 SIZE_RATIOS = {
-    'board': (600 / BASE_HEIGHT, 'height'),
-    'rounding': (10 / BASE_HEIGHT, 'height'),
-    'border-width': (10 / BASE_HEIGHT, 'height'),
-    'padding': (10 / BASE_HEIGHT, 'height'),
-    'spacing': (15 / BASE_HEIGHT, 'height'),
-    'title': (75 / BASE_HEIGHT, 'height'),
-    'subtitle': (50 / BASE_HEIGHT, 'height'),
-    'text': (25 / BASE_HEIGHT, 'height'),
-    'sidebar-width': (50 / BASE_WIDTH, 'width'),
-    'board-border': (50 / BASE_HEIGHT, 'height')
+    'board': (600 / BASE_HEIGHT),
+    'rounding': (10 / BASE_HEIGHT),
+    'border-width': (10 / BASE_HEIGHT),
+    'padding': (10 / BASE_HEIGHT),
+    'spacing': (15 / BASE_HEIGHT),
+    'title': (75 / BASE_HEIGHT),
+    'subtitle': (50 / BASE_HEIGHT),
+    'text': (25 / BASE_HEIGHT),
+    'sidebar-width': (50 / BASE_WIDTH),
+    'board-border': (50 / BASE_HEIGHT),
 }
 """
 ## ratios used in order to determine size of elements drawn
-## relative to current window height.
-### key/value pair is organized as such:
-key:
- - str representing ui element.
-
-value:
- - a tuple with the first index being the ratio and
- - the second index containing whether the ratio is
-   with respect to the base width/height of the window.
-### the current keys are:
 ```
 'board' - the side length of the board
 'rounding' - the rounding of corners
@@ -74,6 +67,6 @@ value:
 'subtitle' - subtitle font size
 'text' - text font size
 'sidebar-width' - width of sidebar in main menu
-'board-border' - width of the board's border
+'board-border' - width of the boards border
 ```
 """
