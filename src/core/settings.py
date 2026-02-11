@@ -25,7 +25,7 @@ COLORS = {
     'white-square': "#F1E1D8",
     'black-square': "#311201",
     'board-highlight': "#ffee008e",
-    'move-circle': "#22202EA1"
+    'move-circle': "#271978A0"
 }
 """
 ## dicitonary for colors.
@@ -70,3 +70,4 @@ SIZE_RATIOS = {
 'board-border' - width of the boards border
 ```
 """
+PIECE_SCALE = 0.95
