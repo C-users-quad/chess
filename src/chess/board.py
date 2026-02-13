@@ -1,5 +1,5 @@
 from core.settings import *
-from core.utils import get_ui_elem, get_tui_text_box
+from core.utils import get_ui_elem
 from chess.square import BoardSquare
 from chess.pieces import *
 
@@ -90,7 +90,7 @@ class Board:
         moves a piece to end pos. assumes move is legal.
 
         Args:
-            piece (ChessPiece): the piece to be moved
+            piece (Piece): the piece to be moved
             end_pos (tuple[int, int]): the position the piece will be moved to
             represented as (row, col) indices in the board array.
         """
@@ -99,7 +99,10 @@ class Board:
         start_square = self.board[start_row][start_col]
         end_square = self.board[end_row][end_col]
         start_square.remove_piece()
+        capture_pawn_if_en_passant(piece, self, end_pos)
         self.place_piece(piece, end_square.pos)
+        reset_pawn_conditions(self)
+        piece.has_moved = True
 
     def place_piece(self, piece, pos):
         """
@@ -126,16 +129,55 @@ class Board:
         self.render()
         GameContext.game.display.blit(self.image, self.rect)
 
+def capture_pawn_if_en_passant(piece, board: Board, end_pos):
+    # the piece thats moving must be a pawn
+    if not isinstance(piece, Pawn):
+        return
+    print("boom")
+
+    # the position the piece is moving to must be an en passant move
+    en_passant_moves = piece.get_en_passant_moves()
+    if not end_pos in en_passant_moves:
+        return
+
+    # capture the piece
+    row, col = end_pos
+    victim_pos = (row - piece.dir, col)
+    victim_square = board.get_square(*victim_pos)
+    print("yee")
+    victim_square.remove_piece()
+
+def reset_pawn_conditions(board: Board):
+    """
+    once the turn changes,
+    make the previous mover's pawns' reset their en passant flags
+    """
+    for row in board.board:
+        for square in row:
+            if square.empty():
+                continue
+            if square.piece.color == board.turn_color:
+                continue
+            if hasattr(square.piece, 'just_moved_forward_two'):
+                square.piece.just_moved_forward_two = False
+
 def populate_board(board: Board):
     """adds the initial arrangement of chess pieces to the board"""
-    ### black side ###
-    # rooks
-    board.place_piece(Rook((0,0), board, 'black'), (0,0))
-    board.place_piece(Rook((0,7), board, 'black'), (0,7))
-    board.place_piece(Bishop((0,1),board,'black'), (0,1))
+    colors = ['black', 'white']
+    # make back rows
+    for color in colors:
+        row = 0 if color == 'black' else 7
+        col = 0
+        for piece in [Rook, Knight, Bishop, Queen, Queen, Bishop, Knight, Rook]:
+            pos = (row, col)
+            board.place_piece(piece(pos, color), pos)
+            col += 1
 
-    ### white side ###
-    # rooks
-    board.place_piece(Rook((7,0), board, 'white'), (7,0))
-    board.place_piece(Rook((7,7), board, 'white'), (7,7))
-    board.place_piece(Queen((4,4),board, 'white'), (4,4))
+    # make pawns
+    for color in colors:
+        row = 1 if color == 'black' else 6
+        col = 0
+        for _ in range(8):
+            pos = (row, col)
+            board.place_piece(Pawn(pos, color), pos)
+            col += 1

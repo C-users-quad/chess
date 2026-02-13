@@ -46,6 +46,9 @@ class BoardSquare(Clickable):
 
         # compute the drawing rect **centered inside board image**
         board_row, board_col = self.pos
+        if self.board.turn_color == 'black':
+            board_row = 7 - board_row
+            board_col = 7 - board_col
         drawing_x = board_center[0] + (board_col - 4) * square_side_length
         drawing_y = board_center[1] + (board_row - 4) * square_side_length
         self.drawing_rect = pygame.Rect(
@@ -84,7 +87,7 @@ class BoardSquare(Clickable):
         image_center = (image_side_length / 2, image_side_length / 2)
 
         # create circle
-        circle_radius = self.image.get_width() / 5
+        circle_radius = self.image.get_width() * MOVE_CIRCLE_SCALE
         circle = pygame.Surface((circle_radius*2, circle_radius*2), pygame.SRCALPHA)
         pygame.draw.circle(
             circle, COLORS['move-circle'],
@@ -106,19 +109,19 @@ class BoardSquare(Clickable):
         selected_square = self.board.find_selected_square()
         if selected_square:
             if self.valid_square:
-                # case where you move a piece
+                # case: move a piece
                 self.board.move_piece(selected_square.piece, self.pos)
                 self.board.change_turn()
                 self.board.reset_flags()
             else:
-                # case where you select another piece
+                # case: select another piece
                 self.board.reset_flags()
                 self.selected = True
                 if not self.empty():
                     if self.piece.color != self.board.turn_color:
                         return
                     self.board.show_valid_moves(self)
-        # case where you select a piece
+        # case: select a piece
         self.selected = True
         if not self.empty():
             if self.piece.color != self.board.turn_color:
@@ -137,7 +140,7 @@ class BoardSquare(Clickable):
 
     def remove_piece(self):
         self.piece = None
-
+ 
     def empty(self):
         return self.piece is None
 
