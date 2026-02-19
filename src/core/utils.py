@@ -46,3 +46,11 @@ def get_ui_elem(element, get_exact=False):
     scaled_ui_elem = ratio * max_size
     scaled_ui_elem = min(max_size, scaled_ui_elem) # ensures elements stay on screen
     return scaled_ui_elem if get_exact else int(scaled_ui_elem)
+
+def resize(base_size, pos):
+    x, y = pos
+    base_win_w, base_win_h = base_size
+    curr_win_w, curr_win_h = GameContext.game.display.get_size()
+    scale_x = curr_win_w / base_win_w
+    scale_y = curr_win_h / base_win_h
+    return (x * scale_x, y * scale_y)

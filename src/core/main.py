@@ -1,6 +1,7 @@
 from core.settings import *
 from core.utils import get_tui_text_box, asset_path
 from states.main_menu import MainMenu
+from states.settings import SettingsMenu
 from states.chess import Chess
 from chess.board import Board
 
@@ -15,7 +16,8 @@ class Game:
         self.dt = 0
         self.states = {
             'main-menu': lambda: MainMenu(),
-            'chess': lambda: Chess()
+            'chess': lambda: Chess(),
+            'settings': lambda: SettingsMenu()
         }
         """
         dict of every state, used to push states to state stack
@@ -23,11 +25,17 @@ class Game:
         ```
         'main-menu' - the main menu
         'chess' - the game itself
+        'settings' - the settings menu
         ```
         """
         self.state_stack = []
         self.on = True
         self.board = None
+        self.dim_surf = pygame.Surface(self.display.get_size(), pygame.SRCALPHA)
+        self.dim_surf.fill(COLORS['state-dim'])
+        self.dim_surf.set_alpha(STATE_DIM_ALPHA)
+        self.dim_rect = self.dim_surf.get_rect()
+        self.prev_window_size = self.display.get_size()
 
     def get_font(self, size):
         if size not in self.fonts:
@@ -49,6 +57,13 @@ class Game:
     def power_off(self):
         self.on = False
 
+    def window_resized(self):
+        return self.prev_window_size != self.display.get_size()
+
+    def update(self):
+        self.prev_window_size = self.display.get_size()
+        self.dt = self.clock.tick(FPS) / 1000
+
     def __str__(self):
         text = (
             f"Game object {hex(id(self))}\n"
@@ -68,18 +83,20 @@ def main():
     game.push_state('main-menu')
 
     while game.on:
-        # get delta time
-        game.dt = game.clock.tick(FPS) / 1000
+        # update game context
+        game.update()
 
         # update top state
         top_state = game.state_stack[-1]
-        top_state.handle_events()
+        top_state.handle_events(pygame.event.get())
         top_state.update()
 
         # draw game
         game.display.fill(COLORS['clear'])
-        for state in game.state_stack[0:len(game.state_stack)-1]:
-            if state.draw_below: state.draw()
+        for state in game.state_stack[0:-1]:
+            if state.draw_below:
+                state.draw()
+                state.draw_dim()
         top_state.draw()
 
         pygame.display.update()

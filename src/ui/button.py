@@ -10,7 +10,7 @@ class UIButton(UITextBox, Clickable):
         super().__init__(
             pos=pos, anchor=anchor, text=text,
             font_size=font_size,
-            auto_size=auto_size, size=size,
+            do_auto_size=auto_size, size=size,
             **kwargs
         )
         self.click_action = click_action
@@ -20,10 +20,10 @@ class UIButton(UITextBox, Clickable):
             return
         if not self.hover:
             # re-render without highlight
-            self.render_element()
+            self.render()
         else:
             # re-render with highlight
-            self.render_element(
+            self.render(
                 bg_color=COLORS['button-highlight'])
 
     def do_click_action(self):

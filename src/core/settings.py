@@ -3,7 +3,11 @@ from os.path import join
 import sys
 from pathlib import Path
 from typing import Literal
+from copy import deepcopy
+from rich.console import Console
 
+# override print to rich printing for colors yay!!
+print = Console().print
 class GameContext:
     """container for game object so that it can be globally accessed"""
     game = None
@@ -15,6 +19,7 @@ FPS = 60
 BASE_WIDTH, BASE_HEIGHT = (1256, 750)
 """the window sizes i used when making the ui, used for scaling"""
 ANTIALIAS = True
+STATE_DIM_ALPHA = 100
 COLORS = {
     'clear': "#68f66a",
     'text': "#FFFFFF",
@@ -25,7 +30,8 @@ COLORS = {
     'white-square': "#F1E1D8",
     'black-square': "#311201",
     'board-highlight': "#ffee008e",
-    'move-circle': "#271978A0"
+    'move-circle': "#271978A0",
+    'state-dim': (0,0,0)
 }
 """
 ## dicitonary for colors.
@@ -39,7 +45,7 @@ COLORS = {
 'board-border' - color used for the chess boards sides
 'white-square' - color used for the white squares
 'black-square' - color used for the black squares
-'sidebar' - color of the sidebar used in the main menu
+'sidebar' - color of the sidebar used in the main menuelegantly
 'move-circle' - color of circle drawn on squares that a piece can move to
 ```
 """

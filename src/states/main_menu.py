@@ -4,6 +4,7 @@ from core.utils import get_tui_text_box, get_ui_elem
 from ui.button import UIButton
 from ui.text_box import UITextBox
 from ui.base import UIElement
+from ui.colored_rect import UIColoredRect
 
 def make_ui(ui):
     # reset ui and get needed data from game
@@ -15,20 +16,21 @@ def make_ui(ui):
     spacing = get_ui_elem('spacing')
     border_width = get_ui_elem('border-width')
     padding = get_ui_elem('padding')
-    title_font_size = get_ui_elem('title')
     subtitle_font_size = get_ui_elem('subtitle')
     sidebar_width = get_ui_elem('sidebar-width')
 
     # make title
     title = UITextBox((win_w/2, spacing),
-        "midtop", "CHESS", title_font_size, True)
+        "midtop", "CHESS", 'title', True)
     ui.append(title)
 
     # make sidebars
     sidebar_size = (sidebar_width, win_h)
-    bar1 = UIElement((0,0), sidebar_size, "topleft", COLORS['white-square'])
+    bar1 = UIColoredRect(
+        (0,0), sidebar_size, "topleft", COLORS['white-square'])
     ui.append(bar1)
-    bar2 = UIElement((win_w, 0), sidebar_size, "topright", COLORS['black-square'])
+    bar2 = UIColoredRect(
+        (win_w, 0), sidebar_size, "topright", COLORS['black-square'])
     ui.append(bar2)
 
     # make buttons
@@ -37,17 +39,17 @@ def make_ui(ui):
         subtitle_font_size + border_width * 2 + padding * 2
     )
     play_game = UIButton((spacing + sidebar_width, win_h - spacing),
-        "bottomleft", "Play Game", subtitle_font_size,
+        "bottomleft", "Play Game", 'subtitle',
         lambda: game.pop_state(), size=menu_button_size)
     ui.append(play_game)
 
     settings = UIButton((win_w / 2, win_h - spacing),
-        "midbottom", "Settings", subtitle_font_size,
-        lambda: print(settings.__str__()), size=menu_button_size)
+        "midbottom", "Settings", 'subtitle',
+        lambda: game.push_state('settings'), size=menu_button_size)
     ui.append(settings)
 
     quit_game = UIButton((win_w - spacing - sidebar_width, win_h - spacing),
-        "bottomright", "Quit Game", subtitle_font_size,
+        "bottomright", "Quit Game", 'subtitle',
         lambda: game.power_off(), size=menu_button_size)
     ui.append(quit_game)
 
@@ -57,19 +59,20 @@ class MainMenu(GameState):
         self.draw_below = True
         make_ui(self.ui)
 
-    def handle_events(self):
-        events = pygame.event.get()
+    def handle_events(self, events):
         super().handle_events(events)
-        for event in events:
-            if event.type == pygame.VIDEORESIZE:
-                make_ui(self.ui)
-            if event.type == pygame.QUIT:
-                self.game.power_off()
 
     def update(self):
         for element in self.ui:
             element.update()
 
+    def render(self):
+        if not self.game.window_resized():
+            return
+        for element in self.ui:
+            element.render()
+
     def draw(self):
+        self.render()
         for element in self.ui:
             element.draw()

@@ -11,24 +11,59 @@ for piece in ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn']:
         path = join('assets', 'images', 'pieces', filename)
         PIECE_IMAGES[key] = pygame.image.load(asset_path(path))
 
+def get_all_pieces_of_color(color: Literal['white', 'black']):
+    pieces = []
+    board = GameContext.game.board.board
+    for row in board:
+        for square in row:
+            if square.empty():
+                continue
+            if square.piece.color == color:
+                pieces.append(square.piece)
+
+    return pieces
+
 # import piece images and make accessable with a dict, write the
 # base piece class and write other piece classes.
 class Piece:
+    name = None
     def __init__(self, pos, color, **kwargs):
         super().__init__(**kwargs)
         self.pos = pos
         self.color = color
         self.has_moved = False
+        self.image = PIECE_IMAGES[(color, self.name)]
 
     @property
     def board(self):
         return GameContext.game.board
 
-    def get_valid_moves(self):
+    def get_pseudo_moves(self):
         pass
+
+    def get_valid_moves(self):
+        return self.filter_illegal_moves(self.get_pseudo_moves())
 
     def update_pos(self, pos):
         self.pos = pos
+
+    def filter_illegal_moves(self, moves):
+        original_board = GameContext.game.board
+        legal_moves = []
+
+        for move in moves:
+            temp_board = deepcopy(original_board)
+            GameContext.game.board = temp_board
+
+            temp_piece = temp_board.get_square(*self.pos).piece
+            temp_king = temp_board.white_king if self.color == 'white' else temp_board.black_king
+
+            temp_board.move_piece(temp_piece, move)
+            if not temp_king.in_check():
+                legal_moves.append(move)
+
+        GameContext.game.board = original_board
+        return legal_moves
 
     def __str__(self):
         lines = (
@@ -44,71 +79,64 @@ class SlidingPiece(Piece):
     def __init__(self, pos, color, **kwargs):
         super().__init__(pos=pos, color=color, **kwargs)
 
-    def get_valid_moves(self):
-        valid_moves = []
+    def get_pseudo_moves(self):
+        pseudo_moves = []
         for dr, dc in self.directions:
             row, col = self.pos
             row, col = row + dr, col + dc
             while self.board.pos_on_board(row, col):
                 curr_square = self.board.get_square(row, col)
                 if curr_square.empty():
-                    valid_moves.append((row, col))
+                    pseudo_moves.append((row, col))
                     row += dr
                     col += dc
                     continue
                 if curr_square.piece.color != self.color:
-                    valid_moves.append((row, col))
+                    pseudo_moves.append((row, col))
                     break
                 if curr_square.piece.color == self.color:
                     break
 
-        return valid_moves
+        return pseudo_moves
 
 class Rook(SlidingPiece):
     name = 'rook'
+    directions = [
+                (0, 1),
+        (-1, 0),         (1, 0),
+                (0,-1),
+    ]
     def __init__(self, pos, color, **kwargs):
         super().__init__(pos=pos, color=color, **kwargs)
-        self.image = PIECE_IMAGES[(color, self.name)]
-        self.directions = [
-                     (0, 1),
-            (-1, 0),         (1, 0),
-                     (0,-1),
-        ]
 
 class Bishop(SlidingPiece):
     name = 'bishop'
+    directions = [
+        (-1, 1),        (1, 1),
+
+        (-1,-1),        (1,-1)
+    ]
     def __init__(self, pos, color, **kwargs):
         super().__init__(pos=pos, color=color, **kwargs)
-        self.image = PIECE_IMAGES[(color, self.name)]
-        self.directions = [
-            (-1, 1),        (1, 1),
-
-            (-1,-1),        (1,-1)
-        ]
 
 class Queen(SlidingPiece):
     name = 'queen'
+    directions = Rook.directions.copy()
+    directions.extend(Bishop.directions)
     def __init__(self, pos, color, **kwargs):
         super().__init__(pos=pos, color=color, **kwargs)
-        self.image = PIECE_IMAGES[(color, self.name)]
-        self.directions = [
-            (-1, 1), (0, 1), (1, 1),
-            (-1, 0),         (1, 0),
-            (-1,-1), (0,-1), (1,-1)
-        ]
 
 class Knight(Piece):
     name = 'knight'
+    directions = [
+        (-2,-1), (-2,1), (2,-1), (2,1),
+        (-1,-2), (1,-2), (-1,2), (1,2)
+    ]
     def __init__(self, pos, color, **kwargs):
         super().__init__(pos=pos, color=color, **kwargs)
-        self.image = PIECE_IMAGES[(color, self.name)]
-        self.directions = [
-            (-2,-1), (-2,1), (2,-1), (2,1),
-            (-1,-2), (1,-2), (-1,2), (1,2)
-        ]
 
-    def get_valid_moves(self):
-        valid_moves = []
+    def get_pseudo_moves(self):
+        pseudo_moves = []
         for dr, dc in self.directions:
             row, col = self.pos
             row, col = row + dr, col + dc
@@ -117,17 +145,16 @@ class Knight(Piece):
 
             curr_square = self.board.get_square(row, col)
             if curr_square.empty():
-                valid_moves.append((row, col))
+                pseudo_moves.append((row, col))
             elif curr_square.piece.color != self.color:
-                valid_moves.append((row, col))
+                pseudo_moves.append((row, col))
 
-        return valid_moves
+        return pseudo_moves
 
 class Pawn(Piece):
     name = 'pawn'
     def __init__(self, pos, color, **kwargs):
         super().__init__(pos=pos, color=color, **kwargs)
-        self.image = PIECE_IMAGES[(color, self.name)]
         # determines if the pawn moves up or down the board depending on its color
         self.dir = -1 if color == 'white' else 1
         self.attack_moves = [
@@ -167,8 +194,8 @@ class Pawn(Piece):
 
         return en_passant_moves
 
-    def get_valid_moves(self):
-        valid_moves = []
+    def get_pseudo_moves(self):
+        pseudo_moves = []
         # check attacking squares
         for dr, dc in self.attack_moves:
             row, col = self.pos
@@ -181,10 +208,10 @@ class Pawn(Piece):
                 continue
 
             if curr_square.piece.color != self.color:
-                valid_moves.append((row, col))
+                pseudo_moves.append((row, col))
 
         # check en passant
-        valid_moves.extend(self.get_en_passant_moves())
+        pseudo_moves.extend(self.get_en_passant_moves())
 
         # check moving directly infront
         row, col = self.pos
@@ -192,10 +219,43 @@ class Pawn(Piece):
         if self.board.pos_on_board(*pos_infront):
             square_infront = self.board.get_square(*pos_infront)
             if square_infront.empty():
-                valid_moves.append(pos_infront)
+                pseudo_moves.append(pos_infront)
 
         # check moving 2 squares forward
         if not self.has_moved:
-            valid_moves.append((row + 2*self.dir, col))
+            pos_2_infront = (row + self.dir*2, col)
+            square_infront = self.board.get_square(*pos_infront)
+            square_2_infront = self.board.get_square(*pos_2_infront)
+            if square_infront.empty() and square_2_infront.empty():
+                pseudo_moves.append(pos_2_infront)
 
-        return valid_moves
+        return pseudo_moves
+
+class King(Piece):
+    name = 'king'
+    directions = Queen.directions
+    def __init__(self, pos, color, **kwargs):
+        super().__init__(pos=pos, color=color, **kwargs)
+
+    def in_check(self):
+        enemy_color = 'white' if self.color == 'black' else 'black'
+        enemy_pieces = get_all_pieces_of_color(enemy_color)
+        enemy_moves = []
+        for piece in enemy_pieces:
+            enemy_moves.extend(piece.get_pseudo_moves())
+
+        return self.pos in enemy_moves
+
+    def get_pseudo_moves(self):
+        pseudo_moves = []
+        for dr, dc in self.directions:
+            row, col = self.pos
+            row, col = row + dr, col + dc
+            if not self.board.pos_on_board(row, col):
+                continue
+
+            curr_square = self.board.get_square(row, col)
+            if curr_square.empty() or curr_square.piece.color != self.color:
+                pseudo_moves.append((row, col))
+
+        return pseudo_moves
