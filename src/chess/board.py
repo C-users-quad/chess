@@ -1,5 +1,5 @@
 from core.settings import *
-from core.utils import get_ui_elem
+from core.utils import get_ui_elem, scale
 from chess.square import BoardSquare
 from chess.pieces import *
 
@@ -28,8 +28,8 @@ class Board:
         """re-creates the board's image"""
         # get needed info
         window_width, window_height = GameContext.game.display.get_size()
-        board_side_length = get_ui_elem('board')
-        rounding = get_ui_elem('rounding')
+        board_side_length = scale(get_ui_elem('board'), axis=BOARD_SCALE_AXIS)
+        rounding = scale(get_ui_elem('rounding'), axis=BOARD_SCALE_AXIS)
 
         # create border image
         self.image = pygame.Surface(

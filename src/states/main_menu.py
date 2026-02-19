@@ -10,7 +10,6 @@ def make_ui(ui):
     # reset ui and get needed data from game
     ui.clear()
     game = GameContext.game
-    win_w, win_h = game.display.get_size()
 
     # get needed ui elements
     spacing = get_ui_elem('spacing')
@@ -20,35 +19,35 @@ def make_ui(ui):
     sidebar_width = get_ui_elem('sidebar-width')
 
     # make title
-    title = UITextBox((win_w/2, spacing),
+    title = UITextBox((BASE_WIDTH/2, spacing),
         "midtop", "CHESS", 'title', True)
     ui.append(title)
 
     # make sidebars
-    sidebar_size = (sidebar_width, win_h)
+    sidebar_size = (sidebar_width, BASE_HEIGHT)
     bar1 = UIColoredRect(
         (0,0), sidebar_size, "topleft", COLORS['white-square'])
     ui.append(bar1)
     bar2 = UIColoredRect(
-        (win_w, 0), sidebar_size, "topright", COLORS['black-square'])
+        (BASE_WIDTH, 0), sidebar_size, "topright", COLORS['black-square'])
     ui.append(bar2)
 
     # make buttons
     menu_button_size = (
-        (win_w - 4*spacing - 2*sidebar_width) / 3,
+        (BASE_WIDTH - 4*spacing - 2*sidebar_width) / 3,
         subtitle_font_size + border_width * 2 + padding * 2
     )
-    play_game = UIButton((spacing + sidebar_width, win_h - spacing),
+    play_game = UIButton((spacing + sidebar_width, BASE_HEIGHT - spacing),
         "bottomleft", "Play Game", 'subtitle',
         lambda: game.pop_state(), size=menu_button_size)
     ui.append(play_game)
 
-    settings = UIButton((win_w / 2, win_h - spacing),
+    settings = UIButton((BASE_WIDTH / 2, BASE_HEIGHT - spacing),
         "midbottom", "Settings", 'subtitle',
         lambda: game.push_state('settings'), size=menu_button_size)
     ui.append(settings)
 
-    quit_game = UIButton((win_w - spacing - sidebar_width, win_h - spacing),
+    quit_game = UIButton((BASE_WIDTH - spacing - sidebar_width, BASE_HEIGHT - spacing),
         "bottomright", "Quit Game", 'subtitle',
         lambda: game.power_off(), size=menu_button_size)
     ui.append(quit_game)
@@ -66,13 +65,13 @@ class MainMenu(GameState):
         for element in self.ui:
             element.update()
 
-    def render(self):
-        if not self.game.window_resized():
+    def render(self, force):
+        if not force and not self.game.window_resized():
             return
         for element in self.ui:
             element.render()
 
-    def draw(self):
-        self.render()
+    def draw(self, force_rendering=False):
+        self.render(force_rendering)
         for element in self.ui:
             element.draw()

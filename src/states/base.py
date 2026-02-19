@@ -34,7 +34,7 @@ class GameState:
     def render(self):
         pass
 
-    def draw(self):
+    def draw(self, force_rendering=False):
         pass
 
     def draw_dim(self):

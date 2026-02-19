@@ -1,5 +1,5 @@
 from core.settings import *
-from core.utils import get_tui_text_box, get_ui_elem, resize
+from core.utils import get_tui_text_box, get_ui_elem, resize, scale
 from ui.base import UIElement
 
 class UITextBox(UIElement):
@@ -18,31 +18,27 @@ class UITextBox(UIElement):
 
     @property
     def font(self):
-        return self.game.get_font(get_ui_elem(self.font_size))
+        return self.game.get_font(scale(get_ui_elem(self.font_size), axis='height'))
 
     def auto_size(self):
         """makes it so that the size is snug around the text"""
         # get needed ui elements
-        border_width = get_ui_elem('border-width')
-        padding = get_ui_elem('padding')
+        border_width = scale(get_ui_elem('border-width'), axis=UI_SCALE_AXIS)
+        padding = scale(get_ui_elem('padding'), axis=UI_SCALE_AXIS)
 
         text_width, text_height = self.font.render(
             self.text, ANTIALIAS, (0,0,0)).size
         width = text_width + 2*border_width + 2*padding
         height = text_height + 2*border_width + 2*padding
         self.size = (width, height)
-        self.image = pygame.Surface(
-            self.size,
-            pygame.SRCALPHA)
-        self.rect = self.image.get_rect()
-        setattr(self.rect, self.anchor, resize(self.win_base_size, self.pos))
+        self.resize(self.size)
 
     def render(self, bg_color=COLORS['ui-bg'],
             border_color=COLORS['ui-border'], text_color=COLORS['text']):
         # get needed ui elements
-        rounding = get_ui_elem('rounding')
-        border_width = get_ui_elem('border-width')
-        padding = get_ui_elem('padding')
+        rounding = scale(get_ui_elem('rounding'), axis=UI_SCALE_AXIS)
+        border_width = scale(get_ui_elem('border-width'), axis=UI_SCALE_AXIS)
+        padding = scale(get_ui_elem('padding'), axis=UI_SCALE_AXIS)
 
         # resize sprite
         if self.do_auto_size:

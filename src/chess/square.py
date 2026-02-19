@@ -1,6 +1,6 @@
 from core.settings import *
 from ui.clickable import Clickable
-from core.utils import get_tui_text_box, get_ui_elem
+from core.utils import get_tui_text_box, get_ui_elem, scale
 
 class BoardSquare(Clickable):
     """
@@ -24,8 +24,9 @@ class BoardSquare(Clickable):
 
     def render(self):
         # square size
-        board_width = get_ui_elem('board')
-        board_border_width = get_ui_elem('board-border')
+        board_width = scale(get_ui_elem('board'), axis=BOARD_SCALE_AXIS)
+        board_border_width = scale(
+            get_ui_elem('board-border'), axis=BOARD_SCALE_AXIS)
         square_side_length = (board_width - 2*board_border_width) // 8
         board_center = (board_width / 2, board_width / 2)
         self.size = (square_side_length, square_side_length)
@@ -140,7 +141,7 @@ class BoardSquare(Clickable):
 
     def remove_piece(self):
         self.piece = None
- 
+
     def empty(self):
         return self.piece is None
 

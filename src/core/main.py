@@ -95,7 +95,7 @@ def main():
         game.display.fill(COLORS['clear'])
         for state in game.state_stack[0:-1]:
             if state.draw_below:
-                state.draw()
+                state.draw(force_rendering=True)
                 state.draw_dim()
         top_state.draw()
 

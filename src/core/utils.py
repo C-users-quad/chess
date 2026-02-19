@@ -39,18 +39,39 @@ def asset_path(relative):
     return base / relative
 
 def get_ui_elem(element, get_exact=False):
-    """used to get ui elements that are scaled to the window size"""
-    window_width, window_height = GameContext.game.display.get_size()
+    """used to get base size ui elements"""
     ratio = SIZE_RATIOS[element]
-    max_size = min(window_width, window_height)
+    max_size = min(BASE_WIDTH, BASE_HEIGHT)
     scaled_ui_elem = ratio * max_size
     scaled_ui_elem = min(max_size, scaled_ui_elem) # ensures elements stay on screen
     return scaled_ui_elem if get_exact else int(scaled_ui_elem)
 
-def resize(base_size, pos):
+def resize(pos):
     x, y = pos
-    base_win_w, base_win_h = base_size
     curr_win_w, curr_win_h = GameContext.game.display.get_size()
-    scale_x = curr_win_w / base_win_w
-    scale_y = curr_win_h / base_win_h
+    scale_x = curr_win_w / BASE_WIDTH
+    scale_y = curr_win_h / BASE_HEIGHT
     return (x * scale_x, y * scale_y)
+
+def scale(scalar, get_exact=False,
+          axis: Literal['width', 'height', 'min', 'max']='min'):
+    window_width, window_height = GameContext.game.display.get_size()
+
+    if axis == 'min':
+        scale = min(
+            window_width / BASE_WIDTH,
+            window_height / BASE_HEIGHT
+        )
+    elif axis == 'max':
+        scale = max(
+            window_width / BASE_WIDTH,
+            window_height / BASE_HEIGHT
+        )
+    elif axis == 'width':
+        scale = window_width / BASE_WIDTH
+    elif axis == 'height':
+        scale = window_height / BASE_HEIGHT
+    else:
+        raise ValueError(f"axis argument \"{axis}\" is invalid")
+
+    return scale * scalar if get_exact else int(scale * scalar)

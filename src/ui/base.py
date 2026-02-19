@@ -12,8 +12,6 @@ class UIElement:
         self.rect = pygame.Rect(pos, size)
         self.anchor = anchor
         setattr(self.rect, self.anchor, self.pos)
-        self.win_base_size = self.game.display.get_size()
-        """used to resize ui elements dynamically"""
 
     @property
     def game(self):
@@ -25,12 +23,14 @@ class UIElement:
     def render(self):
         pass
 
-    def resize(self):
+    def resize(self, size_override=None):
+        new_size = size_override if size_override else resize(self.size)
+        new_pos = resize(self.pos)
         self.image = pygame.Surface(
-            resize(self.win_base_size, self.size),
+            new_size,
             pygame.SRCALPHA)
         self.rect = self.image.get_rect()
-        setattr(self.rect, self.anchor, resize(self.win_base_size, self.pos))
+        setattr(self.rect, self.anchor, new_pos)
 
     def draw(self):
         self.game.display.blit(self.image, self.rect)
