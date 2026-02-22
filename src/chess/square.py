@@ -1,6 +1,7 @@
 from core.settings import *
 from ui.clickable import Clickable
-from core.utils import get_tui_text_box, get_ui_elem, scale
+from core.utils import get_tui_text_box, get_ui_elem, playsound, scale
+from chess.move import Move
 
 class BoardSquare(Clickable):
     """
@@ -110,10 +111,8 @@ class BoardSquare(Clickable):
         selected_square = self.board.find_selected_square()
         if selected_square:
             if self.valid_square:
-                # case: move a piece
-                self.board.move_piece(selected_square.piece, self.pos)
-                self.board.change_turn()
-                self.board.reset_flags()
+                # case: make a move
+                self.board.make_move(Move(self.piece, self.pos))
             else:
                 # case: select another piece
                 self.board.reset_flags()

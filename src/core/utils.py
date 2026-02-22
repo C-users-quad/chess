@@ -44,6 +44,7 @@ def get_ui_elem(element, get_exact=False):
     max_size = min(BASE_WIDTH, BASE_HEIGHT)
     scaled_ui_elem = ratio * max_size
     scaled_ui_elem = min(max_size, scaled_ui_elem) # ensures elements stay on screen
+
     return scaled_ui_elem if get_exact else int(scaled_ui_elem)
 
 def resize(pos):
@@ -51,6 +52,7 @@ def resize(pos):
     curr_win_w, curr_win_h = GameContext.game.display.get_size()
     scale_x = curr_win_w / BASE_WIDTH
     scale_y = curr_win_h / BASE_HEIGHT
+
     return (x * scale_x, y * scale_y)
 
 def scale(scalar, get_exact=False,
@@ -74,4 +76,23 @@ def scale(scalar, get_exact=False,
     else:
         raise ValueError(f"axis argument \"{axis}\" is invalid")
 
-    return scale * scalar if get_exact else int(scale * scalar)
+    scaled_num = scale * scalar
+    # prevent elements from going off screen
+    scaled_num = min(window_width, window_height, scaled_num)
+
+    return scaled_num if get_exact else int(scaled_num)
+
+def playsound(sound_filepath):
+    pygame.Sound(asset_path(sound_filepath)).play()
+
+def get_all_pieces_of_color(color: Literal['white', 'black']):
+    pieces = []
+    board = GameContext.game.board.board
+    for row in board:
+        for square in row:
+            if square.empty():
+                continue
+            if square.piece.color == color:
+                pieces.append(square.piece)
+
+    return pieces

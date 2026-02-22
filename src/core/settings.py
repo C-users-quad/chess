@@ -20,8 +20,8 @@ BASE_WIDTH, BASE_HEIGHT = (1256, 750)
 """the window sizes i used when making the ui, used for scaling"""
 ANTIALIAS = True
 STATE_DIM_ALPHA = 100
-BOARD_SCALE_AXIS = 'min'
-UI_SCALE_AXIS = 'max'
+BOARD_SCALE_AXIS = 'height'
+UI_SCALE_AXIS = 'min'
 COLORS = {
     'clear': "#68f66a",
     'text': "#FFFFFF",
@@ -78,5 +78,20 @@ SIZE_RATIOS = {
 'board-border' - width of the boards border
 ```
 """
+SOUNDS = {
+    'move': join('assets', 'sounds', 'piece_moves', 'move.mp3'),
+    'capture': join('assets', 'sounds', 'piece_moves', 'capture.mp3'),
+    'castle': join('assets', 'sounds', 'piece_moves', 'castle.mp3')
+}
+"""
+## dict of every sound's corresponding filepath
+```
+'move' - piece move
+'capture' - piece capture
+'castle' - king castle
+```
+"""
+# relative to board square size
 PIECE_SCALE = 0.95
 MOVE_CIRCLE_SCALE = 0.2
+GAME_END_ICON_SCALE = 0.3

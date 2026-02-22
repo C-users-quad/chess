@@ -1,30 +1,8 @@
 from core.settings import *
-from core.utils import asset_path, get_tui_text_box
+from core.utils import get_all_pieces_of_color, get_tui_text_box
+from core.images import PIECE_IMAGES
+from chess.move import Move
 
-# create piece images dict
-PIECE_IMAGES = {}
-"""(color, piecename) : Surface"""
-for piece in ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn']:
-    for color in ['black', 'white']:
-        key = (color, piece)
-        filename = f'{piece}-{color}.png'
-        path = join('assets', 'images', 'pieces', filename)
-        PIECE_IMAGES[key] = pygame.image.load(asset_path(path))
-
-def get_all_pieces_of_color(color: Literal['white', 'black']):
-    pieces = []
-    board = GameContext.game.board.board
-    for row in board:
-        for square in row:
-            if square.empty():
-                continue
-            if square.piece.color == color:
-                pieces.append(square.piece)
-
-    return pieces
-
-# import piece images and make accessable with a dict, write the
-# base piece class and write other piece classes.
 class Piece:
     name = None
     def __init__(self, pos, color, **kwargs):
@@ -38,31 +16,48 @@ class Piece:
     def board(self):
         return GameContext.game.board
 
+    def get_attack_moves(self):
+        """
+        gets a list of positions corresponding to attack moves.
+        does not consider move legality.
+        """
+        pass
+
     def get_pseudo_moves(self):
+        """
+        gets a list of positions corresponding to possible moves.
+        does not consider move legality.
+        """
         pass
 
     def get_valid_moves(self):
+        """
+        gets a list of legal moves the piece can make.
+        """
         return self.filter_illegal_moves(self.get_pseudo_moves())
 
     def update_pos(self, pos):
+        """
+        precondition: this is a legal move.
+        sets the pieces position to one passed in by pos argument.
+        """
         self.pos = pos
 
     def filter_illegal_moves(self, moves):
-        original_board = GameContext.game.board
+        """
+        takes in pseudo moves and returns a list of move objects
+        that are all legal moves.
+        """
         legal_moves = []
+        king = getattr(self.board, f"{self.color}_king")
 
-        for move in moves:
-            temp_board = deepcopy(original_board)
-            GameContext.game.board = temp_board
+        for end_pos in moves:
+            move = Move(self, end_pos)
+            self.board.make_move(move)
+            if not king.in_check():
+                legal_moves.append(end_pos)
+            self.board.unmake_move(move)
 
-            temp_piece = temp_board.get_square(*self.pos).piece
-            temp_king = temp_board.white_king if self.color == 'white' else temp_board.black_king
-
-            temp_board.move_piece(temp_piece, move)
-            if not temp_king.in_check():
-                legal_moves.append(move)
-
-        GameContext.game.board = original_board
         return legal_moves
 
     def __str__(self):
@@ -78,6 +73,9 @@ class Piece:
 class SlidingPiece(Piece):
     def __init__(self, pos, color, **kwargs):
         super().__init__(pos=pos, color=color, **kwargs)
+
+    def get_attack_moves(self):
+        return self.get_pseudo_moves()
 
     def get_pseudo_moves(self):
         pseudo_moves = []
@@ -135,6 +133,9 @@ class Knight(Piece):
     def __init__(self, pos, color, **kwargs):
         super().__init__(pos=pos, color=color, **kwargs)
 
+    def get_attack_moves(self):
+        return self.get_pseudo_moves()
+
     def get_pseudo_moves(self):
         pseudo_moves = []
         for dr, dc in self.directions:
@@ -161,6 +162,7 @@ class Pawn(Piece):
             (self.dir,-1),(self.dir,1)
         ]
         self.just_moved_forward_two = False
+        self.promotion_row = 0 if self.color == 'white' else 7
 
     def update_pos(self, pos):
         # pawn-specific check used for en passant
@@ -168,6 +170,18 @@ class Pawn(Piece):
             self.just_moved_forward_two = True
         # the actual updating of the position
         self.pos = pos
+
+    def get_attack_moves(self):
+        attack_moves = []
+        for dr, dc in self.attack_moves:
+            row, col = self.pos
+            row, col = row + dr, col + dc
+            if not self.board.pos_on_board(row, col):
+                continue
+
+            attack_moves.append((row, col))
+
+        return attack_moves
 
     def get_en_passant_moves(self):
         en_passant_moves = []
@@ -190,7 +204,6 @@ class Pawn(Piece):
                     continue
                 # en passant
                 en_passant_moves.append((row, col))
-                continue
 
         return en_passant_moves
 
@@ -242,9 +255,58 @@ class King(Piece):
         enemy_pieces = get_all_pieces_of_color(enemy_color)
         enemy_moves = []
         for piece in enemy_pieces:
-            enemy_moves.extend(piece.get_pseudo_moves())
+            enemy_moves.extend(piece.get_attack_moves())
 
         return self.pos in enemy_moves
+
+    def get_castling_moves(self):
+        castling_moves = []
+        if self.has_moved:
+            return
+
+        if self.in_check():
+            return
+
+        row, col = self.pos
+        castle_sides = {
+            'kingside': [(row, col + 1), (row, col + 2)],
+            'queenside':[(row, col - 1), (row, col - 2), (row, col - 3)]
+        }
+
+        for side, squares in castle_sides.items():
+            # check if rook has moved
+            rook_col = 7 if side == 'kingside' else 0
+            rook_square = self.board.get_square(row, rook_col)
+            if rook_square.empty() or rook_square.piece.has_moved:
+                continue
+
+            # check if no pieces in the way
+            if any(not self.board.get_square(*sqr).empty() for sqr in squares):
+                continue
+
+            # check if castling side is under attack
+            path_squares = squares[:-1]
+            enemy_color = 'black' if self.color == 'white' else 'white'
+            if any(sq in piece.get_attack_moves()
+                   for piece in get_all_pieces_of_color(enemy_color)
+                   for sq in path_squares):
+                continue
+
+            # pass all checks, allow castling move.
+            castling_moves.append(squares[1])
+
+        return castling_moves
+
+    def get_attack_moves(self):
+        attack_moves = []
+        for dr, dc in self.directions:
+            row, col = self.pos
+            row, col = row + dr, col + dc
+            if not self.board.pos_on_board(row, col):
+                continue
+            attack_moves.append((row, col))
+
+        return attack_moves
 
     def get_pseudo_moves(self):
         pseudo_moves = []
@@ -257,5 +319,7 @@ class King(Piece):
             curr_square = self.board.get_square(row, col)
             if curr_square.empty() or curr_square.piece.color != self.color:
                 pseudo_moves.append((row, col))
+
+        pseudo_moves.extend(self.get_castling_moves())
 
         return pseudo_moves

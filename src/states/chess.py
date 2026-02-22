@@ -4,7 +4,7 @@ from chess.board import Board
 
 class Chess(GameState):
     def __init__(self):
-        self.draw_below = True
+        super().__init__()
         self.dim = False
 
     def handle_events(self, events):

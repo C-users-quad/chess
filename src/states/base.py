@@ -4,7 +4,7 @@ from core.utils import get_tui_text_box
 class GameState:
     """base game state class, should be inherited by all game state classes"""
     def __init__(self):
-        self.draw_below = False
+        self.draw_below = True
         """determines whether this game state can be drawn below the active one"""
         self.ui = []
         """a list of ui elements, so that you can easily update and draw them."""

@@ -53,12 +53,7 @@ class Board:
                 square.draw() # draws the square onto the boards image
 
     def render_game_end_overlay(self):
-        if self.stalemate:
-            white_king_sqr = self.get_square(*self.white_king.pos)
-            black_king_sqr = self.get_square(*self.black_king.pos)
-            for sqr in [white_king_sqr, black_king_sqr]:
-                display = GameContext.game.display
-
+        pass
 
     def handle_checkmate(self):
         pieces = get_all_pieces_of_color(self.turn_color)
@@ -83,7 +78,7 @@ class Board:
             for square in row:
                 if square.selected: return square
 
-    def reset_flags(self):
+    def reset_square_flags(self):
         for row in self.board:
             for square in row:
                 if square.selected or square.valid_square:
@@ -94,7 +89,7 @@ class Board:
         if selected_square.empty():
             return
 
-        valid_moves = selected_square.piece.get_valid_moves() # code breaks here
+        valid_moves = selected_square.piece.get_valid_moves()
         if not valid_moves:
             return
 
@@ -116,29 +111,32 @@ class Board:
     def pos_on_board(self, row, col):
         return 0 <= row <= 7 and 0 <= col <= 7
 
-    def move_piece(
-        self, piece, end_pos: tuple[int, int]):
+    def make_move(self, move: Move):
         """
-        moves a piece to end pos. assumes move is legal.
+        makes the move.
 
-        Args:
-            piece (Piece): the piece to be moved
-            end_pos (tuple[int, int]): the position the piece will be moved to
-            represented as (row, col) indices in the board array.
+        precondition: move is legal.
         """
-        start_row, start_col = piece.pos
-        end_row, end_col = end_pos
-        start_square = self.board[start_row][start_col]
-        end_square = self.board[end_row][end_col]
-        start_square.remove_piece()
-        self.capture_pawn_if_en_passant(piece, end_pos)
-        self.place_piece(piece, end_square.pos)
-        self.reset_pawn_conditions()
-        piece.has_moved = True
+        move.check_flags_before_move()
+        self._apply_move(move)
+        move.check_flags_after_move()
+
+    def unmake_move(self, move: Move):
+        self.get_square(*move.start).place(move.piece)
+        if move.capture_square:
+            self.get_square(*move.capture_square).place(move.captured_piece)
+
+    def _apply_move(self, move: Move):
+        self.get_square(*move.start).remove_piece()
+        self.get_square(*move.end).place(move.piece)
+        self.capture_pawn_if_en_passant(move)
+        self.change_turn()
+        self.reset_square_flags()
+        self.reset_pawn_flags()
 
     def place_piece(self, piece, pos):
         """
-        place a piece at pos.
+        place a piece on a square at pos.
         used during piece creation.
         """
         row, col = pos
@@ -164,9 +162,9 @@ class Board:
 
     def draw(self):
         self.render()
+        GameContext.game.display.blit(self.image, self.rect)
         if self.game_end:
             self.render_game_end_overlay()
-        GameContext.game.display.blit(self.image, self.rect)
 
     def populate_board(self):
         """adds the initial arrangement of chess pieces to the board"""
@@ -195,23 +193,23 @@ class Board:
                 self.place_piece(Pawn(pos, color), pos)
                 col += 1
 
-    def capture_pawn_if_en_passant(self, piece, end_pos):
+    def capture_pawn_if_en_passant(self, move: Move):
         # the piece thats moving must be a pawn
-        if not isinstance(piece, Pawn):
+        if not isinstance(move.piece, Pawn):
             return
 
         # the position the piece is moving to must be an en passant move
-        en_passant_moves = piece.get_en_passant_moves()
-        if not end_pos in en_passant_moves:
+        en_passant_moves = move.piece.get_en_passant_moves()
+        if not move.end in en_passant_moves:
             return
 
         # capture the piece
-        row, col = end_pos
-        victim_pos = (row - piece.dir, col)
+        row, col = move.end
+        victim_pos = (row - move.piece.dir, col)
         victim_square = self.get_square(*victim_pos)
         victim_square.remove_piece()
 
-    def reset_pawn_conditions(self):
+    def reset_pawn_flags(self):
         """
         once the turn changes,
         make the previous mover's pawns' reset their en passant flags

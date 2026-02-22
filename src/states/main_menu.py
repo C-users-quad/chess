@@ -55,7 +55,6 @@ def make_ui(ui):
 class MainMenu(GameState):
     def __init__(self):
         super().__init__()
-        self.draw_below = True
         make_ui(self.ui)
 
     def handle_events(self, events):
