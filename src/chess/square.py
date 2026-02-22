@@ -103,7 +103,7 @@ class BoardSquare(Clickable):
         """resolves square being clicked"""
         if self.board.clicked_outside():
             if self.selected:
-                self.board.reset_flags()
+                self.board.reset_square_flags()
 
         if not self.detect_click():
             return
@@ -112,10 +112,10 @@ class BoardSquare(Clickable):
         if selected_square:
             if self.valid_square:
                 # case: make a move
-                self.board.make_move(Move(self.piece, self.pos))
+                self.board.make_move(Move(selected_square.piece, self.pos))
             else:
                 # case: select another piece
-                self.board.reset_flags()
+                self.board.reset_square_flags()
                 self.selected = True
                 if not self.empty():
                     if self.piece.color != self.board.turn_color:
@@ -150,7 +150,7 @@ class BoardSquare(Clickable):
             f"Selected: {self.selected}\n"
             f"Valid Square: {self.valid_square}\n"
             f"Pos: {self.pos}\n"
-            f"Piece: {self.piece}\n"
+            f"Piece: {type(self.piece)}\n"
             f"Color: {self.color}\n"
             f"Hover: {self.hover}\n"
             f"Center: {self.drawing_rect.center}"

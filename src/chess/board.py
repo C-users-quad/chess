@@ -111,27 +111,28 @@ class Board:
     def pos_on_board(self, row, col):
         return 0 <= row <= 7 and 0 <= col <= 7
 
-    def make_move(self, move: Move):
+    def make_move(self, move: Move, real_move=True):
         """
         makes the move.
 
         precondition: move is legal.
         """
         move.check_flags_before_move()
-        self._apply_move(move)
+        self._apply_move(move, real_move)
         move.check_flags_after_move()
 
     def unmake_move(self, move: Move):
         self.get_square(*move.start).place(move.piece)
         if move.capture_square:
             self.get_square(*move.capture_square).place(move.captured_piece)
+        self.get_square(*move.end).remove_piece()
 
-    def _apply_move(self, move: Move):
+    def _apply_move(self, move: Move, real_move=True):
         self.get_square(*move.start).remove_piece()
         self.get_square(*move.end).place(move.piece)
         self.capture_pawn_if_en_passant(move)
         self.change_turn()
-        self.reset_square_flags()
+        if real_move: self.reset_square_flags()
         self.reset_pawn_flags()
 
     def place_piece(self, piece, pos):

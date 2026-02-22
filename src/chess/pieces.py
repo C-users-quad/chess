@@ -53,7 +53,7 @@ class Piece:
 
         for end_pos in moves:
             move = Move(self, end_pos)
-            self.board.make_move(move)
+            self.board.make_move(move, False)
             if not king.in_check():
                 legal_moves.append(end_pos)
             self.board.unmake_move(move)
