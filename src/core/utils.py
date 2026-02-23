@@ -82,9 +82,6 @@ def scale(scalar, get_exact=False,
 
     return scaled_num if get_exact else int(scaled_num)
 
-def playsound(sound_filepath):
-    pygame.Sound(asset_path(sound_filepath)).play()
-
 def get_all_pieces_of_color(color: Literal['white', 'black']):
     pieces = []
     board = GameContext.game.board.board
@@ -96,3 +93,6 @@ def get_all_pieces_of_color(color: Literal['white', 'black']):
                 pieces.append(square.piece)
 
     return pieces
+
+def opposite_color(color: Literal['white', 'black']):
+    return 'white' if color == 'black' else 'black'

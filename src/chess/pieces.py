@@ -1,5 +1,5 @@
 from core.settings import *
-from core.utils import get_all_pieces_of_color, get_tui_text_box
+from core.utils import get_all_pieces_of_color, get_tui_text_box, opposite_color
 from core.images import PIECE_IMAGES
 from chess.move import Move
 
@@ -30,7 +30,7 @@ class Piece:
         """
         pass
 
-    def get_valid_moves(self):
+    def get_legal_moves(self):
         """
         gets a list of legal moves the piece can make.
         """
@@ -53,7 +53,7 @@ class Piece:
 
         for end_pos in moves:
             move = Move(self, end_pos)
-            self.board.make_move(move, False)
+            self.board.make_move(move, real_move=False)
             if not king.in_check():
                 legal_moves.append(end_pos)
             self.board.unmake_move(move)
@@ -61,11 +61,26 @@ class Piece:
         return legal_moves
 
     def __str__(self):
+        # format legal moves
+        max_box_width = 30
+        legal_moves_string = "Legal Moves: "
+        legal_moves = self.get_legal_moves()
+        for i, move in enumerate(legal_moves):
+            legal_moves_string += f"{move}"
+            index_last_newline = legal_moves_string[::-1].find("\n")
+            if i < len(legal_moves) - 1:
+                legal_moves_string += ", "
+            if index_last_newline == -1 and len(legal_moves_string) > max_box_width:
+                legal_moves_string += "\n"
+            if index_last_newline > max_box_width:
+                legal_moves_string += "\n"
+
         lines = (
             f"{self.name} {hex(id(self))}\n"
             f"Pos: {self.pos}\n"
             f"Color: {self.color}\n"
-            f"Valid Moves: {self.get_valid_moves()}"
+            f"Has moved: {self.has_moved}\n"
+            f"{legal_moves_string}"
         )
 
         return get_tui_text_box(lines)
@@ -251,7 +266,7 @@ class King(Piece):
         super().__init__(pos=pos, color=color, **kwargs)
 
     def in_check(self):
-        enemy_color = 'white' if self.color == 'black' else 'black'
+        enemy_color = opposite_color(self.color)
         enemy_pieces = get_all_pieces_of_color(enemy_color)
         enemy_moves = []
         for piece in enemy_pieces:
@@ -286,7 +301,7 @@ class King(Piece):
 
             # check if castling side is under attack
             path_squares = squares[:-1]
-            enemy_color = 'black' if self.color == 'white' else 'white'
+            enemy_color = opposite_color(self.color)
             if any(sq in piece.get_attack_moves()
                    for piece in get_all_pieces_of_color(enemy_color)
                    for sq in path_squares):
@@ -320,6 +335,7 @@ class King(Piece):
             if curr_square.empty() or curr_square.piece.color != self.color:
                 pseudo_moves.append((row, col))
 
-        pseudo_moves.extend(self.get_castling_moves())
+        castling_moves = self.get_castling_moves()
+        if castling_moves: pseudo_moves.extend(castling_moves)
 
         return pseudo_moves

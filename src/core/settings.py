@@ -8,12 +8,17 @@ from rich.console import Console
 
 # override print to rich printing for colors yay!!
 print = Console().print
+
 class GameContext:
     """container for game object so that it can be globally accessed"""
     game = None
 
+# window stuff
 WINDOW_SIZE = (800, 600)
 FPS = 60
+
+# file stuff
+PIECE_SOUNDS_PATH = join('assets', 'sounds', 'piece_moves')
 
 # ui-related stuff. colors, sizes, etc.
 BASE_WIDTH, BASE_HEIGHT = (1256, 750)
@@ -33,7 +38,10 @@ COLORS = {
     'black-square': "#311201",
     'board-highlight': "#ffee008e",
     'move-circle': "#271978A0",
-    'state-dim': (0,0,0)
+    'state-dim': (0,0,0),
+    'winning-sqr-highlight': "#44ff00cd",
+    'losing-sqr-highlight': "#ff0000c1",
+    'stalemate-sqr-highlight': "#000000CC"
 }
 """
 ## dicitonary for colors.
@@ -49,6 +57,9 @@ COLORS = {
 'black-square' - color used for the black squares
 'sidebar' - color of the sidebar used in the main menuelegantly
 'move-circle' - color of circle drawn on squares that a piece can move to
+'winning-sqr-highlight' - color the square of the winning king is highlighted
+'losing-sqr-highlight' - color the square of the losing king is highlighted
+'stalemate-sqr-highlight' - color the kings' squares are highlighted if stalemate
 ```
 """
 SIZE_RATIOS = {
@@ -94,4 +105,4 @@ SOUNDS = {
 # relative to board square size
 PIECE_SCALE = 0.95
 MOVE_CIRCLE_SCALE = 0.2
-GAME_END_ICON_SCALE = 0.3
+GAME_END_ICON_SCALE = 0.5

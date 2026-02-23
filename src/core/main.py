@@ -1,7 +1,7 @@
 from core.settings import *
 from core.utils import get_tui_text_box, asset_path
 from states.main_menu import MainMenu
-from states.settings import SettingsMenu
+from states.settings_menu import SettingsMenu
 from states.chess import Chess
 from chess.board import Board
 
@@ -36,6 +36,7 @@ class Game:
         self.dim_surf.set_alpha(STATE_DIM_ALPHA)
         self.dim_rect = self.dim_surf.get_rect()
         self.prev_window_size = self.display.get_size()
+        self.debug = False
 
     def get_font(self, size):
         if size not in self.fonts:
@@ -60,9 +61,22 @@ class Game:
     def window_resized(self):
         return self.prev_window_size != self.display.get_size()
 
+    def detect_debug_toggle(self):
+        """
+        toggles debug mode if ctrl+alt+shift+d is pressed
+        """
+        keys = pygame.key.get_just_pressed()
+        mods = pygame.key.get_mods()
+        if mods & pygame.KMOD_CTRL and \
+            mods & pygame.KMOD_ALT and \
+             mods & pygame.KMOD_SHIFT and \
+              keys[pygame.K_d]:
+                self.debug = not self.debug
+
     def update(self):
         self.prev_window_size = self.display.get_size()
         self.dt = self.clock.tick(FPS) / 1000
+        self.detect_debug_toggle()
 
     def __str__(self):
         text = (

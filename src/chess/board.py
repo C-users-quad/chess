@@ -1,5 +1,6 @@
 from core.settings import *
-from core.utils import get_ui_elem, scale
+from core.utils import get_ui_elem, scale, opposite_color
+from core.images import GAME_END_ICONS
 from chess.square import BoardSquare
 from chess.pieces import *
 
@@ -14,6 +15,7 @@ class Board:
             [BoardSquare((r,c), ('white-square','black-square')[(r+c)%2], self)
              for c in range(8)] for r in range(8)
         ]
+        self.turn_color = 'white' # whos turn it is
         self.white_king = None
         self.black_king = None
         self.checkmate = False
@@ -21,7 +23,6 @@ class Board:
         self.game_end = False
         self.winning_color = None
         self.populate_board() # give board initial pieces
-        self.turn_color = 'white' # whos turn it is
         self.render()
 
     def render(self):
@@ -53,32 +54,84 @@ class Board:
                 square.draw() # draws the square onto the boards image
 
     def render_game_end_overlay(self):
-        pass
+        white_king_sqr = self.get_square(*self.white_king.pos)
+        black_king_sqr = self.get_square(*self.black_king.pos)
+        icon_length = white_king_sqr.rect.width * GAME_END_ICON_SCALE
+        icon_size = (icon_length, icon_length)
 
-    def handle_checkmate(self):
+        if self.checkmate:
+            winning_sqr = white_king_sqr if self.winning_color == 'white' else \
+                black_king_sqr
+            losing_sqr = white_king_sqr if self.winning_color != 'white' else \
+                black_king_sqr
+            win_icon, lose_icon = GAME_END_ICONS['winner'], GAME_END_ICONS['loser']
+
+            win_icon = pygame.transform.smoothscale(win_icon, icon_size)
+            lose_icon = pygame.transform.smoothscale(lose_icon, icon_size)
+
+            win_icon_rect = win_icon.get_rect(
+                center=winning_sqr.rect.topright
+            )
+            lose_icon_rect = win_icon.get_rect(
+                center=losing_sqr.rect.topright
+            )
+
+            GameContext.game.display.blit(win_icon, win_icon_rect)
+            GameContext.game.display.blit(lose_icon, lose_icon_rect)
+
+        elif self.stalemate:
+            stalemate_icon = GAME_END_ICONS['stalemate']
+            stalemate_icon = pygame.transform.smoothscale(stalemate_icon, icon_size)
+
+            icon_rect_white_king = stalemate_icon.get_rect(
+                center=white_king_sqr.rect.topright
+            )
+            icon_rect_black_king = stalemate_icon.get_rect(
+                center=black_king_sqr.rect.topright
+            )
+
+            GameContext.game.display.blit(stalemate_icon, icon_rect_white_king)
+            GameContext.game.display.blit(stalemate_icon, icon_rect_black_king)
+
+    def handle_game_end(self):
         pieces = get_all_pieces_of_color(self.turn_color)
         player_can_move = False
         for piece in pieces:
-            if piece.get_valid_moves():
+            if piece.get_legal_moves():
                 player_can_move = True
                 break
 
         if not player_can_move:
+            white_king_sqr = self.get_square(*self.white_king.pos)
+            black_king_sqr = self.get_square(*self.black_king.pos)
             self.game_end = True
-            king = self.white_king if self.turn_color == 'white' else self.black_king
+            king = getattr(self, f"{piece.color}_king")
             if king.in_check():
                 self.checkmate = True
-                self.winning_color = (
-                    'white' if self.turn_color == 'black' else 'black')
+                self.winning_color = opposite_color(self.turn_color)
+                winning_sqr = white_king_sqr if self.winning_color == 'white' else \
+                    black_king_sqr
+                losing_sqr = white_king_sqr if self.winning_color != 'white' else \
+                    black_king_sqr
+                winning_sqr.winning_square = True
+                losing_sqr.losing_square = True
             else:
+                white_king_sqr.stalemate_square = True
+                black_king_sqr.stalemate_square = True
                 self.stalemate = True
+
+        if self.game_end:
+            self.reset_square_flags()
 
     def find_selected_square(self):
         for row in self.board:
             for square in row:
                 if square.selected: return square
 
-    def reset_square_flags(self):
+    def reset_square_flags(self, real_move=True):
+        if not real_move:
+            return
+
         for row in self.board:
             for square in row:
                 if square.selected or square.valid_square:
@@ -89,7 +142,7 @@ class Board:
         if selected_square.empty():
             return
 
-        valid_moves = selected_square.piece.get_valid_moves()
+        valid_moves = selected_square.piece.get_legal_moves()
         if not valid_moves:
             return
 
@@ -119,21 +172,39 @@ class Board:
         """
         move.check_flags_before_move()
         self._apply_move(move, real_move)
-        move.check_flags_after_move()
+        move.check_flags_after_move(real_move)
+        move.play_move_sound(real_move)
 
     def unmake_move(self, move: Move):
-        self.get_square(*move.start).place(move.piece)
+        # reset squares
+        self.place_piece(move.piece, move.start)
+        self.remove_piece(move.end)
         if move.capture_square:
-            self.get_square(*move.capture_square).place(move.captured_piece)
-        self.get_square(*move.end).remove_piece()
+            self.place_piece(move.captured_piece, move.capture_square)
+
+        # reset board
+        self.reset_pawn_flags()
+        self.change_turn()
+
+        # reset piece
+        move.piece.has_moved = move.original_has_moved
+        if hasattr(move, 'original_just_moved_forward_two'):
+            move.piece.just_moved_forward_two = move.original_just_moved_forward_two
+        if move.is_castle:
+            rook = self.get_square(*move.rook_end).piece
+            self.remove_piece(move.rook_end)
+            self.place_piece(rook, move.rook_start)
+            rook.has_moved = False
 
     def _apply_move(self, move: Move, real_move=True):
-        self.get_square(*move.start).remove_piece()
-        self.get_square(*move.end).place(move.piece)
-        self.capture_pawn_if_en_passant(move)
-        self.change_turn()
-        if real_move: self.reset_square_flags()
+        move.piece.has_moved = True
+        self.remove_piece(move.start)
+        self.place_piece(move.piece, move.end)
+        self._capture_pawn_if_en_passant(move)
+        self._move_rook_if_castling(move)
+        self.reset_square_flags(real_move)
         self.reset_pawn_flags()
+        self.change_turn()
 
     def place_piece(self, piece, pos):
         """
@@ -141,15 +212,17 @@ class Board:
         used during piece creation.
         """
         row, col = pos
-        square = self.board[row][col]
+        square = self.get_square(row, col)
         square.place(piece)
         piece.update_pos(pos)
 
+    def remove_piece(self, pos):
+        row, col = pos
+        square = self.get_square(row, col)
+        square.remove_piece()
+
     def change_turn(self):
-        if self.turn_color == 'white':
-            self.turn_color = 'black'
-        else:
-            self.turn_color = 'white'
+        self.turn_color = opposite_color(self.turn_color)
 
     def update(self):
         if self.game_end:
@@ -159,7 +232,7 @@ class Board:
             for square in row:
                 square.update()
 
-        self.handle_checkmate()
+        self.handle_game_end()
 
     def draw(self):
         self.render()
@@ -174,16 +247,14 @@ class Board:
         for color in colors:
             row = 0 if color == 'black' else 7
             col = 0
-            for piece_class in [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]:
-                pos = (row, col)
-                piece = piece_class(pos, color)
-                self.place_piece(piece, pos)
-                if isinstance(piece, King):
-                    if color == 'black':
-                        self.black_king = piece
-                    else:
-                        self.white_king = piece
-                col += 1
+            for piece_class in \
+                [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]:
+                    pos = (row, col)
+                    piece = piece_class(pos, color)
+                    self.place_piece(piece, pos)
+                    if isinstance(piece, King):
+                        setattr(self, f"{color}_king", piece)
+                    col += 1
 
         # make pawns
         for color in colors:
@@ -192,16 +263,16 @@ class Board:
             for _ in range(8):
                 pos = (row, col)
                 self.place_piece(Pawn(pos, color), pos)
+
                 col += 1
 
-    def capture_pawn_if_en_passant(self, move: Move):
+    def _capture_pawn_if_en_passant(self, move: Move):
         # the piece thats moving must be a pawn
         if not isinstance(move.piece, Pawn):
             return
 
         # the position the piece is moving to must be an en passant move
-        en_passant_moves = move.piece.get_en_passant_moves()
-        if not move.end in en_passant_moves:
+        if not move.is_en_passant:
             return
 
         # capture the piece
@@ -210,16 +281,45 @@ class Board:
         victim_square = self.get_square(*victim_pos)
         victim_square.remove_piece()
 
+    def _move_rook_if_castling(self, move: Move):
+        if not move.is_castle:
+            return
+
+        # determine rooks initial and final positions
+        kingside_castle_col = 6
+        queenside_castle_col = 2
+
+        if move.end[1] == kingside_castle_col:
+            # kingside
+            rook_initial_pos = (move.end[0], move.end[1] + 1)
+            rook_final_pos = (move.end[0], move.end[1] - 1)
+        elif move.end[1] == queenside_castle_col:
+            # queenside
+            rook_initial_pos = (move.end[0], move.end[1] - 2)
+            rook_final_pos = (move.end[0], move.end[1] + 1)
+
+        # move rook
+        piece = self.get_square(*rook_initial_pos).piece
+        self.remove_piece(rook_initial_pos)
+        self.place_piece(piece, rook_final_pos)
+
+        # update move info
+        move.rook_start = rook_initial_pos
+        move.rook_end = rook_final_pos
+
     def reset_pawn_flags(self):
         """
         once the turn changes,
         make the previous mover's pawns' reset their en passant flags
         """
+        previous_move_color = opposite_color(self.turn_color)
         for row in self.board:
             for square in row:
                 if square.empty():
                     continue
-                if square.piece.color == self.turn_color:
+                if not isinstance(square.piece, Pawn):
                     continue
-                if hasattr(square.piece, 'just_moved_forward_two'):
-                    square.piece.just_moved_forward_two = False
+                if square.piece.color != previous_move_color:
+                    continue
+                square.piece.just_moved_forward_two = False
+
