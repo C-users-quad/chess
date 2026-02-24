@@ -16,10 +16,10 @@ class Game:
         """dict of font size (int) : font (pygame.Font)"""
         self.dt = 0
         self.states = {
-            'main-menu': lambda: MainMenu(),
-            'chess': lambda: Chess(),
-            'settings': lambda: SettingsMenu(),
-            'promotion': lambda: Promotion()
+            'main-menu': MainMenu,
+            'chess': Chess,
+            'settings': SettingsMenu,
+            'promotion': Promotion
         }
         """
         dict of every state, used to push states to state stack
@@ -33,7 +33,6 @@ class Game:
         """
         self.state_stack = []
         self.on = True
-        self.board = None
         self.dim_surf = pygame.Surface(self.display.get_size(), pygame.SRCALPHA)
         self.dim_surf.fill(COLORS['state-dim'])
         self.dim_surf.set_alpha(STATE_DIM_ALPHA)
@@ -44,19 +43,22 @@ class Game:
     def get_font(self, size):
         if size not in self.fonts:
             self.fonts[size] = pygame.Font(
-                asset_path(join('assets', 'fonts', 'MerriweatherSans-Medium.ttf')),
-                size)
+                filename=asset_path(join('assets', 'fonts', 'MerriweatherSans-Medium.ttf')),
+                size=size
+            )
         return self.fonts[size]
 
-    def push_state(self, state):
-        self.state_stack.append(self.states[state]())
+    def push_state(self, state, args=None):
+        if not args:
+            state = self.states[state]()
+        else:
+            state = self.states[state](*args)
+        self.state_stack.append(state)
+
+        return state
 
     def pop_state(self):
         self.state_stack.pop()
-
-    def swap_state(self, state):
-        """swaps the top state with state specified by argument"""
-        self.state_stack[-1] = self.states[state]()
 
     def power_off(self):
         self.on = False
@@ -93,10 +95,9 @@ class Game:
 def main():
     # create game context
     game = GameContext.game = Game()
-    game.board = Board()
 
     # push initial states
-    game.push_state('chess')
+    game.push_state('chess', (Board(),)``)
     game.push_state('main-menu')
 
     while game.on:

@@ -5,17 +5,15 @@ from core.enums import PieceColors, PieceNames
 from chess.move import Move
 
 class Piece:
+    """base piece class for logical chess pieces"""
     name = None
-    def __init__(self, pos, color, **kwargs):
+    def __init__(self, pos, color, board, **kwargs):
         super().__init__(**kwargs)
         self.pos = pos
         self.color = color
         self.has_moved = False
         self.image = PIECE_IMAGES[(color, self.name)]
-
-    @property
-    def board(self):
-        return GameContext.game.board
+        self.board = board
 
     def get_attack_moves(self):
         """
@@ -53,8 +51,8 @@ class Piece:
         king = getattr(self.board, f"{self.color.value}_king")
 
         for end_pos in moves:
-            move = Move(self, end_pos)
-            self.board.make_move(move, real_move=False)
+            move = Move(self, end_pos, self.board, real_move=False)
+            self.board.make_move(move)
             if not king.in_check():
                 legal_moves.append(end_pos)
             self.board.unmake_move(move)
@@ -89,8 +87,13 @@ class Piece:
         return get_tui_text_box(lines)
 
 class SlidingPiece(Piece):
-    def __init__(self, pos, color, **kwargs):
-        super().__init__(pos=pos, color=color, **kwargs)
+    def __init__(self, pos, color, board, **kwargs):
+        super().__init__(
+            pos=pos,
+            color=color,
+            board=board,
+            **kwargs
+        )
 
     def get_attack_moves(self):
         return self.get_pseudo_moves()
@@ -122,8 +125,13 @@ class Rook(SlidingPiece):
         (-1, 0),         (1, 0),
                 (0,-1),
     ]
-    def __init__(self, pos, color, **kwargs):
-        super().__init__(pos=pos, color=color, **kwargs)
+    def __init__(self, pos, color, board, **kwargs):
+        super().__init__(
+            pos=pos,
+            color=color,
+            board=board,
+            **kwargs
+        )
 
 class Bishop(SlidingPiece):
     name = PieceNames.BISHOP
@@ -132,15 +140,25 @@ class Bishop(SlidingPiece):
 
         (-1,-1),        (1,-1)
     ]
-    def __init__(self, pos, color, **kwargs):
-        super().__init__(pos=pos, color=color, **kwargs)
+    def __init__(self, pos, color, board, **kwargs):
+        super().__init__(
+            pos=pos,
+            color=color,
+            board=board,
+            **kwargs
+        )
 
 class Queen(SlidingPiece):
     name = PieceNames.QUEEN
     directions = Rook.directions.copy()
     directions.extend(Bishop.directions)
-    def __init__(self, pos, color, **kwargs):
-        super().__init__(pos=pos, color=color, **kwargs)
+    def __init__(self, pos, color, board, **kwargs):
+        super().__init__(
+            pos=pos,
+            color=color,
+            board=board,
+            **kwargs
+        )
 
 class Knight(Piece):
     name = PieceNames.KNIGHT
@@ -148,8 +166,13 @@ class Knight(Piece):
         (-2,-1), (-2,1), (2,-1), (2,1),
         (-1,-2), (1,-2), (-1,2), (1,2)
     ]
-    def __init__(self, pos, color, **kwargs):
-        super().__init__(pos=pos, color=color, **kwargs)
+    def __init__(self, pos, color, board, **kwargs):
+        super().__init__(
+            pos=pos,
+            color=color,
+            board=board,
+            **kwargs
+        )
 
     def get_attack_moves(self):
         return self.get_pseudo_moves()
@@ -172,8 +195,13 @@ class Knight(Piece):
 
 class Pawn(Piece):
     name = PieceNames.PAWN
-    def __init__(self, pos, color, **kwargs):
-        super().__init__(pos=pos, color=color, **kwargs)
+    def __init__(self, pos, color, board, **kwargs):
+        super().__init__(
+            pos=pos,
+            color=color,
+            board=board,
+            **kwargs
+        )
         # determines if the pawn moves up or down the board depending on its color
         self.dir = -1 if color == PieceColors.WHITE else 1
         self.attack_moves = [
@@ -265,12 +293,17 @@ class Pawn(Piece):
 class King(Piece):
     name = PieceNames.KING
     directions = Queen.directions
-    def __init__(self, pos, color, **kwargs):
-        super().__init__(pos=pos, color=color, **kwargs)
+    def __init__(self, pos, color, board, **kwargs):
+        super().__init__(
+            pos=pos,
+            color=color,
+            board=board,
+            **kwargs
+        )
 
     def in_check(self):
         enemy_color = opposite_color(self.color)
-        enemy_pieces = get_all_pieces_of_color(enemy_color)
+        enemy_pieces = get_all_pieces_of_color(enemy_color, self.board)
         enemy_moves = []
         for piece in enemy_pieces:
             enemy_moves.extend(piece.get_attack_moves())
@@ -306,7 +339,7 @@ class King(Piece):
             path_squares = squares[:-1]
             enemy_color = opposite_color(self.color)
             if any(sq in piece.get_attack_moves()
-                   for piece in get_all_pieces_of_color(enemy_color)
+                   for piece in get_all_pieces_of_color(enemy_color, self.board)
                    for sq in path_squares):
                 continue
 

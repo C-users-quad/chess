@@ -1,11 +1,15 @@
 from core.settings import *
+from core.enums import StateNames
 from states.base import GameState
 from chess.board import Board
 
 class Chess(GameState):
-    def __init__(self):
+    """game state with chess board"""
+    name = StateNames.CHESS
+    def __init__(self, board):
         super().__init__()
         self.dim = False
+        self.board= board
 
     def handle_events(self, events):
         super().handle_events(events)
@@ -15,17 +19,17 @@ class Chess(GameState):
 
     def handle_input(self, key):
         if key == pygame.K_ESCAPE:
-            self.game.board.reset_square_flags()
+            self.board.reset_square_flags()
             self.game.push_state('main-menu')
 
     def update(self):
-        self.game.board.update()
+        self.board.update()
 
     def render(self, force):
         if not force and not self.game.window_resized():
             return
-        self.game.board.render()
+        self.board.render()
 
     def draw(self, force_rendering=False):
         self.render(force_rendering)
-        self.game.board.draw()
+        self.board.draw()

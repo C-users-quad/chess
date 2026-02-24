@@ -101,7 +101,7 @@ class Board:
             GameContext.game.display.blit(stalemate_icon, icon_rect_black_king)
 
     def handle_game_end(self):
-        pieces = get_all_pieces_of_color(self.turn_color)
+        pieces = get_all_pieces_of_color(self.turn_color, self)
         player_can_move = False
         for piece in pieces:
             if piece.get_legal_moves():
@@ -175,16 +175,16 @@ class Board:
         row, col = pos
         return 0 <= row <= 7 and 0 <= col <= 7
 
-    def make_move(self, move: Move, real_move=True):
+    def make_move(self, move: Move):
         """
         makes the move.
 
         precondition: move is legal.
         """
         move.check_flags_before_move()
-        self._apply_move(move, real_move)
-        move.check_flags_after_move(real_move)
-        move.play_move_sound(real_move)
+        self._apply_move(move)
+        move.check_flags_after_move()
+        move.play_move_sound()
 
     def unmake_move(self, move: Move):
         # reset squares
@@ -207,13 +207,14 @@ class Board:
             self.place_piece(rook, move.rook_start)
             rook.has_moved = False
 
-    def _apply_move(self, move: Move, real_move=True):
+    def _apply_move(self, move: Move):
         move.piece.has_moved = True
         self.remove_piece(move.start)
         self.place_piece(move.piece, move.end)
         self._capture_pawn_if_en_passant(move)
         self._move_rook_if_castling(move)
-        self.reset_square_flags(real_move)
+        self.handle_pawn_promotion(move)
+        self.reset_square_flags(move.real_move)
         self.reset_pawn_flags()
         self.change_turn()
 
@@ -222,14 +223,12 @@ class Board:
         place a piece on a square at pos.
         used during piece creation.
         """
-        row, col = pos
-        square = self.get_square((row, col))
+        square = self.get_square(pos)
         square.place(piece)
         piece.update_pos(pos)
 
     def remove_piece(self, pos):
-        row, col = pos
-        square = self.get_square((row, col))
+        square = self.get_square(pos)
         square.remove_piece()
 
     def change_turn(self):
@@ -261,7 +260,7 @@ class Board:
             for piece_class in \
                 [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]:
                     pos = (row, col)
-                    piece = piece_class(pos, color)
+                    piece = piece_class(pos, color, self)
                     self.place_piece(piece, pos)
                     if isinstance(piece, King):
                         setattr(self, f"{color.value}_king", piece)
@@ -273,7 +272,7 @@ class Board:
             col = 0
             for _ in range(8):
                 pos = (row, col)
-                self.place_piece(Pawn(pos, color), pos)
+                self.place_piece(Pawn(pos, color, self), pos)
                 col += 1
 
     def _capture_pawn_if_en_passant(self, move: Move):
@@ -333,3 +332,11 @@ class Board:
                     continue
                 square.piece.just_moved_forward_two = False
 
+    def handle_pawn_promotion(self, move: Move):
+        if not move.real_move:
+            return
+
+        if not move.is_promotion:
+            return
+
+        GameContext.game.push_state('promotion', (move,))

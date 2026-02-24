@@ -137,15 +137,16 @@ class BoardSquare(Clickable):
         if selected_square:
             if self.valid_square:
                 # case: make a move
-                self.board.make_move(Move(selected_square.piece, self.pos))
+                self.board.make_move(Move(selected_square.piece, self.pos, self.board))
             else:
                 # case: select another piece
-                self.board.reset_square_flags()
+                self.board.reset_square_flags(real_move=True)
                 self.selected = True
                 if not self.empty():
                     if self.piece.color != self.board.turn_color:
                         return
                     self.board.show_valid_moves(self)
+                    
         # case: select a piece
         self.selected = True
         if not self.empty():

@@ -66,7 +66,6 @@ def resize(point, uniform=False,
             scale_x = scale_y = min(scale_x, scale_y)
         case 'max':
             scale_x = scale_y = max(scale_x, scale_y)
-            print(scale_x, scale_y)
 
 
     # compute resized point and return
@@ -103,10 +102,9 @@ def scale(scalar, get_exact=False,
 
     return scaled_num if get_exact else int(scaled_num)
 
-def get_all_pieces_of_color(color):
+def get_all_pieces_of_color(color, board):
     pieces = []
-    board = GameContext.game.board.board
-    for row in board:
+    for row in board.board:
         for square in row:
             if square.empty():
                 continue

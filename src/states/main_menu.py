@@ -1,3 +1,4 @@
+from core.enums import StateNames
 from core.settings import *
 from states.base import GameState
 from core.utils import get_tui_text_box, get_ui_elem
@@ -54,7 +55,7 @@ def make_ui(ui):
         anchor="bottomleft",
         text="Play Game",
         font_size='subtitle',
-        click_action=lambda: game.pop_state(),
+        click_action=game.pop_state,
         size=menu_button_size
     )
     ui.append(play_game)
@@ -64,7 +65,8 @@ def make_ui(ui):
         anchor="midbottom",
         text="Settings",
         font_size='subtitle',
-        click_action=lambda: game.push_state('settings'),
+        click_action=game.push_state,
+        click_action_args=('settings',),
         size=menu_button_size
     )
     ui.append(settings)
@@ -74,12 +76,14 @@ def make_ui(ui):
         anchor="bottomright",
         text="Quit Game",
         font_size='subtitle',
-        click_action=lambda: game.power_off(),
+        click_action=game.power_off,
         size=menu_button_size
     )
     ui.append(quit_game)
 
 class MainMenu(GameState):
+    """main menu with important buttons"""
+    names = StateNames.MAIN_MENU
     def __init__(self):
         super().__init__()
         make_ui(self.ui)

@@ -3,7 +3,6 @@ from os.path import join
 import sys
 from pathlib import Path
 from typing import Literal
-from copy import deepcopy
 from rich.console import Console
 from enum import Enum
 
@@ -45,7 +44,8 @@ COLORS = {
     'winning-sqr-highlight': "#44ff00cd",
     'losing-sqr-highlight': "#ff0000c1",
     'stalemate-sqr-highlight': "#000000CC",
-    'promotion-ui': "#ffffff"
+    'promotion-ui-bg': "#ffffff",
+    'promotion-ui-btn': "#919191"
 }
 """
 ## dicitonary for colors.
@@ -64,7 +64,8 @@ COLORS = {
 'winning-sqr-highlight' - color the square of the winning king is highlighted
 'losing-sqr-highlight' - color the square of the losing king is highlighted
 'stalemate-sqr-highlight' - color the kings squares are highlighted if stalemate
-'promotion-ui' - color the background box of the pawn promotion ui is
+'promotion-ui-bg' - color the background box of the pawn promotion ui is
+'promotion-ui-btn' - color the buttons are in the pawn promotion ui
 ```
 """
 SIZE_RATIOS = {

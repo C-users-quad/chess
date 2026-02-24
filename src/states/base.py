@@ -1,8 +1,10 @@
 from core.settings import *
 from core.utils import get_tui_text_box
+from core.enums import StateNames
 
 class GameState:
     """base game state class, should be inherited by all game state classes"""
+    name = None
     def __init__(self):
         self.draw_below = True
         """determines whether this game state can be drawn below the active one"""
@@ -20,6 +22,7 @@ class GameState:
             if event.type == pygame.QUIT:
                 self.game.power_off()
             elif event.type == pygame.VIDEORESIZE:
+                # recreates game dim surfaces
                 self.game.dim_surf = pygame.Surface(
                     self.game.display.get_size(), pygame.SRCALPHA)
                 self.game.dim_surf.fill((*COLORS['state-dim'], STATE_DIM_ALPHA))
@@ -49,5 +52,5 @@ class GameState:
         self.game.display.blit(self.game.dim_surf, self.game.dim_rect)
 
     def __str__(self):
-        text = f"GameState {hex(id(self))}"
+        text = f"{self.name.value} {hex(id(self))}"
         return get_tui_text_box(text)
