@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Literal
 from copy import deepcopy
 from rich.console import Console
+from enum import Enum
 
 # override print to rich printing for colors yay!!
 print = Console().print
@@ -19,6 +20,7 @@ FPS = 60
 
 # file stuff
 PIECE_SOUNDS_PATH = join('assets', 'sounds', 'piece_moves')
+BUTTON_SOUNDS_PATH = join('assets', 'sounds', 'button')
 
 # ui-related stuff. colors, sizes, etc.
 BASE_WIDTH, BASE_HEIGHT = (1256, 750)
@@ -27,12 +29,13 @@ ANTIALIAS = True
 STATE_DIM_ALPHA = 100
 BOARD_SCALE_AXIS = 'height'
 UI_SCALE_AXIS = 'min'
+MIN_UI_SIZE = 1
 COLORS = {
     'clear': "#68f66a",
     'text': "#FFFFFF",
     'ui-bg': "#220A0A",
     'ui-border': "#32c38b",
-    'button-highlight': "#1F6F78",
+    'button-highlight': "#0000008C",
     'board-border': "#6F3110",
     'white-square': "#F1E1D8",
     'black-square': "#311201",
@@ -41,7 +44,8 @@ COLORS = {
     'state-dim': (0,0,0),
     'winning-sqr-highlight': "#44ff00cd",
     'losing-sqr-highlight': "#ff0000c1",
-    'stalemate-sqr-highlight': "#000000CC"
+    'stalemate-sqr-highlight': "#000000CC",
+    'promotion-ui': "#ffffff"
 }
 """
 ## dicitonary for colors.
@@ -55,11 +59,12 @@ COLORS = {
 'board-border' - color used for the chess boards sides
 'white-square' - color used for the white squares
 'black-square' - color used for the black squares
-'sidebar' - color of the sidebar used in the main menuelegantly
+'sidebar' - color of the sidebar used in the main menu
 'move-circle' - color of circle drawn on squares that a piece can move to
 'winning-sqr-highlight' - color the square of the winning king is highlighted
 'losing-sqr-highlight' - color the square of the losing king is highlighted
-'stalemate-sqr-highlight' - color the kings' squares are highlighted if stalemate
+'stalemate-sqr-highlight' - color the kings squares are highlighted if stalemate
+'promotion-ui' - color the background box of the pawn promotion ui is
 ```
 """
 SIZE_RATIOS = {

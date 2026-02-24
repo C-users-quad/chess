@@ -29,13 +29,19 @@ class GameState:
         pass
 
     def update(self):
-        pass
+        for element in self.ui:
+            element.update()
 
-    def render(self):
-        pass
+    def render(self, force):
+        if not force and not self.game.window_resized():
+            return
+        for element in self.ui:
+            element.render()
 
     def draw(self, force_rendering=False):
-        pass
+        self.render(force_rendering)
+        for element in self.ui:
+            element.draw()
 
     def draw_dim(self):
         """used for states below top state, to dim them."""

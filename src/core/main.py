@@ -3,6 +3,7 @@ from core.utils import get_tui_text_box, asset_path
 from states.main_menu import MainMenu
 from states.settings_menu import SettingsMenu
 from states.chess import Chess
+from states.promotion import Promotion
 from chess.board import Board
 
 class Game:
@@ -17,7 +18,8 @@ class Game:
         self.states = {
             'main-menu': lambda: MainMenu(),
             'chess': lambda: Chess(),
-            'settings': lambda: SettingsMenu()
+            'settings': lambda: SettingsMenu(),
+            'promotion': lambda: Promotion()
         }
         """
         dict of every state, used to push states to state stack
@@ -26,6 +28,7 @@ class Game:
         'main-menu' - the main menu
         'chess' - the game itself
         'settings' - the settings menu
+        'promotion' - the pawn promotion piece selection menu
         ```
         """
         self.state_stack = []

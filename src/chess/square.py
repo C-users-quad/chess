@@ -1,5 +1,6 @@
+from core.enums import PieceColors
 from core.settings import *
-from ui.clickable import Clickable
+from ui.buttons.clickable import Clickable
 from core.utils import get_tui_text_box, get_ui_elem, scale
 from chess.move import Move
 
@@ -31,10 +32,21 @@ class BoardSquare(Clickable):
 
     def render(self):
         # square size
-        board_width = scale(get_ui_elem('board'), axis=BOARD_SCALE_AXIS)
+        board_width = scale(
+            scalar=get_ui_elem('board'),
+            axis=BOARD_SCALE_AXIS
+        )
+
         board_border_width = scale(
-            get_ui_elem('board-border'), axis=BOARD_SCALE_AXIS)
-        square_side_length = (board_width - 2*board_border_width) // 8
+            scalar=get_ui_elem('board-border'),
+            axis=BOARD_SCALE_AXIS
+        )
+
+        square_side_length = max(
+            MIN_UI_SIZE,
+            (board_width - 2*board_border_width) // 8
+        )
+
         board_center = (board_width / 2, board_width / 2)
         self.size = (square_side_length, square_side_length)
         self.image = pygame.Surface(self.size, pygame.SRCALPHA)
@@ -62,7 +74,7 @@ class BoardSquare(Clickable):
 
         # compute the drawing rect **centered inside board image**
         board_row, board_col = self.pos
-        if self.board.turn_color == 'black':
+        if self.board.turn_color == PieceColors.BLACK:
             board_row = 7 - board_row
             board_col = 7 - board_col
         drawing_x = board_center[0] + (board_col - 4) * square_side_length
@@ -117,7 +129,7 @@ class BoardSquare(Clickable):
             if self.selected:
                 self.board.reset_square_flags()
 
-        if not self.detect_click():
+        if not self.detect_release():
             return
 
         if GameContext.game.debug: print(self.piece)
