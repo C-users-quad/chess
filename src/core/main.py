@@ -105,10 +105,8 @@ def main():
     game = GameContext.game = Game()
 
     # push initial states
-    board = Board()
-    game.push_state('chess', (board,))
+    game.push_state('chess', (Board(),))
     game.push_state('main-menu')
-    game.push_state('promotion', (Move(Pawn((0,0), PieceColors.WHITE, board), (0,0), board, True),))
 
     while game.on:
         # update game context

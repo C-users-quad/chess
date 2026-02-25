@@ -25,7 +25,7 @@ class Chess(GameState):
     def update(self):
         self.board.update()
 
-    def render(self, force_rendering):
+    def render(self, force_rendering=False):
         if not force_rendering and not self.game.window_resized():
             return
         self.board.render()

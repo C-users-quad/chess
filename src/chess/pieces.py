@@ -60,28 +60,12 @@ class Piece:
         return legal_moves
 
     def __str__(self):
-        # format legal moves
-        max_box_width = 30
-        legal_moves_string = "Legal Moves: "
-        legal_moves = self.get_legal_moves()
-        for i, move in enumerate(legal_moves):
-            legal_moves_string += f"{move}"
-            index_last_newline = legal_moves_string[::-1].find("\n")
-            if i < len(legal_moves) - 1:
-                legal_moves_string += ", "
-            if index_last_newline == -1 and len(legal_moves_string) > max_box_width:
-                legal_moves_string += "\n"
-            if index_last_newline >= max_box_width:
-                legal_moves_string += "\n"
-
-        if legal_moves_string[-1] == "\n": legal_moves_string = legal_moves_string[:-1]
-
         lines = (
-            f"{self.name} {hex(id(self))}\n"
+            f"{self.name.value} {hex(id(self))}\n"
             f"Pos: {self.pos}\n"
-            f"Color: {self.color}\n"
+            f"Color: {self.color.value}\n"
             f"Has moved: {self.has_moved}\n"
-            f"{legal_moves_string}"
+            f"Legal Moves: {self.get_legal_moves()[:2]}..."
         )
 
         return get_tui_text_box(lines)
