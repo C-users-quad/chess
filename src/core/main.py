@@ -1,9 +1,13 @@
+from chess.move import Move
+from chess.pieces import Pawn
+from core.enums import PieceColors
 from core.settings import *
 from core.utils import get_tui_text_box, asset_path
 from states.main_menu import MainMenu
 from states.settings_menu import SettingsMenu
 from states.chess import Chess
 from states.promotion import Promotion
+from states.new_game import NewGame
 from chess.board import Board
 
 class Game:
@@ -19,7 +23,8 @@ class Game:
             'main-menu': MainMenu,
             'chess': Chess,
             'settings': SettingsMenu,
-            'promotion': Promotion
+            'promotion': Promotion,
+            'new-game': NewGame
         }
         """
         dict of every state, used to push states to state stack
@@ -33,12 +38,15 @@ class Game:
         """
         self.state_stack = []
         self.on = True
+        self.prev_window_size = self.display.get_size()
+        self.debug = False
+        self.render_dim()
+
+    def render_dim(self):
         self.dim_surf = pygame.Surface(self.display.get_size(), pygame.SRCALPHA)
         self.dim_surf.fill(COLORS['state-dim'])
         self.dim_surf.set_alpha(STATE_DIM_ALPHA)
         self.dim_rect = self.dim_surf.get_rect()
-        self.prev_window_size = self.display.get_size()
-        self.debug = False
 
     def get_font(self, size):
         if size not in self.fonts:
@@ -97,8 +105,10 @@ def main():
     game = GameContext.game = Game()
 
     # push initial states
-    game.push_state('chess', (Board(),)``)
+    board = Board()
+    game.push_state('chess', (board,))
     game.push_state('main-menu')
+    game.push_state('promotion', (Move(Pawn((0,0), PieceColors.WHITE, board), (0,0), board, True),))
 
     while game.on:
         # update game context
@@ -113,8 +123,10 @@ def main():
         game.display.fill(COLORS['clear'])
         for state in game.state_stack[0:-1]:
             if state.draw_below:
-                state.draw(force_rendering=True)
+                state.render(force_rendering=True)
+                state.draw()
                 state.draw_dim()
+        top_state.render()
         top_state.draw()
 
         pygame.display.update()

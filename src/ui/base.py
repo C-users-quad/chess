@@ -43,6 +43,7 @@ class UIElement:
             f"Topleft: {self.rect.topleft}\n"
             f"Center: {self.rect.center}\n"
             f"Bottomright: {self.rect.bottomright}\n"
-            f"Resizing axis: {self.resize_axis}"
+            f"Resizing axis: {self.resize_axis}\n"
+            f"Pos: {self.pos}"
         )
         return get_tui_text_box(text)

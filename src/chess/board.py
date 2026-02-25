@@ -131,6 +131,7 @@ class Board:
 
         if self.game_end:
             self.reset_square_flags()
+            GameContext.game.push_state('new-game')
 
     def find_selected_square(self):
         for row in self.board:

@@ -48,8 +48,7 @@ def get_ui_elem(element, get_exact=False):
 
     return scaled_ui_elem if get_exact else int(scaled_ui_elem)
 
-def resize(point, uniform=False,
-           axis: Literal['width', 'height', 'min', 'max', 'auto']='auto'):
+def resize(point, axis: Literal['width', 'height', 'min', 'max', 'auto']='auto'):
     # get needed info
     x, y = point
     curr_win_w, curr_win_h = GameContext.game.display.get_size()
@@ -66,7 +65,10 @@ def resize(point, uniform=False,
             scale_x = scale_y = min(scale_x, scale_y)
         case 'max':
             scale_x = scale_y = max(scale_x, scale_y)
-
+        case 'auto':
+            pass
+        case _:
+            raise ValueError(f"axis argument \"{axis}\" is invalid")
 
     # compute resized point and return
     x_resized = max(MIN_UI_SIZE, x * scale_x)
@@ -78,22 +80,23 @@ def scale(scalar, get_exact=False,
           axis: Literal['width', 'height', 'min', 'max']='min'):
     window_width, window_height = GameContext.game.display.get_size()
 
-    if axis == 'min':
-        scale = min(
-            window_width / BASE_WIDTH,
-            window_height / BASE_HEIGHT
-        )
-    elif axis == 'max':
-        scale = max(
-            window_width / BASE_WIDTH,
-            window_height / BASE_HEIGHT
-        )
-    elif axis == 'width':
-        scale = window_width / BASE_WIDTH
-    elif axis == 'height':
-        scale = window_height / BASE_HEIGHT
-    else:
-        raise ValueError(f"axis argument \"{axis}\" is invalid")
+    match axis:
+        case 'min':
+            scale = min(
+                window_width / BASE_WIDTH,
+                window_height / BASE_HEIGHT
+            )
+        case 'max':
+            scale = max(
+                window_width / BASE_WIDTH,
+                window_height / BASE_HEIGHT
+            )
+        case 'width':
+            scale = window_width / BASE_WIDTH
+        case 'height':
+            scale = window_height / BASE_HEIGHT
+        case _:
+            raise ValueError(f"axis argument \"{axis}\" is invalid")
 
     scaled_num = scale * scalar
     # prevent elements from going off screen
