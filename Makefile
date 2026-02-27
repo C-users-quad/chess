@@ -13,6 +13,9 @@ VENV_DIR = .venv
 # pristine vars
 PYTEST_CACHE_DIR = .pytest_cache
 
+# test vars
+TESTS_DIR = tests
+
 .PHONY: help
 help:
 	@echo -e "\033[35mmake\033[0m Command Help:"
@@ -42,6 +45,7 @@ run:
 clean:
 	@echo Deleting cache...
 	find $(SRC_DIR) -type d -name "__pycache__" -exec rm -rf {} +
+	find $(TESTS_DIR) -type d -name "__pycache__" -exec rm -rf {} +
 
 .PHONY: pristine
 pristine: clean
@@ -52,4 +56,4 @@ pristine: clean
 .PHONY: test
 test:
 	@echo Running unit tests with pytest...
-	PYTHONPATH=$(SRC_DIR) $(PYTHON) -m pytest $(SRC_DIR)/tests -v
+	PYTHONPATH=$(SRC_DIR) $(PYTHON) -m pytest $(TESTS_DIR) -v

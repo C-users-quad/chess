@@ -1,4 +1,5 @@
 """Tests for state machine components."""
+import pytest
 from unittest.mock import MagicMock, patch
 
 class TestGameState:

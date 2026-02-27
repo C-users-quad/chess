@@ -8,9 +8,9 @@ class TestBoard:
     def test_board_initialization(self, mock_game_context):
         """Test Board initializes with 8x8 grid."""
         from chess.board import Board
-        
+
         board = Board()
-        
+
         assert len(board.board) == 8
         assert len(board.board[0]) == 8
         assert board.turn_color.value == "white"
@@ -18,26 +18,26 @@ class TestBoard:
     def test_board_has_kings(self, mock_game_context):
         """Test Board has white and black kings after initialization."""
         from chess.board import Board
-        
+
         board = Board()
-        
+
         assert board.white_king is not None
         assert board.black_king is not None
 
     def test_board_initial_turn_is_white(self, mock_game_context):
         """Test that white moves first."""
         from chess.board import Board
-        
+
         board = Board()
-        
+
         assert board.turn_color.value == "white"
 
     def test_get_square_returns_correct_square(self, mock_game_context):
         """Test get_square returns the correct board square."""
         from chess.board import Board
-        
+
         board = Board()
-        
+
         square = board.get_square((0, 0))
         assert square is not None
         assert square.pos == (0, 0)
@@ -45,9 +45,9 @@ class TestBoard:
     def test_pos_on_board_valid_positions(self, mock_game_context):
         """Test pos_on_board returns True for valid positions."""
         from chess.board import Board
-        
+
         board = Board()
-        
+
         assert board.pos_on_board((0, 0)) == True
         assert board.pos_on_board((7, 7)) == True
         assert board.pos_on_board((3, 4)) == True
@@ -55,9 +55,9 @@ class TestBoard:
     def test_pos_on_board_invalid_positions(self, mock_game_context):
         """Test pos_on_board returns False for invalid positions."""
         from chess.board import Board
-        
+
         board = Board()
-        
+
         assert board.pos_on_board((-1, 0)) == False
         assert board.pos_on_board((0, 8)) == False
         assert board.pos_on_board((8, 8)) == False
@@ -71,10 +71,10 @@ class TestPieces:
         from chess.pieces import Pawn
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         pawn = Pawn((6, 4), PieceColors.WHITE, board)
-        
+
         assert pawn.dir == -1
 
     def test_pawn_initialization_black(self, mock_game_context):
@@ -82,10 +82,10 @@ class TestPieces:
         from chess.pieces import Pawn
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         pawn = Pawn((1, 4), PieceColors.BLACK, board)
-        
+
         assert pawn.dir == 1
 
     def test_pawn_has_not_moved_initially(self, mock_game_context):
@@ -93,10 +93,10 @@ class TestPieces:
         from chess.pieces import Pawn
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         pawn = Pawn((6, 4), PieceColors.WHITE, board)
-        
+
         assert pawn.has_moved == False
 
     def test_pawn_promotion_row_white(self, mock_game_context):
@@ -104,10 +104,10 @@ class TestPieces:
         from chess.pieces import Pawn
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         pawn = Pawn((6, 4), PieceColors.WHITE, board)
-        
+
         assert pawn.promotion_row == 0
 
     def test_pawn_promotion_row_black(self, mock_game_context):
@@ -115,10 +115,10 @@ class TestPieces:
         from chess.pieces import Pawn
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         pawn = Pawn((1, 4), PieceColors.BLACK, board)
-        
+
         assert pawn.promotion_row == 7
 
 
@@ -129,7 +129,7 @@ class TestRook:
         """Test Rook has correct name."""
         from chess.pieces import Rook
         from core.enums import PieceNames
-        
+
         assert Rook.name == PieceNames.ROOK
 
 
@@ -140,7 +140,7 @@ class TestBishop:
         """Test Bishop has correct name."""
         from chess.pieces import Bishop
         from core.enums import PieceNames
-        
+
         assert Bishop.name == PieceNames.BISHOP
 
 
@@ -151,13 +151,13 @@ class TestKnight:
         """Test Knight has correct name."""
         from chess.pieces import Knight
         from core.enums import PieceNames
-        
+
         assert Knight.name == PieceNames.KNIGHT
 
     def test_knight_directions_count(self, mock_game_context):
         """Test Knight has 8 L-shaped move directions."""
         from chess.pieces import Knight
-        
+
         assert len(Knight.directions) == 8
 
 
@@ -168,7 +168,7 @@ class TestQueen:
         """Test Queen has correct name."""
         from chess.pieces import Queen
         from core.enums import PieceNames
-        
+
         assert Queen.name == PieceNames.QUEEN
 
 
@@ -179,7 +179,7 @@ class TestKing:
         """Test King has correct name."""
         from chess.pieces import King
         from core.enums import PieceNames
-        
+
         assert King.name == PieceNames.KING
 
     def test_king_initialization(self, mock_game_context):
@@ -187,10 +187,10 @@ class TestKing:
         from chess.pieces import King
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         king = King((7, 4), PieceColors.WHITE, board)
-        
+
         assert king.pos == (7, 4)
         assert king.color == PieceColors.WHITE
 
@@ -204,11 +204,11 @@ class TestMove:
         from chess.pieces import Pawn
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         pawn = Pawn((6, 4), PieceColors.WHITE, board)
         move = Move(pawn, (5, 4), board)
-        
+
         assert move.piece == pawn
         assert move.start == (6, 4)
         assert move.end == (5, 4)
@@ -219,11 +219,11 @@ class TestMove:
         from chess.pieces import Pawn
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         pawn = Pawn((6, 4), PieceColors.WHITE, board)
         move = Move(pawn, (5, 4), board)
-        
+
         assert move.is_en_passant == False
         assert move.is_castle == False
         assert move.gives_check == False
@@ -236,11 +236,11 @@ class TestMove:
         from chess.pieces import Pawn
         from chess.board import Board
         from core.enums import PieceColors
-        
+
         board = Board()
         pawn = Pawn((6, 4), PieceColors.WHITE, board)
         move = Move(pawn, (5, 4), board)
-        
+
         move.check_flags_before_move()
-        
+
         assert move.original_has_moved == False
