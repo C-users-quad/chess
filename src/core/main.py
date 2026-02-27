@@ -49,9 +49,12 @@ class Game:
         self.dim_rect = self.dim_surf.get_rect()
 
     def get_font(self, size):
+        """gets a pygame.Font object given a numeric font size"""
+        size = int(size) # type safety
         if size not in self.fonts:
             self.fonts[size] = pygame.Font(
-                filename=asset_path(join('assets', 'fonts', 'MerriweatherSans-Medium.ttf')),
+                filename=asset_path(join(
+                    'assets', 'fonts', 'MerriweatherSans-Medium.ttf')),
                 size=size
             )
         return self.fonts[size]

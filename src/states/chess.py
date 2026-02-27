@@ -9,7 +9,7 @@ class Chess(GameState):
     def __init__(self, board):
         super().__init__()
         self.dim = False
-        self.board= board
+        self.board = board
 
     def handle_events(self, events):
         super().handle_events(events)

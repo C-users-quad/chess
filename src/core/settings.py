@@ -26,8 +26,12 @@ BASE_WIDTH, BASE_HEIGHT = (1256, 750)
 """the window sizes i used when making the ui, used for scaling"""
 ANTIALIAS = True
 STATE_DIM_ALPHA = 100
+
+# scale axis
 BOARD_SCALE_AXIS = 'height'
 UI_SCALE_AXIS = 'min'
+FONT_SCALE_AXIS = 'height'
+
 MIN_UI_SIZE = 1
 COLORS = {
     'clear': "#68f66a",

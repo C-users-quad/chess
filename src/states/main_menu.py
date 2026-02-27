@@ -9,10 +9,19 @@ from ui.manager import UIManager
 
 class MainMenu(GameState):
     """main menu with important buttons"""
-    names = StateNames.MAIN_MENU
+    name = StateNames.MAIN_MENU
     def __init__(self):
         super().__init__()
         self.ui = UIManager(elements=self.make_ui())
+
+    def update(self):
+        self.ui.update()
+
+    def render(self, force_rendering=False):
+        self.ui.render(force_rendering)
+
+    def draw(self):
+        self.ui.draw()
 
     def make_ui(self):
         elements = []
