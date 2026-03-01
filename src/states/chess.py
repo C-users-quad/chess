@@ -1,11 +1,14 @@
-from core.settings import *
+import pygame
 from core.enums import StateNames
 from states.base import GameState
 from chess.board import Board
 
+
 class Chess(GameState):
     """game state with chess board"""
+
     name = StateNames.CHESS
+
     def __init__(self, board):
         super().__init__()
         self.dim = False
@@ -20,7 +23,7 @@ class Chess(GameState):
     def handle_input(self, key):
         if key == pygame.K_ESCAPE:
             self.board.reset_square_flags()
-            self.game.push_state('main-menu')
+            self.game.push_state("main-menu")
 
     def update(self):
         self.board.update()

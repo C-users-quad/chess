@@ -1,5 +1,15 @@
-from core.settings import *
+from core.settings import (
+    BASE_HEIGHT,
+    BASE_WIDTH,
+    GameContext,
+    sys,
+    MIN_UI_SIZE,
+    SIZE_RATIOS,
+    Path,
+    Literal,
+)
 from core.enums import PieceColors
+
 
 def get_tui_text_box(text: object):
     """
@@ -26,11 +36,10 @@ def get_tui_text_box(text: object):
     top = "┌" + "─" * (width + 2) + "┐"
     bottom = "└" + "─" * (width + 2) + "┘"
 
-    body = "\n".join(
-        f"│ {line.ljust(width)} │" for line in lines
-    )
+    body = "\n".join(f"│ {line.ljust(width)} │" for line in lines)
 
     return f"{top}\n{body}\n{bottom}"
+
 
 def asset_path(relative):
     if getattr(sys, "frozen", False):
@@ -39,16 +48,18 @@ def asset_path(relative):
         base = Path(__file__).resolve().parent.parent.parent
     return base / relative
 
+
 def get_ui_elem(element, get_exact=False):
     """used to get base size ui elements"""
     ratio = SIZE_RATIOS[element]
     max_size = min(BASE_WIDTH, BASE_HEIGHT)
     scaled_ui_elem = ratio * max_size
-    scaled_ui_elem = min(max_size, scaled_ui_elem) # ensures elements stay on screen
+    scaled_ui_elem = min(max_size, scaled_ui_elem)  # ensures elements stay on screen
 
     return scaled_ui_elem if get_exact else int(scaled_ui_elem)
 
-def resize(point, axis: Literal['width', 'height', 'min', 'max', 'auto']='auto'):
+
+def resize(point, axis: Literal["width", "height", "min", "max", "auto"] = "auto"):
     # get needed info
     x, y = point
     curr_win_w, curr_win_h = GameContext.game.display.get_size()
@@ -57,18 +68,18 @@ def resize(point, axis: Literal['width', 'height', 'min', 'max', 'auto']='auto')
     scale_x = curr_win_w / BASE_WIDTH
     scale_y = curr_win_h / BASE_HEIGHT
     match axis:
-        case 'width':
+        case "width":
             scale_y = scale_x
-        case 'height':
+        case "height":
             scale_x = scale_y
-        case 'min':
+        case "min":
             scale_x = scale_y = min(scale_x, scale_y)
-        case 'max':
+        case "max":
             scale_x = scale_y = max(scale_x, scale_y)
-        case 'auto':
+        case "auto":
             pass
         case _:
-            raise ValueError(f"axis argument \"{axis}\" is invalid")
+            raise ValueError(f'axis argument "{axis}" is invalid')
 
     # compute resized point and return
     x_resized = max(MIN_UI_SIZE, x * scale_x)
@@ -76,27 +87,23 @@ def resize(point, axis: Literal['width', 'height', 'min', 'max', 'auto']='auto')
 
     return (x_resized, y_resized)
 
-def scale(scalar, get_exact=False,
-          axis: Literal['width', 'height', 'min', 'max']='min'):
+
+def scale(
+    scalar, get_exact=False, axis: Literal["width", "height", "min", "max"] = "min"
+):
     window_width, window_height = GameContext.game.display.get_size()
 
     match axis:
-        case 'min':
-            scale = min(
-                window_width / BASE_WIDTH,
-                window_height / BASE_HEIGHT
-            )
-        case 'max':
-            scale = max(
-                window_width / BASE_WIDTH,
-                window_height / BASE_HEIGHT
-            )
-        case 'width':
+        case "min":
+            scale = min(window_width / BASE_WIDTH, window_height / BASE_HEIGHT)
+        case "max":
+            scale = max(window_width / BASE_WIDTH, window_height / BASE_HEIGHT)
+        case "width":
             scale = window_width / BASE_WIDTH
-        case 'height':
+        case "height":
             scale = window_height / BASE_HEIGHT
         case _:
-            raise ValueError(f"axis argument \"{axis}\" is invalid")
+            raise ValueError(f'axis argument "{axis}" is invalid')
 
     scaled_num = scale * scalar
     # prevent elements from going off screen
@@ -104,6 +111,7 @@ def scale(scalar, get_exact=False,
     scaled_num = max(MIN_UI_SIZE, scaled_num)
 
     return scaled_num if get_exact else int(scaled_num)
+
 
 def get_all_pieces_of_color(color, board):
     pieces = []
@@ -115,6 +123,7 @@ def get_all_pieces_of_color(color, board):
                 pieces.append(square.piece)
 
     return pieces
+
 
 def opposite_color(color):
     return PieceColors.BLACK if color == PieceColors.WHITE else PieceColors.WHITE

@@ -1,12 +1,14 @@
-from core.settings import *
 from core.utils import get_all_pieces_of_color, get_tui_text_box, opposite_color
 from core.images import PIECE_IMAGES
 from core.enums import PieceColors, PieceNames
 from chess.move import Move
 
+
 class Piece:
     """base piece class for logical chess pieces"""
+
     name = None
+
     def __init__(self, pos, color, board, **kwargs):
         super().__init__(**kwargs)
         self.pos = pos
@@ -70,14 +72,10 @@ class Piece:
 
         return get_tui_text_box(lines)
 
+
 class SlidingPiece(Piece):
     def __init__(self, pos, color, board, **kwargs):
-        super().__init__(
-            pos=pos,
-            color=color,
-            board=board,
-            **kwargs
-        )
+        super().__init__(pos=pos, color=color, board=board, **kwargs)
 
     def get_attack_moves(self):
         return self.get_pseudo_moves()
@@ -102,61 +100,52 @@ class SlidingPiece(Piece):
 
         return pseudo_moves
 
+
 class Rook(SlidingPiece):
     name = PieceNames.ROOK
     directions = [
-                (0, 1),
-        (-1, 0),         (1, 0),
-                (0,-1),
+        (0, 1),
+        (-1, 0),
+        (1, 0),
+        (0, -1),
     ]
+
     def __init__(self, pos, color, board, **kwargs):
-        super().__init__(
-            pos=pos,
-            color=color,
-            board=board,
-            **kwargs
-        )
+        super().__init__(pos=pos, color=color, board=board, **kwargs)
+
 
 class Bishop(SlidingPiece):
     name = PieceNames.BISHOP
-    directions = [
-        (-1, 1),        (1, 1),
+    directions = [(-1, 1), (1, 1), (-1, -1), (1, -1)]
 
-        (-1,-1),        (1,-1)
-    ]
     def __init__(self, pos, color, board, **kwargs):
-        super().__init__(
-            pos=pos,
-            color=color,
-            board=board,
-            **kwargs
-        )
+        super().__init__(pos=pos, color=color, board=board, **kwargs)
+
 
 class Queen(SlidingPiece):
     name = PieceNames.QUEEN
     directions = Rook.directions.copy()
     directions.extend(Bishop.directions)
+
     def __init__(self, pos, color, board, **kwargs):
-        super().__init__(
-            pos=pos,
-            color=color,
-            board=board,
-            **kwargs
-        )
+        super().__init__(pos=pos, color=color, board=board, **kwargs)
+
 
 class Knight(Piece):
     name = PieceNames.KNIGHT
     directions = [
-        (-2,-1), (-2,1), (2,-1), (2,1),
-        (-1,-2), (1,-2), (-1,2), (1,2)
+        (-2, -1),
+        (-2, 1),
+        (2, -1),
+        (2, 1),
+        (-1, -2),
+        (1, -2),
+        (-1, 2),
+        (1, 2),
     ]
+
     def __init__(self, pos, color, board, **kwargs):
-        super().__init__(
-            pos=pos,
-            color=color,
-            board=board,
-            **kwargs
-        )
+        super().__init__(pos=pos, color=color, board=board, **kwargs)
 
     def get_attack_moves(self):
         return self.get_pseudo_moves()
@@ -177,26 +166,21 @@ class Knight(Piece):
 
         return pseudo_moves
 
+
 class Pawn(Piece):
     name = PieceNames.PAWN
+
     def __init__(self, pos, color, board, **kwargs):
-        super().__init__(
-            pos=pos,
-            color=color,
-            board=board,
-            **kwargs
-        )
+        super().__init__(pos=pos, color=color, board=board, **kwargs)
         # determines if the pawn moves up or down the board depending on its color
         self.dir = -1 if color == PieceColors.WHITE else 1
-        self.attack_moves = [
-            (self.dir,-1),(self.dir,1)
-        ]
+        self.attack_moves = [(self.dir, -1), (self.dir, 1)]
         self.just_moved_forward_two = False
         self.promotion_row = 0 if self.color == PieceColors.WHITE else 7
 
     def update_pos(self, pos):
         # pawn-specific check used for en passant
-        if pos[0] == self.pos[0] + self.dir*2:
+        if pos[0] == self.pos[0] + self.dir * 2:
             self.just_moved_forward_two = True
         # the actual updating of the position
         self.pos = pos
@@ -266,7 +250,7 @@ class Pawn(Piece):
 
         # check moving 2 squares forward
         if not self.has_moved:
-            pos_2_infront = (row + self.dir*2, col)
+            pos_2_infront = (row + self.dir * 2, col)
             square_infront = self.board.get_square(pos_infront)
             square_2_infront = self.board.get_square(pos_2_infront)
             if square_infront.empty() and square_2_infront.empty():
@@ -274,16 +258,13 @@ class Pawn(Piece):
 
         return pseudo_moves
 
+
 class King(Piece):
     name = PieceNames.KING
     directions = Queen.directions
+
     def __init__(self, pos, color, board, **kwargs):
-        super().__init__(
-            pos=pos,
-            color=color,
-            board=board,
-            **kwargs
-        )
+        super().__init__(pos=pos, color=color, board=board, **kwargs)
 
     def in_check(self):
         enemy_color = opposite_color(self.color)
@@ -304,13 +285,13 @@ class King(Piece):
 
         row, col = self.pos
         castle_sides = {
-            'kingside': [(row, col + 1), (row, col + 2)],
-            'queenside':[(row, col - 1), (row, col - 2), (row, col - 3)]
+            "kingside": [(row, col + 1), (row, col + 2)],
+            "queenside": [(row, col - 1), (row, col - 2), (row, col - 3)],
         }
 
         for side, squares in castle_sides.items():
             # check if rook has moved
-            rook_col = 7 if side == 'kingside' else 0
+            rook_col = 7 if side == "kingside" else 0
             rook_square = self.board.get_square((row, rook_col))
             if rook_square.empty() or rook_square.piece.has_moved:
                 continue
@@ -322,9 +303,11 @@ class King(Piece):
             # check if castling side is under attack
             path_squares = squares[:-1]
             enemy_color = opposite_color(self.color)
-            if any(sq in piece.get_attack_moves()
-                   for piece in get_all_pieces_of_color(enemy_color, self.board)
-                   for sq in path_squares):
+            if any(
+                sq in piece.get_attack_moves()
+                for piece in get_all_pieces_of_color(enemy_color, self.board)
+                for sq in path_squares
+            ):
                 continue
 
             # pass all checks, allow castling move.
@@ -356,6 +339,7 @@ class King(Piece):
                 pseudo_moves.append((row, col))
 
         castling_moves = self.get_castling_moves()
-        if castling_moves: pseudo_moves.extend(castling_moves)
+        if castling_moves:
+            pseudo_moves.extend(castling_moves)
 
         return pseudo_moves

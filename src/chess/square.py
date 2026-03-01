@@ -1,8 +1,18 @@
+from core.settings import (
+    BOARD_SCALE_AXIS,
+    COLORS,
+    GameContext,
+    Literal,
+    MIN_UI_SIZE,
+    MOVE_CIRCLE_SCALE,
+    PIECE_SCALE,
+    pygame,
+)
 from core.enums import PieceColors
-from core.settings import *
 from ui.buttons.clickable import Clickable
 from core.utils import get_tui_text_box, get_ui_elem, scale
 from chess.move import Move
+
 
 class BoardSquare(Clickable):
     """
@@ -13,8 +23,14 @@ class BoardSquare(Clickable):
     the board square sprite contained here should be drawn
     on to the board sprite and positioned relative to it
     """
-    def __init__(self, pos: tuple[int, int],
-            color: Literal['white-square', 'black-square'], board, **kwargs):
+
+    def __init__(
+        self,
+        pos: tuple[int, int],
+        color: Literal["white-square", "black-square"],
+        board,
+        **kwargs,
+    ):
         # get square size
         super().__init__(**kwargs)
         # logical attributes and flags of board square
@@ -32,19 +48,14 @@ class BoardSquare(Clickable):
 
     def render(self):
         # square size
-        board_width = scale(
-            scalar=get_ui_elem('board'),
-            axis=BOARD_SCALE_AXIS
-        )
+        board_width = scale(scalar=get_ui_elem("board"), axis=BOARD_SCALE_AXIS)
 
         board_border_width = scale(
-            scalar=get_ui_elem('board-border'),
-            axis=BOARD_SCALE_AXIS
+            scalar=get_ui_elem("board-border"), axis=BOARD_SCALE_AXIS
         )
 
         square_side_length = max(
-            MIN_UI_SIZE,
-            (board_width - 2*board_border_width) // 8
+            MIN_UI_SIZE, (board_width - 2 * board_border_width) // 8
         )
 
         board_center = (board_width / 2, board_width / 2)
@@ -56,9 +67,12 @@ class BoardSquare(Clickable):
 
         # highlights
         color_override = None
-        if self.stalemate_square: color_override = COLORS['stalemate-sqr-highlight']
-        if self.winning_square: color_override = COLORS['winning-sqr-highlight']
-        if self.losing_square: color_override = COLORS['losing-sqr-highlight']
+        if self.stalemate_square:
+            color_override = COLORS["stalemate-sqr-highlight"]
+        if self.winning_square:
+            color_override = COLORS["winning-sqr-highlight"]
+        if self.losing_square:
+            color_override = COLORS["losing-sqr-highlight"]
         self.draw_highlight(color_override)
         self.draw_move_circle()
 
@@ -66,10 +80,14 @@ class BoardSquare(Clickable):
         if not self.empty():
             piece = pygame.transform.smoothscale(
                 self.piece.image,
-                (int(square_side_length*PIECE_SCALE),
-                 int(square_side_length*PIECE_SCALE))
+                (
+                    int(square_side_length * PIECE_SCALE),
+                    int(square_side_length * PIECE_SCALE),
+                ),
             )
-            piece_rect = piece.get_rect(center=(square_side_length//2, square_side_length//2))
+            piece_rect = piece.get_rect(
+                center=(square_side_length // 2, square_side_length // 2)
+            )
             self.image.blit(piece, piece_rect)
 
         # compute the drawing rect **centered inside board image**
@@ -80,8 +98,7 @@ class BoardSquare(Clickable):
         drawing_x = board_center[0] + (board_col - 4) * square_side_length
         drawing_y = board_center[1] + (board_row - 4) * square_side_length
         self.drawing_rect = pygame.Rect(
-            drawing_x, drawing_y,
-            square_side_length, square_side_length
+            drawing_x, drawing_y, square_side_length, square_side_length
         )
 
         # compute screen rect relative to board's position
@@ -94,8 +111,9 @@ class BoardSquare(Clickable):
             return
 
         # create highlight and draw it onto the square image
-        highlight_color = color_override if color_override else \
-            COLORS['board-highlight']
+        highlight_color = (
+            color_override if color_override else COLORS["board-highlight"]
+        )
         image_side_length = self.image.get_width()
         image_center = (image_side_length / 2, image_side_length / 2)
         highlight = pygame.Surface(self.image.size, pygame.SRCALPHA)
@@ -114,10 +132,10 @@ class BoardSquare(Clickable):
 
         # create circle
         circle_radius = self.image.get_width() * MOVE_CIRCLE_SCALE
-        circle = pygame.Surface((circle_radius*2, circle_radius*2), pygame.SRCALPHA)
+        circle = pygame.Surface((circle_radius * 2, circle_radius * 2), pygame.SRCALPHA)
         pygame.draw.circle(
-            circle, COLORS['move-circle'],
-            (circle_radius, circle_radius), circle_radius)
+            circle, COLORS["move-circle"], (circle_radius, circle_radius), circle_radius
+        )
         circle_rect = circle.get_rect(center=image_center)
 
         # draw circle onto image
@@ -132,7 +150,8 @@ class BoardSquare(Clickable):
         if not self.detect_release():
             return
 
-        if GameContext.game.debug: print(self.piece)
+        if GameContext.game.debug:
+            print(self.piece)
         selected_square = self.board.find_selected_square()
         if selected_square:
             if self.valid_square:
@@ -146,7 +165,7 @@ class BoardSquare(Clickable):
                     if self.piece.color != self.board.turn_color:
                         return
                     self.board.show_valid_moves(self)
-                    
+
         # case: select a piece
         self.selected = True
         if not self.empty():

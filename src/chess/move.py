@@ -1,7 +1,7 @@
-from core.settings import *
 from core.sounds import PIECE_SOUNDS
 from core.utils import get_all_pieces_of_color, opposite_color
-from core.enums import PieceNames, PieceColors
+from core.enums import PieceNames
+
 
 class Move:
     """
@@ -9,6 +9,7 @@ class Move:
 
     precondition: move is legal
     """
+
     def __init__(self, piece, end_pos, board, real_move=True):
         self.piece = piece
         self.start = piece.pos
@@ -47,11 +48,12 @@ class Move:
         if isinstance(self.piece, Pawn):
             self.original_just_moved_forward_two = self.piece.just_moved_forward_two
             if self.end in self.piece.get_en_passant_moves():
+                if self.real_move: print("hi")
                 self.is_en_passant = True
                 victim_sqr = self.board.get_square((self.start[0], self.end[1]))
                 self.captured_piece = victim_sqr.piece
                 self.capture_square = victim_sqr.piece.pos
-            if self.end[0] == self.start[0] + self.piece.dir*2:
+            if self.end[0] == self.start[0] + self.piece.dir * 2:
                 self.double_pawn_push = True
             if self.end[0] == self.piece.promotion_row:
                 self.is_promotion = True
@@ -71,26 +73,28 @@ class Move:
         enemy_king = getattr(self.board, f"{enemy_color.value}_king")
         if enemy_king.in_check():
             self.gives_check = True
-        if all(not piece.get_legal_moves()
-            for piece in get_all_pieces_of_color(enemy_color, self.board)):
-                self.ends_game = True
+        if all(
+            not piece.get_legal_moves()
+            for piece in get_all_pieces_of_color(enemy_color, self.board)
+        ):
+            self.ends_game = True
 
     def play_move_sound(self):
         if not self.real_move:
             return
 
         if self.ends_game:
-            PIECE_SOUNDS['game-end'].play()
+            PIECE_SOUNDS["game-end"].play()
         elif self.gives_check:
-            PIECE_SOUNDS['check'].play()
+            PIECE_SOUNDS["check"].play()
         elif self.is_castle:
-            PIECE_SOUNDS['castle'].play()
+            PIECE_SOUNDS["castle"].play()
         elif self.is_promotion:
-            PIECE_SOUNDS['promote'].play()
+            PIECE_SOUNDS["promote"].play()
         elif self.capture_square:
-            PIECE_SOUNDS['capture'].play()
+            PIECE_SOUNDS["capture"].play()
         else:
-            PIECE_SOUNDS['move'].play()
+            PIECE_SOUNDS["move"].play()
 
     def set_promotion_piece(self, piece_name):
         from chess.pieces import Queen, Rook, Bishop, Knight
@@ -107,6 +111,5 @@ class Move:
                 piece_class = Knight
 
         self.board.place_piece(
-            piece=piece_class(self.end, self.piece.color, self.board),
-            pos=self.end
+            piece=piece_class(self.end, self.piece.color, self.board), pos=self.end
         )

@@ -7,11 +7,15 @@ ENTRYPOINT_MODULE = core.main
 REQUIREMENTS_DIR = requirements.txt
 PIP = pip3
 
+# clean vars
+PYCACHE_DIR = __pycache__
+
 # venv vars
 VENV_DIR = .venv
 
 # pristine vars
 PYTEST_CACHE_DIR = .pytest_cache
+RUFF_CACHE_DIR = .ruff_cache
 
 # test vars
 TESTS_DIR = tests
@@ -25,11 +29,17 @@ help:
 	@echo -e "    \033[36mclean:\033[0m cleans all the cached bytecode"
 	@echo -e "    \033[36mpristine:\033[0m cleans code cache, test cache, removes environment."
 	@echo -e "    \033[36mtest:\033[0m run unit tests"
+	@echo -e "    \033[36mlint:\033[0m lint source code"
 
 .PHONY: venv
 venv:
 	@echo Creating virtual environment
 	$(PYTHON) -m venv $(VENV_DIR)
+
+.PHONY: lint
+lint:
+	@echo Cleaning up code...
+	ruff format $(SRC_DIR) -v
 
 .PHONY: install
 install: venv
@@ -44,14 +54,14 @@ run:
 .PHONY: clean
 clean:
 	@echo Deleting cache...
-	find $(SRC_DIR) -type d -name "__pycache__" -exec rm -rf {} +
-	find $(TESTS_DIR) -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type d -name $(PYCACHE_DIR) -exec rm -rfv {} +
 
 .PHONY: pristine
 pristine: clean
 	@echo Making build pristine...
-	find . -type d -name $(VENV_DIR) -exec rm -rf {} +
-	find . -type d -name $(PYTEST_CACHE_DIR) -exec rm -rf {} +
+	find . -type d -name $(VENV_DIR) -exec rm -rfv {} +
+	find . -type d -name $(PYTEST_CACHE_DIR) -exec rm -rfv {} +
+	find . -type d -name $(RUFF_CACHE_DIR) -exec rm -rfv {} +
 
 .PHONY: test
 test:

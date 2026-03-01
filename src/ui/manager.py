@@ -1,6 +1,6 @@
-from core.settings import *
 from core.utils import get_tui_text_box
 from ui.base import UIElement
+
 
 class UIManager(UIElement):
     def __init__(self, elements: list[UIElement]):
@@ -24,9 +24,6 @@ class UIManager(UIElement):
             element.update()
 
     def __str__(self):
-        lines = (
-            f"UIManager {hex(id(self))}\n"
-            f"Elements: {self.elements}"
-        )
+        lines = f"UIManager {hex(id(self))}\nElements: {self.elements}"
 
         return get_tui_text_box(lines)

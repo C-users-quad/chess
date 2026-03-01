@@ -1,4 +1,5 @@
-from core.settings import *
+import pygame
+from core.settings import BASE_WIDTH
 from core.utils import get_ui_elem
 from core.images import PIECE_IMAGES
 from core.enums import PieceColors, PieceNames, StateNames
@@ -7,9 +8,12 @@ from ui.rects.text_box import UITextBox
 from ui.buttons.image_button import UIImageButton
 from ui.manager import UIManager
 
+
 class SettingsMenu(GameState):
     """menu for game settings"""
+
     name = StateNames.SETTINGS
+
     def __init__(self):
         super().__init__()
         self.ui = UIManager(elements=self.make_ui())
@@ -36,16 +40,16 @@ class SettingsMenu(GameState):
     def make_ui(self):
         elements = []
 
-        spacing = get_ui_elem('spacing')
-        padding = get_ui_elem('padding')
-        rounding = get_ui_elem('rounding')
+        spacing = get_ui_elem("spacing")
+        padding = get_ui_elem("padding")
+        rounding = get_ui_elem("rounding")
 
         title = UITextBox(
             pos=(BASE_WIDTH / 2, spacing),
-            anchor='midtop',
-            text='Settings',
-            font_size='title',
-            do_auto_size=True
+            anchor="midtop",
+            text="Settings",
+            font_size="title",
+            do_auto_size=True,
         )
         elements.append(title)
 

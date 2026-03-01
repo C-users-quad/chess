@@ -6,20 +6,24 @@ from typing import Literal
 from rich.console import Console
 from enum import Enum
 
+
 # override print to rich printing for colors yay!!
 print = Console().print
 
+
 class GameContext:
     """container for game object so that it can be globally accessed"""
+
     game = None
+
 
 # window stuff
 WINDOW_SIZE = (800, 600)
 FPS = 60
 
 # file stuff
-PIECE_SOUNDS_PATH = join('assets', 'sounds', 'piece_moves')
-BUTTON_SOUNDS_PATH = join('assets', 'sounds', 'button')
+PIECE_SOUNDS_PATH = join("assets", "sounds", "piece_moves")
+BUTTON_SOUNDS_PATH = join("assets", "sounds", "button")
 
 # ui-related stuff. colors, sizes, etc.
 BASE_WIDTH, BASE_HEIGHT = (1256, 750)
@@ -28,28 +32,28 @@ ANTIALIAS = True
 STATE_DIM_ALPHA = 100
 
 # scale axis
-BOARD_SCALE_AXIS = 'height'
-UI_SCALE_AXIS = 'min'
-FONT_SCALE_AXIS = 'height'
+BOARD_SCALE_AXIS = "height"
+UI_SCALE_AXIS = "min"
+FONT_SCALE_AXIS = "height"
 
 MIN_UI_SIZE = 1
 COLORS = {
-    'clear': "#68f66a",
-    'text': "#FFFFFF",
-    'ui-bg': "#220A0A",
-    'ui-border': "#32c38b",
-    'button-highlight': "#0000008C",
-    'board-border': "#6F3110",
-    'white-square': "#F1E1D8",
-    'black-square': "#311201",
-    'board-highlight': "#ffee008e",
-    'move-circle': "#271978A0",
-    'state-dim': (0,0,0),
-    'winning-sqr-highlight': "#44ff00cd",
-    'losing-sqr-highlight': "#ff0000c1",
-    'stalemate-sqr-highlight': "#000000CC",
-    'promotion-ui-bg': "#ffffff",
-    'promotion-ui-btn': "#919191"
+    "clear": "#68f66a",
+    "text": "#FFFFFF",
+    "ui-bg": "#220A0A",
+    "ui-border": "#32c38b",
+    "button-highlight": "#0000008C",
+    "board-border": "#6F3110",
+    "white-square": "#F1E1D8",
+    "black-square": "#311201",
+    "board-highlight": "#ffee008e",
+    "move-circle": "#271978A0",
+    "state-dim": (0, 0, 0),
+    "winning-sqr-highlight": "#44ff00cd",
+    "losing-sqr-highlight": "#ff0000c1",
+    "stalemate-sqr-highlight": "#000000CC",
+    "promotion-ui-bg": "#ffffff",
+    "promotion-ui-btn": "#919191",
 }
 """
 ## dicitonary for colors.
@@ -73,16 +77,16 @@ COLORS = {
 ```
 """
 SIZE_RATIOS = {
-    'board': (600 / BASE_HEIGHT),
-    'rounding': (10 / BASE_HEIGHT),
-    'border-width': (10 / BASE_HEIGHT),
-    'padding': (10 / BASE_HEIGHT),
-    'spacing': (15 / BASE_HEIGHT),
-    'title': (75 / BASE_HEIGHT),
-    'subtitle': (50 / BASE_HEIGHT),
-    'text': (25 / BASE_HEIGHT),
-    'sidebar-width': (50 / BASE_WIDTH),
-    'board-border': (50 / BASE_HEIGHT),
+    "board": (600 / BASE_HEIGHT),
+    "rounding": (10 / BASE_HEIGHT),
+    "border-width": (10 / BASE_HEIGHT),
+    "padding": (7 / BASE_HEIGHT),
+    "spacing": (15 / BASE_HEIGHT),
+    "title": (75 / BASE_HEIGHT),
+    "subtitle": (50 / BASE_HEIGHT),
+    "text": (25 / BASE_HEIGHT),
+    "sidebar-width": (50 / BASE_WIDTH),
+    "board-border": (50 / BASE_HEIGHT),
 }
 """
 ## ratios used in order to determine size of elements drawn
@@ -100,9 +104,9 @@ SIZE_RATIOS = {
 ```
 """
 SOUNDS = {
-    'move': join('assets', 'sounds', 'piece_moves', 'move.mp3'),
-    'capture': join('assets', 'sounds', 'piece_moves', 'capture.mp3'),
-    'castle': join('assets', 'sounds', 'piece_moves', 'castle.mp3')
+    "move": join("assets", "sounds", "piece_moves", "move.mp3"),
+    "capture": join("assets", "sounds", "piece_moves", "capture.mp3"),
+    "castle": join("assets", "sounds", "piece_moves", "castle.mp3"),
 }
 """
 ## dict of every sound's corresponding filepath

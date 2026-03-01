@@ -1,4 +1,4 @@
-from core.settings import *
+from core.settings import BUTTON_SOUNDS_PATH, PIECE_SOUNDS_PATH, pygame, join
 from core.utils import asset_path
 
 # initialize mixer so pygame.Sound() works
@@ -20,7 +20,7 @@ current keys:
 'promote' - pawn promotion
 ```
 """
-for key in ['capture', 'castle', 'check', 'move', 'game-end', 'promote']:
+for key in ["capture", "castle", "check", "move", "game-end", "promote"]:
     filename = f"{key}.mp3"
     path = join(PIECE_SOUNDS_PATH, filename)
     PIECE_SOUNDS[key] = pygame.Sound(asset_path(path))
@@ -37,7 +37,7 @@ current keys:
 'button-up' - button release
 ```
 """
-for key in ['button-down', 'button-up']:
+for key in ["button-down", "button-up"]:
     filename = f"{key}.mp3"
     path = join(BUTTON_SOUNDS_PATH, filename)
     BUTTON_SOUNDS[key] = pygame.Sound(asset_path(path))

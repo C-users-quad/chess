@@ -1,62 +1,79 @@
-from core.settings import *
+from core.settings import (
+    BOARD_SCALE_AXIS,
+    COLORS,
+    GameContext,
+    GAME_END_ICON_SCALE,
+    pygame,
+)
 from core.utils import get_ui_elem, scale, opposite_color
 from core.images import GAME_END_ICONS
-from core.enums import PieceNames, PieceColors
+from core.enums import PieceColors
 from chess.square import BoardSquare
-from chess.pieces import *
+from chess.move import Move
+from chess.pieces import (
+    King,
+    Knight,
+    Pawn,
+    Queen,
+    Rook,
+    Bishop,
+    get_all_pieces_of_color,
+)
+
 
 class Board:
     """
     # The chessboard represented with a 2d array.
         - every index has a boardsquare object
     """
+
     def __init__(self):
         # make and populate the 2d board array with boardsquares
         self.board = [
-            [BoardSquare((r,c), ('white-square','black-square')[(r+c)%2], self)
-             for c in range(8)] for r in range(8)
+            [
+                BoardSquare((r, c), ("white-square", "black-square")[(r + c) % 2], self)
+                for c in range(8)
+            ]
+            for r in range(8)
         ]
-        self.turn_color = PieceColors.WHITE # whos turn it is
+        self.turn_color = PieceColors.WHITE  # whos turn it is
         self.white_king = None
         self.black_king = None
         self.checkmate = False
         self.stalemate = False
         self.game_end = False
         self.winning_color = None
-        self.populate_board() # give board initial pieces
+        self.populate_board()  # give board initial pieces
         self.render()
 
     def render(self):
         """re-creates the board's image"""
         # get needed info
         window_width, window_height = GameContext.game.display.get_size()
-        board_side_length = scale(get_ui_elem('board'), axis=BOARD_SCALE_AXIS)
-        rounding = scale(get_ui_elem('rounding'), axis=BOARD_SCALE_AXIS)
+        board_side_length = scale(get_ui_elem("board"), axis=BOARD_SCALE_AXIS)
+        rounding = scale(get_ui_elem("rounding"), axis=BOARD_SCALE_AXIS)
 
         # create border image
         self.image = pygame.Surface(
-            size=(board_side_length, board_side_length),
-            flags=pygame.SRCALPHA
+            size=(board_side_length, board_side_length), flags=pygame.SRCALPHA
         )
 
         # center board on screen
-        self.rect = self.image.get_rect(
-            center=(window_width/2, window_height/2)
-        )
+        self.rect = self.image.get_rect(center=(window_width / 2, window_height / 2))
 
         # draw boards border
         pygame.draw.rect(
             surface=self.image,
-            color=COLORS['board-border'],
-            rect=(0,0,board_side_length,board_side_length),
-            border_radius=rounding
+            color=COLORS["board-border"],
+            rect=(0, 0, board_side_length, board_side_length),
+            border_radius=rounding,
         )
 
         # draw squares onto board
         for row in self.board:
             for square in row:
-                square.render() # creates the squares image
-                square.draw() # draws the square onto the boards image
+                square.render()  # creates the squares image
+                square.draw()  # draws the square onto the boards image
 
     def render_game_end_overlay(self):
         white_king_sqr = self.get_square(self.white_king.pos)
@@ -65,29 +82,29 @@ class Board:
         icon_size = (icon_length, icon_length)
 
         if self.checkmate:
-            winning_sqr = white_king_sqr \
-                if self.winning_color == PieceColors.WHITE else \
-                    black_king_sqr
-            losing_sqr = white_king_sqr \
-                if self.winning_color != PieceColors.WHITE else \
-                    black_king_sqr
-            win_icon, lose_icon = GAME_END_ICONS['winner'], GAME_END_ICONS['loser']
+            winning_sqr = (
+                white_king_sqr
+                if self.winning_color == PieceColors.WHITE
+                else black_king_sqr
+            )
+            losing_sqr = (
+                white_king_sqr
+                if self.winning_color != PieceColors.WHITE
+                else black_king_sqr
+            )
+            win_icon, lose_icon = GAME_END_ICONS["winner"], GAME_END_ICONS["loser"]
 
             win_icon = pygame.transform.smoothscale(win_icon, icon_size)
             lose_icon = pygame.transform.smoothscale(lose_icon, icon_size)
 
-            win_icon_rect = win_icon.get_rect(
-                center=winning_sqr.rect.topright
-            )
-            lose_icon_rect = win_icon.get_rect(
-                center=losing_sqr.rect.topright
-            )
+            win_icon_rect = win_icon.get_rect(center=winning_sqr.rect.topright)
+            lose_icon_rect = win_icon.get_rect(center=losing_sqr.rect.topright)
 
             GameContext.game.display.blit(win_icon, win_icon_rect)
             GameContext.game.display.blit(lose_icon, lose_icon_rect)
 
         elif self.stalemate:
-            stalemate_icon = GAME_END_ICONS['stalemate']
+            stalemate_icon = GAME_END_ICONS["stalemate"]
             stalemate_icon = pygame.transform.smoothscale(stalemate_icon, icon_size)
 
             icon_rect_white_king = stalemate_icon.get_rect(
@@ -116,12 +133,16 @@ class Board:
             if king.in_check():
                 self.checkmate = True
                 self.winning_color = opposite_color(self.turn_color)
-                winning_sqr = white_king_sqr \
-                    if self.winning_color == PieceColors.WHITE else \
-                        black_king_sqr
-                losing_sqr = white_king_sqr \
-                    if self.winning_color != PieceColors.WHITE else \
-                        black_king_sqr
+                winning_sqr = (
+                    white_king_sqr
+                    if self.winning_color == PieceColors.WHITE
+                    else black_king_sqr
+                )
+                losing_sqr = (
+                    white_king_sqr
+                    if self.winning_color != PieceColors.WHITE
+                    else black_king_sqr
+                )
                 winning_sqr.winning_square = True
                 losing_sqr.losing_square = True
             else:
@@ -131,12 +152,13 @@ class Board:
 
         if self.game_end:
             self.reset_square_flags()
-            GameContext.game.push_state('new-game')
+            GameContext.game.push_state("new-game")
 
     def find_selected_square(self):
         for row in self.board:
             for square in row:
-                if square.selected: return square
+                if square.selected:
+                    return square
 
     def reset_square_flags(self, real_move=True):
         if not real_move:
@@ -200,7 +222,7 @@ class Board:
 
         # reset piece
         move.piece.has_moved = move.original_has_moved
-        if hasattr(move, 'original_just_moved_forward_two'):
+        if hasattr(move, "original_just_moved_forward_two"):
             move.piece.just_moved_forward_two = move.original_just_moved_forward_two
         if move.is_castle:
             rook = self.get_square(move.rook_end).piece
@@ -258,14 +280,22 @@ class Board:
         for color in colors:
             row = 0 if color == PieceColors.BLACK else 7
             col = 0
-            for piece_class in \
-                [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]:
-                    pos = (row, col)
-                    piece = piece_class(pos, color, self)
-                    self.place_piece(piece, pos)
-                    if isinstance(piece, King):
-                        setattr(self, f"{color.value}_king", piece)
-                    col += 1
+            for piece_class in [
+                Rook,
+                Knight,
+                Bishop,
+                Queen,
+                King,
+                Bishop,
+                Knight,
+                Rook,
+            ]:
+                pos = (row, col)
+                piece = piece_class(pos, color, self)
+                self.place_piece(piece, pos)
+                if isinstance(piece, King):
+                    setattr(self, f"{color.value}_king", piece)
+                col += 1
 
         # make pawns
         for color in colors:
@@ -340,4 +370,4 @@ class Board:
         if not move.is_promotion:
             return
 
-        GameContext.game.push_state('promotion', (move,))
+        GameContext.game.push_state("promotion", (move,))

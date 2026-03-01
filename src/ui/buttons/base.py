@@ -1,19 +1,25 @@
-from core.settings import *
+from core.settings import COLORS, pygame
 from core.utils import get_tui_text_box
 from core.sounds import BUTTON_SOUNDS
 from ui.base import UIElement
 from ui.buttons.clickable import Clickable
 
+
 class UIButton(UIElement, Clickable):
     """ui button class that is clickable and has a sprite"""
-    def __init__(self, pos, size, anchor, click_action, click_action_args=None,
-                 resize_axis='auto', **kwargs):
+
+    def __init__(
+        self,
+        pos,
+        size,
+        anchor,
+        click_action,
+        click_action_args=None,
+        resize_axis="auto",
+        **kwargs,
+    ):
         super().__init__(
-            pos=pos,
-            size=size,
-            anchor=anchor,
-            resize_axis=resize_axis,
-            **kwargs
+            pos=pos, size=size, anchor=anchor, resize_axis=resize_axis, **kwargs
         )
         self.click_action = click_action
         self.click_action_args = click_action_args
@@ -21,7 +27,7 @@ class UIButton(UIElement, Clickable):
 
     def render_highlight(self):
         overlay = pygame.Surface(self.image.get_size(), pygame.SRCALPHA)
-        overlay.fill(COLORS['button-highlight'])
+        overlay.fill(COLORS["button-highlight"])
 
         # multiply overlay by the button image
         overlay.blit(self.image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
@@ -61,12 +67,13 @@ class UIButton(UIElement, Clickable):
 
     def play_button_sounds(self):
         if self.detect_press():
-            BUTTON_SOUNDS['button-down'].play()
+            BUTTON_SOUNDS["button-down"].play()
         elif self.detect_release():
-            BUTTON_SOUNDS['button-up'].play()
+            BUTTON_SOUNDS["button-up"].play()
 
     def debug(self):
-        if self.hover and self.game.debug: print(self)
+        if self.hover and self.game.debug:
+            print(self)
 
     def update(self):
         self.play_button_sounds()

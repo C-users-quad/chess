@@ -1,4 +1,5 @@
-from core.settings import *
+import pygame
+from core.settings import BASE_HEIGHT, BASE_WIDTH
 from core.enums import StateNames
 from core.utils import get_ui_elem
 from states.base import GameState
@@ -9,25 +10,28 @@ from ui.widget import UIWidget
 from ui.manager import UIManager
 from chess.board import Board
 
+
 def new_game_widget_child_factory(base, state):
     children = []
 
-    padding = get_ui_elem('padding')
+    padding = get_ui_elem("padding")
     new_game_button = UITextButton(
         pos=(base.base_size[0] / 2, base.base_size[1] - padding),
         anchor="midbottom",
         text="New Game",
         font_size="text",
         click_action=state.reset_board,
-        size=(base.base_size[0] - padding*2, base.base_size[1] / 5),
-        resize_axis=base.resize_axis
+        size=(base.base_size[0] - padding * 2, base.base_size[1] / 5),
+        resize_axis=base.resize_axis,
     )
     children.append(new_game_button)
 
     return children
 
+
 class NewGame(GameState):
     name = StateNames.NEW_GAME
+
     def __init__(self):
         super().__init__()
         self.chess_state = self.game.state_stack[0]
@@ -59,7 +63,7 @@ class NewGame(GameState):
 
     def make_ui(self):
         elements = []
-        resize_axis = 'width'
+        resize_axis = "width"
 
         # make new game widget
         new_game_widget_base = UIColoredRect(
@@ -67,15 +71,15 @@ class NewGame(GameState):
             size=(BASE_WIDTH / 5, BASE_HEIGHT / 3),
             anchor="center",
             rounding=True,
-            color='white',
-            resize_axis=resize_axis
+            color="white",
+            resize_axis=resize_axis,
         )
 
         new_game_widget = UIWidget(
             base=new_game_widget_base,
-            child_factory=lambda:
-                new_game_widget_child_factory(
-                    new_game_widget_base, self),
+            child_factory=lambda: new_game_widget_child_factory(
+                new_game_widget_base, self
+            ),
         )
         elements.append(new_game_widget)
 

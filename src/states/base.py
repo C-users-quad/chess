@@ -1,9 +1,13 @@
-from core.settings import *
+import pygame
+from core.settings import GameContext
 from core.utils import get_tui_text_box
+
 
 class GameState:
     """base game state class, should be inherited by all game state classes"""
+
     name = None
+
     def __init__(self):
         self.draw_below = True
         """determines whether this game state can be drawn below the active one"""

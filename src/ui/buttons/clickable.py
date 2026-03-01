@@ -1,7 +1,9 @@
-from core.settings import *
+from core.settings import pygame
+
 
 class Clickable:
     """class for clickable elements on screen"""
+
     def __init__(self, **kwargs):
         self.hover = False
         self.prev_hover = False

@@ -1,18 +1,23 @@
-from core.settings import *
+from core.settings import Enum
+
 
 class PieceNames(Enum):
     """enums for piece names"""
-    KING = 'king'
-    QUEEN = 'queen'
-    ROOK = 'rook'
-    BISHOP = 'bishop'
-    KNIGHT = 'knight'
-    PAWN = 'pawn'
+
+    KING = "king"
+    QUEEN = "queen"
+    ROOK = "rook"
+    BISHOP = "bishop"
+    KNIGHT = "knight"
+    PAWN = "pawn"
+
 
 class PieceColors(Enum):
     """enums for piece colors"""
-    BLACK = 'black'
-    WHITE = 'white'
+
+    BLACK = "black"
+    WHITE = "white"
+
 
 class StateNames(Enum):
     BASE = "GameState"

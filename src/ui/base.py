@@ -1,10 +1,13 @@
-from core.settings import *
+from core.settings import GameContext, pygame
 from core.utils import get_tui_text_box, resize
+
 
 class UIElement:
     """parent ui class that stores a surface and rect combo with a size and pos."""
-    def __init__(self, pos=(0,0), size=(0,0), anchor="topleft",
-                 resize_axis='auto', **kwargs):
+
+    def __init__(
+        self, pos=(0, 0), size=(0, 0), anchor="topleft", resize_axis="auto", **kwargs
+    ):
         super().__init__(**kwargs)
         self.base_size = size
         self.base_pos = pos
@@ -30,8 +33,11 @@ class UIElement:
         return base_rect
 
     def resize(self, size_override=None):
-        new_size = size_override if size_override else \
-            resize(self.base_size, axis=self.resize_axis)
+        new_size = (
+            size_override
+            if size_override
+            else resize(self.base_size, axis=self.resize_axis)
+        )
         new_pos = resize(self.base_pos)
         self.image = pygame.Surface(new_size, pygame.SRCALPHA)
         self.rect = self.image.get_rect()

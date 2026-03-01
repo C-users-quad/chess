@@ -1,10 +1,11 @@
-from core.settings import *
 from core.utils import get_tui_text_box, resize
 from ui.base import UIElement
 from ui.rects.colored_rect import UIColoredRect
 
+
 class UIWidget(UIElement):
     """a manager for a composite ui element with a visual base"""
+
     def __init__(self, base: UIColoredRect, child_factory: callable, **kwargs):
         """
         ui widget maker
@@ -19,7 +20,7 @@ class UIWidget(UIElement):
             size=base.base_size,
             anchor=base.anchor,
             resize_axis=base.resize_axis,
-            **kwargs
+            **kwargs,
         )
         self.base = base
         self.child_factory = child_factory
@@ -38,20 +39,16 @@ class UIWidget(UIElement):
         # position child rect relative to base rect
         child_rel_topleft = (
             base_child_rect.left - base_base_rect.left,
-            base_child_rect.top - base_base_rect.top
+            base_child_rect.top - base_base_rect.top,
         )
         base_child_rect.topleft = child_rel_topleft
 
         # scale rect to current window size
         setattr(
-            base_child_rect,
-            "size",
-            resize(base_child_rect.size, child.resize_axis)
+            base_child_rect, "size", resize(base_child_rect.size, child.resize_axis)
         )
         setattr(
-            base_child_rect,
-            child.anchor,
-            resize(child.base_pos, child.resize_axis)
+            base_child_rect, child.anchor, resize(child.base_pos, child.resize_axis)
         )
 
         return base_child_rect
@@ -86,7 +83,7 @@ class UIWidget(UIElement):
         self.game.display.blit(self.base.image, self.base.rect)
         # if widget has buttons, draw their highlights on top
         for child in self.children:
-            if hasattr(child, 'draw_highlight'):
+            if hasattr(child, "draw_highlight"):
                 child.draw_highlight()
 
     def __str__(self):
