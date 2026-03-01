@@ -1,11 +1,18 @@
 # run vars
 SRC_DIR = src
-PYTHON = python3
 ENTRYPOINT_MODULE = core.main
+
+# detect OS
+ifeq ($(OS),Windows_NT)
+	PYTHON = python
+	VENV_PIP = $(VENV_DIR)/Scripts/pip
+else
+	PYTHON = python3
+	VENV_PIP = $(VENV_DIR)/bin/pip
+endif
 
 # install vars
 REQUIREMENTS_DIR = requirements.txt
-PIP = pip3
 
 # clean vars
 PYCACHE_DIR = __pycache__
@@ -19,6 +26,9 @@ RUFF_CACHE_DIR = .ruff_cache
 
 # test vars
 TESTS_DIR = tests
+
+# export pythonpath
+export PYTHONPATH := $(SRC_DIR)
 
 .PHONY: help
 help:
@@ -44,12 +54,12 @@ lint:
 .PHONY: install
 install: venv
 	@echo Installing dependencies...
-	$(VENV_DIR)/bin/pip install -r $(REQUIREMENTS_DIR)
+	$(VENV_PIP) install -r $(REQUIREMENTS_DIR)
 
 .PHONY: run
 run:
 	@echo Running Chess Game...
-	PYTHONPATH=$(SRC_DIR) $(PYTHON) -m $(ENTRYPOINT_MODULE)
+	$(PYTHON) -m $(ENTRYPOINT_MODULE)
 
 .PHONY: clean
 clean:
@@ -66,4 +76,4 @@ pristine: clean
 .PHONY: test
 test:
 	@echo Running unit tests with pytest...
-	PYTHONPATH=$(SRC_DIR) $(PYTHON) -m pytest $(TESTS_DIR) -v
+	$(PYTHON) -m pytest $(TESTS_DIR) -v
