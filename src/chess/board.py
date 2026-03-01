@@ -7,7 +7,7 @@ from core.settings import (
 )
 from core.utils import get_ui_elem, scale, opposite_color
 from core.images import GAME_END_ICONS
-from core.enums import PieceColors
+from core.enums import PieceColors, StateNames
 from chess.square import BoardSquare
 from chess.move import Move
 from chess.pieces import (
@@ -152,7 +152,7 @@ class Board:
 
         if self.game_end:
             self.reset_square_flags()
-            GameContext.game.push_state("new-game")
+            GameContext.game.push_state(StateNames.NEW_GAME)
 
     def find_selected_square(self):
         for row in self.board:
@@ -370,4 +370,4 @@ class Board:
         if not move.is_promotion:
             return
 
-        GameContext.game.push_state("promotion", (move,))
+        GameContext.game.push_state(StateNames.PROMOTION, (move,))

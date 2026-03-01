@@ -48,7 +48,6 @@ class Move:
         if isinstance(self.piece, Pawn):
             self.original_just_moved_forward_two = self.piece.just_moved_forward_two
             if self.end in self.piece.get_en_passant_moves():
-                if self.real_move: print("hi")
                 self.is_en_passant = True
                 victim_sqr = self.board.get_square((self.start[0], self.end[1]))
                 self.captured_piece = victim_sqr.piece

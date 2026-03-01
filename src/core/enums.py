@@ -20,6 +20,8 @@ class PieceColors(Enum):
 
 
 class StateNames(Enum):
+    """enums for state names"""
+
     BASE = "GameState"
     CHESS = "Chess"
     MAIN_MENU = "Main Menu"

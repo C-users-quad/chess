@@ -84,7 +84,7 @@ class MainMenu(GameState):
             text="Settings",
             font_size="subtitle",
             click_action=self.game.push_state,
-            click_action_args=("settings",),
+            click_action_args=(StateNames.SETTINGS,),
             size=menu_button_size,
         )
         elements.append(settings)

@@ -23,7 +23,7 @@ class Chess(GameState):
     def handle_input(self, key):
         if key == pygame.K_ESCAPE:
             self.board.reset_square_flags()
-            self.game.push_state("main-menu")
+            self.game.push_state(StateNames.MAIN_MENU)
 
     def update(self):
         self.board.update()

@@ -9,6 +9,7 @@ from core.settings import (
     sys,
 )
 from core.utils import get_tui_text_box, asset_path
+from core.enums import StateNames
 from states.main_menu import MainMenu
 from states.settings_menu import SettingsMenu
 from states.chess import Chess
@@ -28,21 +29,16 @@ class Game:
         """dict of font size (int) : font (pygame.Font)"""
         self.dt = 0
         self.states = {
-            "main-menu": MainMenu,
-            "chess": Chess,
-            "settings": SettingsMenu,
-            "promotion": Promotion,
-            "new-game": NewGame,
+            StateNames.MAIN_MENU: MainMenu,
+            StateNames.CHESS: Chess,
+            StateNames.SETTINGS: SettingsMenu,
+            StateNames.PROMOTION: Promotion,
+            StateNames.NEW_GAME: NewGame,
         }
         """
         dict of every state, used to push states to state stack
-        current keys:
-        ```
-        'main-menu' - the main menu
-        'chess' - the game itself
-        'settings' - the settings menu
-        'promotion' - the pawn promotion piece selection menu
-        ```
+
+        key: StateNames.[some state name] -> value: state class
         """
         self.state_stack = []
         self.on = True
@@ -120,8 +116,8 @@ def main():
     game = GameContext.game = Game()
 
     # push initial states
-    game.push_state("chess", (Board(),))
-    game.push_state("main-menu")
+    game.push_state(StateNames.CHESS, (Board(),))
+    game.push_state(StateNames.MAIN_MENU)
 
     while game.on:
         # update game context
