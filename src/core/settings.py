@@ -24,17 +24,18 @@ FPS = 60
 # file stuff
 PIECE_SOUNDS_PATH = join("assets", "sounds", "piece_moves")
 BUTTON_SOUNDS_PATH = join("assets", "sounds", "button")
+FONT_PATH = join("assets", "fonts", "MerriweatherSans-Medium.ttf")
 
 # ui-related stuff. colors, sizes, etc.
 BASE_WIDTH, BASE_HEIGHT = (1256, 750)
-"""the window sizes i used when making the ui, used for scaling"""
+"""reference dimensions for scaling system"""
 ANTIALIAS = True
 STATE_DIM_ALPHA = 100
 
 # scale axis
 BOARD_SCALE_AXIS = "height"
 UI_SCALE_AXIS = "min"
-FONT_SCALE_AXIS = "height"
+TEXT_SCALE_AXIS = "height"
 
 MIN_UI_SIZE = 1
 COLORS = {
@@ -67,7 +68,6 @@ COLORS = {
 'board-border' - color used for the chess boards sides
 'white-square' - color used for the white squares
 'black-square' - color used for the black squares
-'sidebar' - color of the sidebar used in the main menu
 'move-circle' - color of circle drawn on squares that a piece can move to
 'winning-sqr-highlight' - color the square of the winning king is highlighted
 'losing-sqr-highlight' - color the square of the losing king is highlighted
@@ -101,19 +101,6 @@ SIZE_RATIOS = {
 'text' - text font size
 'sidebar-width' - width of sidebar in main menu
 'board-border' - width of the boards border
-```
-"""
-SOUNDS = {
-    "move": join("assets", "sounds", "piece_moves", "move.mp3"),
-    "capture": join("assets", "sounds", "piece_moves", "capture.mp3"),
-    "castle": join("assets", "sounds", "piece_moves", "castle.mp3"),
-}
-"""
-## dict of every sound's corresponding filepath
-```
-'move' - piece move
-'capture' - piece capture
-'castle' - king castle
 ```
 """
 # relative to board square size

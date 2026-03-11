@@ -4,9 +4,9 @@ from core.images import PIECE_IMAGES
 from core.enums import PieceNames, StateNames
 from ui.rects.colored_rect import UIColoredRect
 from ui.buttons.image_button import UIImageButton
-from ui.widget import UIWidget
+from ui.composites.widget import UIWidget
 from states.base import GameState
-from ui.manager import UIManager
+from ui.composites.manager import UIManager
 
 
 def promotion_widget_child_factory(base, move, state):
@@ -34,8 +34,7 @@ def promotion_widget_child_factory(base, move, state):
             "topleft",
         ],
     }
-    for name, pos in buttons.items():
-        pos, anchor = pos
+    for name, (pos, anchor) in buttons.items():
         btn_bg = UIColoredRect(
             pos=pos,
             size=option_btn_size,
@@ -69,7 +68,6 @@ class Promotion(GameState):
         self.move = move
         self.default_promotion = PieceNames.QUEEN
         """the piece you default to during promotion"""
-        self.ui = UIManager(elements=self.make_ui())
 
     def handle_events(self, events):
         super().handle_events(events)
@@ -119,4 +117,4 @@ class Promotion(GameState):
         )
         elements.append(promotion_ui)
 
-        return elements
+        self.ui = UIManager(elements)

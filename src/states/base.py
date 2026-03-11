@@ -1,5 +1,4 @@
-import pygame
-from core.settings import GameContext
+from core.settings import GameContext, pygame
 from core.utils import get_tui_text_box
 
 
@@ -15,13 +14,15 @@ class GameState:
         """a ui manager that updates a collection of ui elements"""
         self.dim = True
         """"determine if the state is dimmed when drawn below others"""
+        self.make_ui()
 
     @property
     def game(self):
         return GameContext.game
 
     def make_ui(self):
-        """creates a list of all ui elements present in this game state"""
+        """creates a list of all ui elements present in this game state
+        and puts them in a ui manager to be assigned to self.ui"""
         pass
 
     def handle_events(self, events):

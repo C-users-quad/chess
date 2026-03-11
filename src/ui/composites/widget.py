@@ -44,9 +44,7 @@ class UIWidget(UIElement):
         base_child_rect.topleft = child_rel_topleft
 
         # scale rect to current window size
-        setattr(
-            base_child_rect, "size", resize(base_child_rect.size, child.resize_axis)
-        )
+        base_child_rect.size = resize(base_child_rect.size, child.resize_axis)
         setattr(
             base_child_rect, child.anchor, resize(child.base_pos, child.resize_axis)
         )

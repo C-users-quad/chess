@@ -1,13 +1,18 @@
+from core.settings import GameContext
 from core.utils import get_tui_text_box
 from ui.base import UIElement
 
 
-class UIManager(UIElement):
+class UIManager:
     def __init__(self, elements: list[UIElement]):
         """
         manages a collection of ui elements
         """
         self.elements = elements
+
+    @property
+    def game(self):
+        return GameContext.game
 
     def render(self, force_rendering=False):
         if not force_rendering and not self.game.window_resized():

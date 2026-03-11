@@ -1,21 +1,18 @@
 from core.enums import StateNames
 from core.settings import BASE_HEIGHT, BASE_WIDTH, COLORS
 from states.base import GameState
-from core.utils import get_tui_text_box, get_ui_elem
+from core.utils import get_ui_elem
 from ui.buttons.text_button import UITextButton
 from ui.rects.text_box import UITextBox
 from ui.rects.colored_rect import UIColoredRect
-from ui.manager import UIManager
+from ui.composites.manager import UIManager
+from ui.text import UIText
 
 
 class MainMenu(GameState):
     """main menu with important buttons"""
 
     name = StateNames.MAIN_MENU
-
-    def __init__(self):
-        super().__init__()
-        self.ui = UIManager(elements=self.make_ui())
 
     def update(self):
         self.ui.update()
@@ -68,6 +65,7 @@ class MainMenu(GameState):
             (BASE_WIDTH - 4 * spacing - 2 * sidebar_width) / 3,
             subtitle_font_size + border_width * 2 + padding * 2,
         )
+        # chess is always below main menu.
         play_game = UITextButton(
             pos=(spacing + sidebar_width, BASE_HEIGHT - spacing),
             anchor="bottomleft",
@@ -99,4 +97,4 @@ class MainMenu(GameState):
         )
         elements.append(quit_game)
 
-        return elements
+        self.ui = UIManager(elements)

@@ -98,7 +98,7 @@ class Board:
             lose_icon = pygame.transform.smoothscale(lose_icon, icon_size)
 
             win_icon_rect = win_icon.get_rect(center=winning_sqr.rect.topright)
-            lose_icon_rect = win_icon.get_rect(center=losing_sqr.rect.topright)
+            lose_icon_rect = lose_icon.get_rect(center=losing_sqr.rect.topright)
 
             GameContext.game.display.blit(win_icon, win_icon_rect)
             GameContext.game.display.blit(lose_icon, lose_icon_rect)

@@ -35,7 +35,7 @@ class UIElement:
     def resize(self, size_override=None):
         new_size = (
             size_override
-            if size_override
+            if size_override is not None
             else resize(self.base_size, axis=self.resize_axis)
         )
         new_pos = resize(self.base_pos)

@@ -45,7 +45,7 @@ class TestUIManager:
 
     def test_uimanager_initialization(self, mock_game_context):
         """Test UIManager can be initialized with elements list."""
-        from ui.manager import UIManager
+        from ui.composites.manager import UIManager
         from ui.base import UIElement
 
         elements = [UIElement(), UIElement()]
@@ -55,7 +55,7 @@ class TestUIManager:
 
     def test_uimanager_update_calls_element_updates(self, mock_game_context):
         """Test UIManager update propagates to elements."""
-        from ui.manager import UIManager
+        from ui.composites.manager import UIManager
         from ui.base import UIElement
 
         mock_element = MagicMock(spec=UIElement)
@@ -67,7 +67,7 @@ class TestUIManager:
 
     def test_uimanager_draw_calls_element_draws(self, mock_game_context):
         """Test UIManager draw propagates to elements."""
-        from ui.manager import UIManager
+        from ui.composites.manager import UIManager
         from ui.base import UIElement
 
         mock_element = MagicMock(spec=UIElement)
@@ -83,7 +83,7 @@ class TestUIWidget:
 
     def test_uiwidget_initialization(self, mock_game_context):
         """Test UIWidget can be initialized with base and child_factory."""
-        from ui.widget import UIWidget
+        from ui.composites.widget import UIWidget
         from ui.rects.colored_rect import UIColoredRect
 
         base = UIColoredRect(

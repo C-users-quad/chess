@@ -19,4 +19,4 @@ class UIImage(UIElement):
         resized_image = pygame.transform.smoothscale(
             surface=self._original_image, size=self.image.size
         )
-        self.image.blit(resized_image)
+        self.image.blit(resized_image, (0, 0))

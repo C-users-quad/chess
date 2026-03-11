@@ -1,7 +1,7 @@
-import pygame
+from core.settings import pygame
 from core.enums import StateNames
-from states.base import GameState
 from chess.board import Board
+from states.base import GameState
 
 
 class Chess(GameState):
@@ -9,10 +9,10 @@ class Chess(GameState):
 
     name = StateNames.CHESS
 
-    def __init__(self, board):
+    def __init__(self):
         super().__init__()
         self.dim = False
-        self.board = board
+        self.board = Board()
 
     def handle_events(self, events):
         super().handle_events(events)

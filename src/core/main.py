@@ -3,7 +3,7 @@ from core.settings import (
     WINDOW_SIZE,
     COLORS,
     STATE_DIM_ALPHA,
-    join,
+    FONT_PATH,
     FPS,
     GameContext,
     sys,
@@ -46,6 +46,10 @@ class Game:
         self.debug = False
         self.render_dim()
 
+    def initialize_state_stack(self):
+        self.push_state(StateNames.CHESS)
+        self.push_state(StateNames.MAIN_MENU)
+
     def render_dim(self):
         self.dim_surf = pygame.Surface(self.display.get_size(), pygame.SRCALPHA)
         self.dim_surf.fill(COLORS["state-dim"])
@@ -57,15 +61,13 @@ class Game:
         size = int(size)  # type safety
         if size not in self.fonts:
             self.fonts[size] = pygame.Font(
-                filename=asset_path(
-                    join("assets", "fonts", "MerriweatherSans-Medium.ttf")
-                ),
+                filename=asset_path(FONT_PATH),
                 size=size,
             )
         return self.fonts[size]
 
     def push_state(self, state, args=None):
-        if not args:
+        if args is None:
             state = self.states[state]()
         else:
             state = self.states[state](*args)
@@ -114,10 +116,7 @@ class Game:
 def main():
     # create game context
     game = GameContext.game = Game()
-
-    # push initial states
-    game.push_state(StateNames.CHESS, (Board(),))
-    game.push_state(StateNames.MAIN_MENU)
+    game.initialize_state_stack()
 
     while game.on:
         # update game context

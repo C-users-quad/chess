@@ -1,7 +1,7 @@
 from core.settings import (
     ANTIALIAS,
     COLORS,
-    FONT_SCALE_AXIS,
+    TEXT_SCALE_AXIS,
     MIN_UI_SIZE,
     UI_SCALE_AXIS,
     pygame,
@@ -11,7 +11,7 @@ from ui.base import UIElement
 
 
 class UITextBox(UIElement):
-    """a stylized rectangle"""
+    """a stylized rectangle with text"""
 
     def __init__(
         self,
@@ -26,7 +26,7 @@ class UITextBox(UIElement):
     ):
         """
         note: font size should be a key for SIZE_RATIOS
-        dict which corresponds to a font size or auto
+        dict which corresponds to a font size or "auto"
         """
         self.text = text
         self.font_size = font_size
@@ -40,7 +40,7 @@ class UITextBox(UIElement):
 
     @property
     def font(self):
-        # if auto, get font with height that fits perfectly into buttons size
+        # if auto, get font with height that fits perfectly into text rect
         if self.font_size == "auto":
             # get needed ui elements
             border_width = scale(get_ui_elem("border-width"), axis=UI_SCALE_AXIS)
@@ -52,7 +52,7 @@ class UITextBox(UIElement):
             return self.game.get_font(font_height)
 
         return self.game.get_font(
-            scale(get_ui_elem(self.font_size), axis=FONT_SCALE_AXIS)
+            scale(get_ui_elem(self.font_size), axis=TEXT_SCALE_AXIS)
         )
 
     def auto_size(self):
@@ -73,6 +73,8 @@ class UITextBox(UIElement):
         border_color=COLORS["ui-border"],
         text_color=COLORS["text"],
     ):
+        self.image.fill((0, 0, 0))
+
         # get needed ui elements
         rounding = scale(get_ui_elem("rounding"), axis=UI_SCALE_AXIS)
         border_width = scale(get_ui_elem("border-width"), axis=UI_SCALE_AXIS)
