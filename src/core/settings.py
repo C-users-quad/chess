@@ -41,7 +41,7 @@ TEXT_SCALE_AXIS = "height"
 
 COLORS = {
     "bg": "#68f66a",
-    "clear": (0,0,0,0),
+    "clear": (0, 0, 0, 0),
     "text": "#FFFFFF",
     "ui-bg": "#220A0A",
     "ui-border": "#32c38b",
