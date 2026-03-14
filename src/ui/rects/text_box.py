@@ -73,7 +73,7 @@ class UITextBox(UIElement):
         border_color=COLORS["ui-border"],
         text_color=COLORS["text"],
     ):
-        self.image.fill((0, 0, 0))
+        self.image.fill(COLORS["clear"])
 
         # get needed ui elements
         rounding = scale(get_ui_elem("rounding"), axis=UI_SCALE_AXIS)

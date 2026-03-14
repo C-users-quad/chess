@@ -50,7 +50,7 @@ class Piece:
         that are all legal moves.
         """
         legal_moves = []
-        king = getattr(self.board, f"{self.color.value}_king")
+        king = getattr(self.board, f"{self.color}_king")
 
         for end_pos in moves:
             move = Move(self, end_pos, self.board, real_move=False)
@@ -63,9 +63,9 @@ class Piece:
 
     def __str__(self):
         lines = (
-            f"{self.name.value} {hex(id(self))}\n"
+            f"{self.name} {hex(id(self))}\n"
             f"Pos: {self.pos}\n"
-            f"Color: {self.color.value}\n"
+            f"Color: {self.color}\n"
             f"Has moved: {self.has_moved}\n"
             f"Legal Moves: {self.get_legal_moves()[:2]}..."
         )

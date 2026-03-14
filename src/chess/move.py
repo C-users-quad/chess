@@ -1,6 +1,6 @@
-from core.sounds import PIECE_SOUNDS
+from core.sounds import playsound
 from core.utils import get_all_pieces_of_color, opposite_color
-from core.enums import PieceNames
+from core.enums import PieceNames, SoundNames
 
 
 class Move:
@@ -69,7 +69,7 @@ class Move:
 
         # deteremines if gives check/checkmate
         enemy_color = opposite_color(self.piece.color)
-        enemy_king = getattr(self.board, f"{enemy_color.value}_king")
+        enemy_king = getattr(self.board, f"{enemy_color}_king")
         if enemy_king.in_check():
             self.gives_check = True
         if all(
@@ -83,17 +83,17 @@ class Move:
             return
 
         if self.ends_game:
-            PIECE_SOUNDS["game-end"].play()
+            playsound(SoundNames.MOVE)
         elif self.gives_check:
-            PIECE_SOUNDS["check"].play()
+            playsound(SoundNames.CHECK)
         elif self.is_castle:
-            PIECE_SOUNDS["castle"].play()
+            playsound(SoundNames.CASTLE)
         elif self.is_promotion:
-            PIECE_SOUNDS["promote"].play()
+            playsound(SoundNames.PROMOTE)
         elif self.capture_square:
-            PIECE_SOUNDS["capture"].play()
+            playsound(SoundNames.CAPTURE)
         else:
-            PIECE_SOUNDS["move"].play()
+            playsound(SoundNames.MOVE)
 
     def set_promotion_piece(self, piece_name):
         from chess.pieces import Queen, Rook, Bishop, Knight

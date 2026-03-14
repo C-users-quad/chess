@@ -1,4 +1,4 @@
-from core.settings import pygame
+from core.settings import pygame, COLORS
 from core.utils import get_ui_elem, scale
 from ui.base import UIElement
 
@@ -18,7 +18,8 @@ class UIColoredRect(UIElement):
 
     def render(self):
         self.resize()
-        self.image.fill((0, 0, 0))
+        self.image.fill(COLORS["clear"])
+        
         if self.rounding:
             rounding = scale(get_ui_elem("rounding"))
             pygame.draw.rect(

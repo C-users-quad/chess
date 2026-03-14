@@ -13,7 +13,7 @@ class TestBoard:
 
         assert len(board.board) == 8
         assert len(board.board[0]) == 8
-        assert board.turn_color.value == "white"
+        assert board.turn_color == "white"
 
     def test_board_has_kings(self, mock_game_context):
         """Test Board has white and black kings after initialization."""
@@ -30,7 +30,7 @@ class TestBoard:
 
         board = Board()
 
-        assert board.turn_color.value == "white"
+        assert board.turn_color == "white"
 
     def test_get_square_returns_correct_square(self, mock_game_context):
         """Test get_square returns the correct board square."""

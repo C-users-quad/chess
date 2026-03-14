@@ -51,5 +51,5 @@ class GameState:
         self.game.display.blit(self.game.dim_surf, self.game.dim_rect)
 
     def __str__(self):
-        text = f"{self.name.value} {hex(id(self))}"
+        text = f"{self.name} {hex(id(self))}"
         return get_tui_text_box(text)

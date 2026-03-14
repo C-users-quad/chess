@@ -11,6 +11,10 @@ from core.settings import (
 from core.enums import PieceColors
 
 
+def clamp(value: float, min_value: float, max_value: float):
+    return min(max_value, max(value, min_value))
+
+
 def get_tui_text_box(text: object):
     """
     Bundles up lines of text in a neat box. Mainly used for printing and debugging.

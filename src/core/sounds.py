@@ -1,43 +1,82 @@
-from core.settings import BUTTON_SOUNDS_PATH, PIECE_SOUNDS_PATH, pygame, join
-from core.utils import asset_path
+from core.settings import (
+    pygame,
+    join,
+    BUTTON_SOUNDS_FILEPATH,
+    PIECE_SOUNDS_FILEPATH,
+    SLIDER_SOUNDS_FILEPATH,
+)
+from core.enums import SoundNames
 
-# initialize mixer so pygame.Sound() works
+# initilaize mixer
 pygame.mixer.init()
 
-PIECE_SOUNDS = {}
+sound_files: dict[str, str] = {
+    SoundNames.CAPTURE: join(PIECE_SOUNDS_FILEPATH, "capture.mp3"),
+    SoundNames.CASTLE: join(PIECE_SOUNDS_FILEPATH, "castle.mp3"),
+    SoundNames.CHECK: join(PIECE_SOUNDS_FILEPATH, "check.mp3"),
+    SoundNames.GAME_END: join(PIECE_SOUNDS_FILEPATH, "game-end.mp3"),
+    SoundNames.MOVE: join(PIECE_SOUNDS_FILEPATH, "move.mp3"),
+    SoundNames.PROMOTE: join(PIECE_SOUNDS_FILEPATH, "promote.mp3"),
+    SoundNames.BUTTON_DOWN: join(BUTTON_SOUNDS_FILEPATH, "button-down.mp3"),
+    SoundNames.BUTTON_UP: join(BUTTON_SOUNDS_FILEPATH, "button-up.mp3"),
+    SoundNames.SLIDER: join(SLIDER_SOUNDS_FILEPATH, "slider.mp3"),
+}
 """
-dict with pygame sound objects corresponding to chess move sounds
+relates sound name identifiers to their filepaths
+"""
 
-key: str -> value: pygame.Sound()
+channel_groups: dict[str, list[str]] = {
+    "piece": [
+        SoundNames.CAPTURE,
+        SoundNames.CASTLE,
+        SoundNames.CHECK,
+        SoundNames.GAME_END,
+        SoundNames.MOVE,
+        SoundNames.PROMOTE,
+    ],
+    "button": [SoundNames.BUTTON_DOWN, SoundNames.BUTTON_UP],
+    "slider": [SoundNames.SLIDER],
+}
+"""
+relates the channel group name identifier to sound name identifiers.
+"""
+# reserve channels
+pygame.mixer.set_reserved(len(channel_groups))
 
-current keys:
+channels: dict[str, int] = {}
+"""
+dictionary that maps the sound name to the channel integer
+that can be used as such to obtain the channel to play the sound in:
+
 ```
-'capture' - piece capture
-'castle' - king castle
-'check' - king check
-'move' - piece move
-'game-end' - checkmate/stalemate etc.
-'promote' - pawn promotion
+channel_for_sound = pygame.mixer.Channel(channels[sound_name])
 ```
 """
-for key in ["capture", "castle", "check", "move", "game-end", "promote"]:
-    filename = f"{key}.mp3"
-    path = join(PIECE_SOUNDS_PATH, filename)
-    PIECE_SOUNDS[key] = pygame.Sound(asset_path(path))
+for channel_num, (group, names) in enumerate(channel_groups.items()):
+    for name in names:
+        channels[name] = channel_num
 
-BUTTON_SOUNDS = {}
-"""
-dict with pygame sound objects corresponding to button presses
+sounds: dict[str, pygame.Sound] = {}
+"""relates a sounds name identifier to its corresponding sound object"""
+for sound_name, sound_filepath in sound_files.items():
+    sounds[sound_name] = pygame.Sound(sound_filepath)
 
-key: str -> value: pygame.Sound()
 
-current keys:
-```
-'button-down' - button press
-'button-up' - button release
-```
-"""
-for key in ["button-down", "button-up"]:
-    filename = f"{key}.mp3"
-    path = join(BUTTON_SOUNDS_PATH, filename)
-    BUTTON_SOUNDS[key] = pygame.Sound(asset_path(path))
+def get_channel(sound_name: str) -> pygame.Channel:
+    return pygame.mixer.Channel(channels[sound_name])
+
+
+def playsound(sound_name: str) -> None:
+    channel = get_channel(sound_name)
+    sound = sounds[sound_name]
+    channel.play(sound)
+
+
+def stopsound(sound_name: str) -> None:
+    channel = get_channel(sound_name)
+    channel.stop()
+
+
+def is_playing(sound_name: str) -> bool:
+    channel = get_channel(sound_name)
+    return channel.get_busy() and channel.get_sound() == sounds[sound_name]

@@ -1,7 +1,19 @@
-from core.settings import Enum
+from core.settings import StrEnum
 
 
-class PieceNames(Enum):
+class SoundNames(StrEnum):
+    CAPTURE = "capture"
+    CASTLE = "castle"
+    CHECK = "check"
+    GAME_END = "game-end"
+    MOVE = "move"
+    PROMOTE = "promote"
+    BUTTON_DOWN = "button-down"
+    BUTTON_UP = "button-up"
+    SLIDER = "slider"
+
+
+class PieceNames(StrEnum):
     """enums for piece names"""
 
     KING = "king"
@@ -12,14 +24,14 @@ class PieceNames(Enum):
     PAWN = "pawn"
 
 
-class PieceColors(Enum):
+class PieceColors(StrEnum):
     """enums for piece colors"""
 
     BLACK = "black"
     WHITE = "white"
 
 
-class StateNames(Enum):
+class StateNames(StrEnum):
     """enums for state names"""
 
     BASE = "GameState"

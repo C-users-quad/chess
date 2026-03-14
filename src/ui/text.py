@@ -1,4 +1,4 @@
-from core.settings import TEXT_SCALE_AXIS, pygame, ANTIALIAS
+from core.settings import COLORS, TEXT_SCALE_AXIS, pygame, ANTIALIAS
 from core.utils import scale
 from ui.base import UIElement
 
@@ -7,7 +7,7 @@ class UIText(UIElement):
     def __init__(
         self,
         pos,
-        font_height,
+        font_height: int,
         anchor,
         resize_axis,
         text: str,
@@ -37,6 +37,7 @@ class UIText(UIElement):
 
     def render(self):
         self.resize()
+        self.image.fill(COLORS["clear"])
         text_surf = self.font.render(self.text, ANTIALIAS, self.text_color)
         text_surf = pygame.transform.smoothscale(text_surf, self.image.get_size())
-        self.image.blit(text_surf, (0, 0))
+        self.image.blit(text_surf)

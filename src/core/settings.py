@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from typing import Literal
 from rich.console import Console
-from enum import Enum
+from enum import StrEnum
 
 
 # override print to rich printing for colors yay!!
@@ -22,8 +22,9 @@ WINDOW_SIZE = (800, 600)
 FPS = 60
 
 # file stuff
-PIECE_SOUNDS_PATH = join("assets", "sounds", "piece_moves")
-BUTTON_SOUNDS_PATH = join("assets", "sounds", "button")
+BUTTON_SOUNDS_FILEPATH: str = join("assets", "sounds", "ui", "button")
+PIECE_SOUNDS_FILEPATH: str = join("assets", "sounds", "piece_moves")
+SLIDER_SOUNDS_FILEPATH: str = join("assets", "sounds", "ui", "slider")
 FONT_PATH = join("assets", "fonts", "MerriweatherSans-Medium.ttf")
 
 # ui-related stuff. colors, sizes, etc.
@@ -31,15 +32,16 @@ BASE_WIDTH, BASE_HEIGHT = (1256, 750)
 """reference dimensions for scaling system"""
 ANTIALIAS = True
 STATE_DIM_ALPHA = 100
+MIN_UI_SIZE = 1
 
 # scale axis
 BOARD_SCALE_AXIS = "height"
 UI_SCALE_AXIS = "min"
 TEXT_SCALE_AXIS = "height"
 
-MIN_UI_SIZE = 1
 COLORS = {
-    "clear": "#68f66a",
+    "bg": "#68f66a",
+    "clear": (0,0,0,0),
     "text": "#FFFFFF",
     "ui-bg": "#220A0A",
     "ui-border": "#32c38b",
@@ -55,10 +57,14 @@ COLORS = {
     "stalemate-sqr-highlight": "#000000CC",
     "promotion-ui-bg": "#ffffff",
     "promotion-ui-btn": "#919191",
+    "slider-base-light": "#2e84ca",
+    "slider-base-dark": "#224a6c",
 }
 """
 ## dicitonary for colors.
+
 ### current keys are:
+
 ```
 'clear' - color used to clear the screen
 'text' - text color
@@ -74,6 +80,8 @@ COLORS = {
 'stalemate-sqr-highlight' - color the kings squares are highlighted if stalemate
 'promotion-ui-bg' - color the background box of the pawn promotion ui is
 'promotion-ui-btn' - color the buttons are in the pawn promotion ui
+'slider-base-light' - color of the right side of the line in a slider ui element
+'slider-base-dark' - color of the left side of the line in a slider ui element
 ```
 """
 SIZE_RATIOS = {

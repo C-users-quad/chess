@@ -16,7 +16,7 @@ every combination of piece color enum to piece name enum -> corresponding piece 
 for piece in list(PieceNames):
     for color in list(PieceColors):
         key = (color, piece)
-        filename = f"{piece.value}-{color.value}.png"
+        filename = f"{piece}-{color}.png"
         path = join("assets", "images", "pieces", filename)
         PIECE_IMAGES[key] = pygame.image.load(asset_path(path))
 

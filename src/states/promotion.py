@@ -64,10 +64,10 @@ class Promotion(GameState):
     names = StateNames.PROMOTION
 
     def __init__(self, move):
-        super().__init__()
         self.move = move
         self.default_promotion = PieceNames.QUEEN
         """the piece you default to during promotion"""
+        super().__init__()
 
     def handle_events(self, events):
         super().handle_events(events)

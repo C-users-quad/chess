@@ -10,7 +10,7 @@ else
 	PYTHON = python3
 	VENV_PIP = $(VENV_DIR)/bin/pip
 endif
-
+	
 # install vars
 REQUIREMENTS_DIR = requirements.txt
 

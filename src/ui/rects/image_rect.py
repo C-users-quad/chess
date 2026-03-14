@@ -1,4 +1,4 @@
-from core.settings import pygame
+from core.settings import COLORS, pygame
 from ui.base import UIElement
 
 
@@ -16,6 +16,7 @@ class UIImage(UIElement):
 
     def render(self):
         self.resize()
+        self.image.fill(COLORS["clear"])
         resized_image = pygame.transform.smoothscale(
             surface=self._original_image, size=self.image.size
         )

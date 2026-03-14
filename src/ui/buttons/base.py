@@ -1,6 +1,7 @@
 from core.settings import COLORS, pygame
 from core.utils import get_tui_text_box
-from core.sounds import BUTTON_SOUNDS
+from core.sounds import playsound
+from core.enums import SoundNames
 from ui.base import UIElement
 from ui.buttons.clickable import Clickable
 
@@ -67,9 +68,9 @@ class UIButton(UIElement, Clickable):
 
     def play_button_sounds(self):
         if self.detect_press():
-            BUTTON_SOUNDS["button-down"].play()
+            playsound(SoundNames.BUTTON_DOWN)
         elif self.detect_release():
-            BUTTON_SOUNDS["button-up"].play()
+            playsound(SoundNames.BUTTON_UP)
 
     def debug(self):
         if self.hover and self.game.debug:

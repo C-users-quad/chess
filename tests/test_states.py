@@ -151,13 +151,13 @@ class TestPieceColors:
         """Test PieceColors.WHITE has correct value."""
         from core.enums import PieceColors
 
-        assert PieceColors.WHITE.value == "white"
+        assert PieceColors.WHITE == "white"
 
     def test_piece_colors_black_value(self, mock_game_context):
         """Test PieceColors.BLACK has correct value."""
         from core.enums import PieceColors
 
-        assert PieceColors.BLACK.value == "black"
+        assert PieceColors.BLACK == "black"
 
 
 class TestPieceNames:

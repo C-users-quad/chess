@@ -129,7 +129,7 @@ class Board:
             white_king_sqr = self.get_square(self.white_king.pos)
             black_king_sqr = self.get_square(self.black_king.pos)
             self.game_end = True
-            king = getattr(self, f"{piece.color.value}_king")
+            king = getattr(self, f"{piece.color}_king")
             if king.in_check():
                 self.checkmate = True
                 self.winning_color = opposite_color(self.turn_color)
@@ -294,7 +294,7 @@ class Board:
                 piece = piece_class(pos, color, self)
                 self.place_piece(piece, pos)
                 if isinstance(piece, King):
-                    setattr(self, f"{color.value}_king", piece)
+                    setattr(self, f"{color}_king", piece)
                 col += 1
 
         # make pawns

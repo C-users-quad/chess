@@ -6,6 +6,7 @@ from ui.buttons.text_button import UITextButton
 from ui.rects.text_box import UITextBox
 from ui.rects.colored_rect import UIColoredRect
 from ui.composites.manager import UIManager
+from ui.slider import UISlider
 from ui.text import UIText
 
 

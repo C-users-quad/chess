@@ -37,7 +37,7 @@ def new_game_widget_child_factory(base, state: NewGame):
     )
     children.append(game_results_text_base)
     if state.chess_state.board.winning_color:
-        game_result = f"{state.chess_state.board.winning_color.value} wins!!"
+        game_result = f"{state.chess_state.board.winning_color} wins!!"
     else:
         game_result = "draw!"
 

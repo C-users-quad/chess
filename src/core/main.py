@@ -84,6 +84,9 @@ class Game:
     def window_resized(self):
         return self.prev_window_size != self.display.get_size()
 
+    def mouse_moved(self):
+        return self.prev_mouse_pos != pygame.mouse.get_pos()
+
     def detect_debug_toggle(self):
         """
         toggles debug mode if ctrl+alt+shift+d is pressed
@@ -100,6 +103,7 @@ class Game:
 
     def update(self):
         self.prev_window_size = self.display.get_size()
+        self.prev_mouse_pos = pygame.mouse.get_pos()
         self.dt = self.clock.tick(FPS) / 1000
         self.detect_debug_toggle()
 
@@ -128,7 +132,7 @@ def main():
         top_state.update()
 
         # draw game
-        game.display.fill(COLORS["clear"])
+        game.display.fill(COLORS["bg"])
         for state in game.state_stack[0:-1]:
             if state.draw_below:
                 state.render(force_rendering=True)
