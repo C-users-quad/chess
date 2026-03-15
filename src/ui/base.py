@@ -15,6 +15,8 @@ class UIElement:
         self.anchor = anchor
         self.resize_axis = resize_axis
         self.rect = self.get_base_rect()
+        self.dirty = False
+        """used for lazily updating """
 
     @property
     def game(self):

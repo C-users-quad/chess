@@ -93,7 +93,7 @@ class SliderMarker(UIElement, Clickable):
         # reposition rect at new x and rerender to display results
         self.current_x = new_x
         self.update_value()
-        self.slider.render()
+        self.slider.dirty = True
 
     def update(self):
         self.detect_hovering()

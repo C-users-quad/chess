@@ -15,7 +15,6 @@ from states.settings_menu import SettingsMenu
 from states.chess import Chess
 from states.promotion import Promotion
 from states.new_game import NewGame
-from chess.board import Board
 
 
 class Game:

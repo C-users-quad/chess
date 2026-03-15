@@ -6,7 +6,7 @@ from core.settings import (
     UI_SCALE_AXIS,
     pygame,
 )
-from core.utils import get_tui_text_box, get_ui_elem, resize, scale
+from core.utils import get_ui_elem, resize, scale
 from ui.base import UIElement
 
 

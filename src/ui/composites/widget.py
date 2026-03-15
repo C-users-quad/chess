@@ -55,6 +55,7 @@ class UIWidget(UIElement):
         for child in self.children:
             self.set_child_screen_rect(child)
             child.update()
+        self.dirty = any(child.dirty for child in self.children)
 
     def set_child_screen_rect(self, child):
         # get the childs rect relative to widget, and widget base rect.
@@ -69,7 +70,7 @@ class UIWidget(UIElement):
         child.rect = child_screen_rect
 
     def render(self):
-        # should resize all elements, re-render base, then draw children onto base
+        # should re-render base, then draw children onto base
         self.base.render()
         for child in self.children:
             child.render()

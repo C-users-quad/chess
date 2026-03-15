@@ -15,9 +15,11 @@ class UIManager:
         return GameContext.game
 
     def render(self, force_rendering=False):
-        if not force_rendering and not self.game.window_resized():
-            return
         for element in self.elements:
+            if not force_rendering \
+                and not self.game.window_resized() \
+                    and not element.dirty:
+                        continue
             element.render()
 
     def draw(self):
