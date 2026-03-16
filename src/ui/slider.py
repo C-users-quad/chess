@@ -20,7 +20,7 @@ class SliderMarker(UIElement, Clickable):
             resize_axis=slider.resize_axis,
             **kwargs,
         )
-        self.set_current_x()
+        self.render()
 
     @property
     def screen_rect(self):
@@ -32,36 +32,30 @@ class SliderMarker(UIElement, Clickable):
         return self.rect.move(self.slider.rect.topleft)
 
     def set_current_x(self):
-        """
-        returns the relative x-position of the
-        markers center based off of the current value
-        """
-        max_x, min_x = self.slider.rect.right, self.slider.rect.left
-
         value_range = self.slider.max_value - self.slider.min_value
-        percent_range = self.slider.curr_value / value_range
-
-        marker_x_range = max_x - min_x
-        marker_x = marker_x_range * percent_range
-        marker_radius = self.rect.height / 2
-
-        # make sure marker stays fully on slider image
-        marker_x = clamp(
-            value=marker_x,
+        print(self.slider.curr_value, self.slider.min_value)
+        percent_range = (self.slider.curr_value - self.slider.min_value) / \
+            value_range
+        marker_radius = self.slider.image.height / 2
+        self.current_x = clamp(
+            value=self.slider.image.width * percent_range,
             min_value=marker_radius,
             max_value=self.slider.image.width - marker_radius,
         )
-
-        self.current_x = marker_x
 
     def update_value(self):
         """
         updates the sliders current value based
         on the current position of the marker
         """
-        percent_x_range = self.current_x / self.slider.rect.width
+        marker_radius = self.slider.rect.height / 2
+        min_x, max_x = marker_radius, self.slider.rect.width - marker_radius
+        x_range = max_x - min_x
+        percent_x_range = (self.current_x - marker_radius) / x_range
         value_range = self.slider.max_value - self.slider.min_value
         self.slider.curr_value = percent_x_range * value_range + self.slider.min_value
+        if self.slider.on_change:
+            self.slider.on_change(self.slider.curr_value)
 
     def handle_sound(self):
         if not self.detect_held_down():
@@ -130,8 +124,30 @@ class UISlider(UIElement):
     """slider that updates a value based on the position of its marker"""
 
     def __init__(
-        self, pos, size, anchor, resize_axis, value, min_value, max_value, **kwargs
+        self,
+        pos,
+        size,
+        anchor,
+        resize_axis,
+        value,
+        min_value,
+        max_value,
+        on_change: callable = None,
+        **kwargs,
     ):
+        """
+        Note: the argument on_change should be passed in as:
+
+        ```
+        slider = UISlider(
+            ...,
+            on_change=lambda value: setattr(
+                value_parent_object, "value_variable_name", value
+            ),
+            ...
+        )
+        ```
+        """
         super().__init__(
             pos=pos, size=size, anchor=anchor, resize_axis=resize_axis, **kwargs
         )
@@ -139,6 +155,7 @@ class UISlider(UIElement):
         self.max_value = max_value
         self.curr_value = value
         self.marker = SliderMarker(self)
+        self.on_change = on_change
         self.render()
 
     def update(self):
@@ -147,7 +164,6 @@ class UISlider(UIElement):
     def render(self):
         self.resize()
         self.marker.resize()
-        self.marker.set_current_x()
         self.image.fill(COLORS["clear"])
 
         # get necessary values
