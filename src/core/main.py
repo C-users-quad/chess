@@ -1,12 +1,13 @@
 from core.settings import (
     pygame,
-    WINDOW_SIZE,
+    BASE_WIDTH,
+    BASE_HEIGHT,
     COLORS,
     STATE_DIM_ALPHA,
     FONT_PATH,
-    FPS,
     GameContext,
     sys,
+    VariableSettings,
 )
 from core.utils import get_tui_text_box, asset_path
 from core.enums import StateNames
@@ -22,7 +23,9 @@ class Game:
 
     def __init__(self):
         pygame.init()
-        self.display = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
+        self.display = pygame.display.set_mode(
+            (BASE_WIDTH, BASE_HEIGHT), pygame.RESIZABLE
+        )
         self.clock = pygame.time.Clock()
         self.fonts = {}
         """dict of font size (int) : font (pygame.Font)"""
@@ -103,7 +106,7 @@ class Game:
     def update(self):
         self.prev_window_size = self.display.get_size()
         self.prev_mouse_pos = pygame.mouse.get_pos()
-        self.dt = self.clock.tick(FPS) / 1000
+        self.dt = self.clock.tick(VariableSettings.fps) / 1000
         self.detect_debug_toggle()
 
     def __str__(self):

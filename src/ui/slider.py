@@ -33,9 +33,7 @@ class SliderMarker(UIElement, Clickable):
 
     def set_current_x(self):
         value_range = self.slider.max_value - self.slider.min_value
-        print(self.slider.curr_value, self.slider.min_value)
-        percent_range = (self.slider.curr_value - self.slider.min_value) / \
-            value_range
+        percent_range = (self.slider.curr_value - self.slider.min_value) / value_range
         marker_radius = self.slider.image.height / 2
         self.current_x = clamp(
             value=self.slider.image.width * percent_range,

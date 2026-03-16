@@ -12,9 +12,9 @@ from ui.composites.manager import UIManager
 def promotion_widget_child_factory(base, move, state):
     children = []
     padding = get_ui_elem("padding")
-    base_center = (base.image.width / 2, base.image.height / 2)
+    base_center = (base.base_size[0] / 2, base.base_size[1] / 2)
 
-    option_btn_side_len = base.image.width / 2 - (3 / 2) * padding
+    option_btn_side_len = base.base_size[0] / 2 - (3 / 2) * padding
     option_btn_size = (option_btn_side_len, option_btn_side_len)
     buttons = {
         PieceNames.QUEEN: [

@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pygame
 from os.path import join
 import sys
@@ -5,21 +6,36 @@ from pathlib import Path
 from typing import Literal
 from rich.console import Console
 from enum import StrEnum
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from core.main import Game
 
 # override print to rich printing for colors yay!!
 print = Console().print
 
 
+class VariableSettings:
+    """
+    container for global settings
+    that can be changed by the user via the settings menu ui
+    """
+
+    fps: int = 60
+    button_volume: float = 1.0
+    slider_volume: float = 1.0
+    piece_volume: float = 1.0
+
+
 class GameContext:
     """container for game object so that it can be globally accessed"""
 
-    game = None
+    game: Game = None
 
 
-# window stuff
-WINDOW_SIZE = (800, 600)
-FPS = 60
+# sound stuff
+MIN_VOLUME, MAX_VOLUME = 0.0, 1.0
+"""min and max volume floats for pygame.mixer.Sound's"""
 
 # file stuff
 BUTTON_SOUNDS_FILEPATH: str = join("assets", "sounds", "ui", "button")
@@ -32,6 +48,7 @@ BASE_WIDTH, BASE_HEIGHT = (1256, 750)
 """reference dimensions for scaling system"""
 ANTIALIAS = True
 STATE_DIM_ALPHA = 100
+"""integer from 0->255 where 0 means no dim to 255 which means black."""
 MIN_UI_SIZE = 1
 
 # scale axis
@@ -41,7 +58,7 @@ TEXT_SCALE_AXIS = "height"
 
 COLORS = {
     "bg": "#68f66a",
-    "clear": (0, 0, 0, 0),
+    "clear": "#00000000",
     "text": "#FFFFFF",
     "ui-bg": "#220A0A",
     "ui-border": "#32c38b",
@@ -51,7 +68,7 @@ COLORS = {
     "black-square": "#311201",
     "board-highlight": "#ffee008e",
     "move-circle": "#271978A0",
-    "state-dim": (0, 0, 0),
+    "state-dim": "#000000",
     "winning-sqr-highlight": "#44ff00cd",
     "losing-sqr-highlight": "#ff0000c1",
     "stalemate-sqr-highlight": "#000000CC",

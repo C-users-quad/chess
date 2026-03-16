@@ -1,4 +1,11 @@
-from core.settings import BASE_HEIGHT, BASE_WIDTH, pygame
+from core.settings import (
+    BASE_HEIGHT,
+    BASE_WIDTH,
+    VariableSettings,
+    pygame,
+    MIN_VOLUME,
+    MAX_VOLUME,
+)
 from core.utils import get_ui_elem
 from core.enums import StateNames
 from states.base import GameState
@@ -10,7 +17,7 @@ from ui.slider import UISlider
 from ui.text import UIText
 
 
-def slider_widget_child_factory(state, base: UIColoredRect):
+def slider_widget_child_factory(base: UIColoredRect):
     children = []
     padding = get_ui_elem("padding")
 
@@ -19,7 +26,7 @@ def slider_widget_child_factory(state, base: UIColoredRect):
         font_height=base.base_size[1] / 2 - padding * 1.5,
         anchor="midtop",
         resize_axis=base.resize_axis,
-        text="Slider Test",
+        text="Slider Volume",
         text_color="black",
         max_width=base.base_size[0] - padding * 2,
     )
@@ -30,10 +37,10 @@ def slider_widget_child_factory(state, base: UIColoredRect):
         size=(base.base_size[0] - padding * 2, base.base_size[1] / 4),
         anchor="midtop",
         resize_axis=base.resize_axis,
-        value=state.test_number,
-        min_value=0,
-        max_value=100,
-        on_change=lambda value: setattr(state, "test_number", value),
+        value=VariableSettings.slider_volume,
+        min_value=MIN_VOLUME,
+        max_value=MAX_VOLUME,
+        on_change=lambda value: setattr(VariableSettings, "slider_volume", value),
     )
     children.append(slider)
 
@@ -44,7 +51,6 @@ class SettingsMenu(GameState):
     """menu for game settings"""
 
     name = StateNames.SETTINGS
-    test_number = 0
 
     def handle_events(self, events):
         super().handle_events(events)
@@ -58,7 +64,6 @@ class SettingsMenu(GameState):
 
     def update(self):
         self.ui.update()
-        print(f"test num curr value: {self.test_number}")
 
     def render(self, force_rendering=False):
         self.ui.render(force_rendering)
@@ -90,9 +95,7 @@ class SettingsMenu(GameState):
         )
         slider_widget = UIWidget(
             base=slider_widget_base,
-            child_factory=lambda: slider_widget_child_factory(
-                self, slider_widget_base
-            ),
+            child_factory=lambda: slider_widget_child_factory(slider_widget_base),
         )
         elements.append(slider_widget)
 
