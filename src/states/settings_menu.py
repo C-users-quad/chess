@@ -9,13 +9,13 @@ from core.settings import (
 from core.utils import get_ui_elem
 from core.enums import StateNames
 from states.base import GameState
-from ui.checkbox import UICheckbox
+from ui.misc.checkbox import UICheckbox
 from ui.composites.widget import UIWidget
 from ui.rects.colored_rect import UIColoredRect
 from ui.rects.text_box import UITextBox
 from ui.composites.manager import UIManager
-from ui.slider import UISlider
-from ui.text import UIText
+from ui.misc.slider import UISlider
+from ui.misc.text import UIText
 
 
 def sfx_volume_widget_child_factory(base: UIColoredRect):

@@ -92,7 +92,7 @@ COLORS = {
     "slider-marker": "#1b1a44",
     "checkbox-ticked": "#4790d3",
     "checkbox-unticked": "#3F3F43",
-    "checkbox-border": "#000000"
+    "checkbox-border": "#000000",
 }
 """
 ## dicitonary for colors.

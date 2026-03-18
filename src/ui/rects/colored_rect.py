@@ -6,12 +6,8 @@ from ui.base import UIElement
 class UIColoredRect(UIElement):
     """a colored rectangle"""
 
-    def __init__(
-        self, pos, size, anchor, color, resize_axis="auto", rounding=False, **kwargs
-    ):
-        super().__init__(
-            pos=pos, size=size, anchor=anchor, resize_axis=resize_axis, **kwargs
-        )
+    def __init__(self, color: pygame.typing.ColorLike, rounding=False, **kwargs):
+        super().__init__(**kwargs)
         self.color = color
         self.rounding = rounding
         self.render()

@@ -11,17 +11,11 @@ class UIButton(UIElement, Clickable):
 
     def __init__(
         self,
-        pos,
-        size,
-        anchor,
         click_action,
         click_action_args=None,
-        resize_axis="auto",
         **kwargs,
     ):
-        super().__init__(
-            pos=pos, size=size, anchor=anchor, resize_axis=resize_axis, **kwargs
-        )
+        super().__init__(**kwargs)
         self.click_action = click_action
         self.click_action_args = click_action_args
         self.highlight = None

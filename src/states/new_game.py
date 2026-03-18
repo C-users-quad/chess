@@ -7,7 +7,7 @@ from ui.rects.colored_rect import UIColoredRect
 from ui.composites.widget import UIWidget
 from ui.composites.manager import UIManager
 from chess.board import Board
-from ui.text import UIText
+from ui.misc.text import UIText
 
 
 def new_game_widget_child_factory(base, state: NewGame):
