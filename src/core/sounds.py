@@ -27,15 +27,15 @@ relates sound name identifiers to their filepaths
 """
 
 volumes: dict[str, callable] = {
-    SoundNames.CAPTURE: lambda: getattr(VariableSettings, "piece_volume"),
-    SoundNames.CASTLE: lambda: getattr(VariableSettings, "piece_volume"),
-    SoundNames.CHECK: lambda: getattr(VariableSettings, "piece_volume"),
-    SoundNames.GAME_END: lambda: getattr(VariableSettings, "piece_volume"),
-    SoundNames.MOVE: lambda: getattr(VariableSettings, "piece_volume"),
-    SoundNames.PROMOTE: lambda: getattr(VariableSettings, "piece_volume"),
-    SoundNames.BUTTON_DOWN: lambda: getattr(VariableSettings, "button_volume"),
-    SoundNames.BUTTON_UP: lambda: getattr(VariableSettings, "button_volume"),
-    SoundNames.SLIDER: lambda: getattr(VariableSettings, "slider_volume"),
+    SoundNames.CAPTURE: lambda: getattr(VariableSettings, "sfx_volume"),
+    SoundNames.CASTLE: lambda: getattr(VariableSettings, "sfx_volume"),
+    SoundNames.CHECK: lambda: getattr(VariableSettings, "sfx_volume"),
+    SoundNames.GAME_END: lambda: getattr(VariableSettings, "sfx_volume"),
+    SoundNames.MOVE: lambda: getattr(VariableSettings, "sfx_volume"),
+    SoundNames.PROMOTE: lambda: getattr(VariableSettings, "sfx_volume"),
+    SoundNames.BUTTON_DOWN: lambda: getattr(VariableSettings, "sfx_volume"),
+    SoundNames.BUTTON_UP: lambda: getattr(VariableSettings, "sfx_volume"),
+    SoundNames.SLIDER: lambda: getattr(VariableSettings, "sfx_volume"),
 }
 """maps a sound name identifier to the sounds corresponding volume setting"""
 

@@ -89,7 +89,6 @@ class SliderMarker(UIElement, Clickable):
 
     def update(self):
         self.detect_hovering()
-        self.detect_press()
         self.handle_sound()
         self.on_drag()
 
@@ -110,7 +109,7 @@ class SliderMarker(UIElement, Clickable):
         screen_radius = self.slider.image.height / 2
         pygame.draw.circle(
             surface=self.image,
-            color=COLORS["text"],
+            color=COLORS["slider-marker"],
             center=(screen_radius, screen_radius),
             radius=screen_radius,
         )

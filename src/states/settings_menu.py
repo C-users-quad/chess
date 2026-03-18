@@ -9,6 +9,7 @@ from core.settings import (
 from core.utils import get_ui_elem
 from core.enums import StateNames
 from states.base import GameState
+from ui.checkbox import UICheckbox
 from ui.composites.widget import UIWidget
 from ui.rects.colored_rect import UIColoredRect
 from ui.rects.text_box import UITextBox
@@ -17,7 +18,7 @@ from ui.slider import UISlider
 from ui.text import UIText
 
 
-def slider_widget_child_factory(base: UIColoredRect):
+def sfx_volume_widget_child_factory(base: UIColoredRect):
     children = []
     padding = get_ui_elem("padding")
 
@@ -26,7 +27,7 @@ def slider_widget_child_factory(base: UIColoredRect):
         font_height=base.base_size[1] / 2 - padding * 1.5,
         anchor="midtop",
         resize_axis=base.resize_axis,
-        text="Slider Volume",
+        text="SFX Volume",
         text_color="black",
         max_width=base.base_size[0] - padding * 2,
     )
@@ -37,12 +38,41 @@ def slider_widget_child_factory(base: UIColoredRect):
         size=(base.base_size[0] - padding * 2, base.base_size[1] / 4),
         anchor="midtop",
         resize_axis=base.resize_axis,
-        value=VariableSettings.slider_volume,
+        value=VariableSettings.sfx_volume,
         min_value=MIN_VOLUME,
         max_value=MAX_VOLUME,
-        on_change=lambda value: setattr(VariableSettings, "slider_volume", value),
+        on_change=VariableSettings.setter("sfx_volume"),
     )
     children.append(slider)
+
+    return children
+
+
+def flip_board_widget_child_factory(base: UIColoredRect):
+    children = []
+    base_size = base.base_size
+    padding = get_ui_elem("padding")
+
+    text = UIText(
+        pos=(base_size[0] / 2, padding),
+        font_height=base_size[1] / 2 - padding * 1.5,
+        anchor="midtop",
+        resize_axis=base.resize_axis,
+        text="Flip Board",
+        text_color="black",
+        max_width=base_size[0] - padding * 2,
+    )
+    children.append(text)
+
+    checkbox = UICheckbox(
+        value=VariableSettings.flip_board,
+        change_value=VariableSettings.setter("flip_board"),
+        pos=(base_size[0] / 2, base_size[1] / 2 + padding * 0.5),
+        anchor="midtop",
+        side_length=base_size[1] / 2 - padding * 1.5,
+        resize_axis=base.resize_axis,
+    )
+    children.append(checkbox)
 
     return children
 
@@ -75,6 +105,7 @@ class SettingsMenu(GameState):
         elements = []
 
         spacing = get_ui_elem("spacing")
+        settings_widget_size = (BASE_WIDTH / 3.75, BASE_HEIGHT / 5.5)
 
         title = UITextBox(
             pos=(BASE_WIDTH / 2, spacing),
@@ -85,18 +116,37 @@ class SettingsMenu(GameState):
         )
         elements.append(title)
 
-        slider_widget_base = UIColoredRect(
+        sfx_volume_widget_base = UIColoredRect(
             pos=(BASE_WIDTH / 2, BASE_HEIGHT / 4),
-            size=(BASE_WIDTH / 4, BASE_HEIGHT / 6),
+            size=settings_widget_size,
             anchor="midtop",
             color="white",
             resize_axis="width",
             rounding=True,
         )
-        slider_widget = UIWidget(
-            base=slider_widget_base,
-            child_factory=lambda: slider_widget_child_factory(slider_widget_base),
+        sfx_volume_widget = UIWidget(
+            base=sfx_volume_widget_base,
+            child_factory=lambda: sfx_volume_widget_child_factory(
+                sfx_volume_widget_base
+            ),
         )
-        elements.append(slider_widget)
+        elements.append(sfx_volume_widget)
+
+        prev_widget_rect = sfx_volume_widget_base.get_base_rect()
+        flip_board_widget_base = UIColoredRect(
+            pos=(prev_widget_rect.centerx, prev_widget_rect.bottom + spacing),
+            size=settings_widget_size,
+            anchor="midtop",
+            color="white",
+            resize_axis="width",
+            rounding=True,
+        )
+        flip_board_widget = UIWidget(
+            base=flip_board_widget_base,
+            child_factory=lambda: flip_board_widget_child_factory(
+                flip_board_widget_base
+            ),
+        )
+        elements.append(flip_board_widget)
 
         self.ui = UIManager(elements)

@@ -72,6 +72,7 @@ class UIWidget(UIElement):
     def render(self):
         # should re-render base, then draw children onto base
         self.base.render()
+        self.rect = self.base.rect
         for child in self.children:
             child.render()
             child_rect = self.get_child_relative_rect(child)

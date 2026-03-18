@@ -6,6 +6,7 @@ from core.settings import (
     MIN_UI_SIZE,
     MOVE_CIRCLE_SCALE,
     PIECE_SCALE,
+    VariableSettings,
     pygame,
 )
 from core.enums import PieceColors
@@ -66,14 +67,7 @@ class BoardSquare(Clickable):
         self.image.fill(self.color)
 
         # highlights
-        color_override = None
-        if self.stalemate_square:
-            color_override = COLORS["stalemate-sqr-highlight"]
-        if self.winning_square:
-            color_override = COLORS["winning-sqr-highlight"]
-        if self.losing_square:
-            color_override = COLORS["losing-sqr-highlight"]
-        self.draw_highlight(color_override)
+        self.draw_highlight()
         self.draw_move_circle()
 
         # draw piece centered
@@ -92,9 +86,12 @@ class BoardSquare(Clickable):
 
         # compute the drawing rect **centered inside board image**
         board_row, board_col = self.pos
-        if self.board.turn_color == PieceColors.BLACK:
-            board_row = 7 - board_row
-            board_col = 7 - board_col
+
+        # flip board if flip board condition is true
+        if VariableSettings.flip_board:
+            if self.board.turn_color == PieceColors.BLACK:
+                board_row = 7 - board_row
+                board_col = 7 - board_col
         drawing_x = board_center[0] + (board_col - 4) * square_side_length
         drawing_y = board_center[1] + (board_row - 4) * square_side_length
         self.drawing_rect = pygame.Rect(
@@ -105,15 +102,25 @@ class BoardSquare(Clickable):
         board_topleft = self.board.rect.topleft
         self.rect = self.drawing_rect.move(board_topleft)
 
-    def draw_highlight(self, color_override=None):
-        # dont draw if it isnt selected
-        if not self.selected and not color_override:
+    def draw_highlight(self):
+        # dont draw if it isnt selected or it isnt the end of the game
+        if not self.selected and not (
+            self.stalemate_square or self.winning_square or self.losing_square
+        ):
             return
 
+        # determine color to highlight the square
+        highlight_color = None
+        if self.stalemate_square:
+            highlight_color = COLORS["stalemate-sqr-highlight"]
+        elif self.winning_square:
+            highlight_color = COLORS["winning-sqr-highlight"]
+        elif self.losing_square:
+            highlight_color = COLORS["losing-sqr-highlight"]
+        else:
+            highlight_color = COLORS["board-highlight"]
+
         # create highlight and draw it onto the square image
-        highlight_color = (
-            color_override if color_override else COLORS["board-highlight"]
-        )
         image_side_length = self.image.get_width()
         image_center = (image_side_length / 2, image_side_length / 2)
         highlight = pygame.Surface(self.image.size, pygame.SRCALPHA)
@@ -152,6 +159,7 @@ class BoardSquare(Clickable):
 
         if GameContext.game.debug:
             print(self.piece)
+
         selected_square = self.board.find_selected_square()
         if selected_square:
             if self.valid_square:

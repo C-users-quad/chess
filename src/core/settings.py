@@ -22,9 +22,22 @@ class VariableSettings:
     """
 
     fps: int = 60
-    button_volume: float = 1.0
-    slider_volume: float = 1.0
-    piece_volume: float = 1.0
+    sfx_volume: float = 1.0
+    flip_board: bool = True
+
+    @classmethod
+    def setter(cls, attr):
+        """
+        Gives a callable that takes in argument value that
+        allows you to change the value
+        of a variable setting with variable name attr.
+
+        Args:
+            attr (str) : name of the variable setting you wish to obtain a setter for
+        Returns:
+            setter (callable) : the variable settings setter.
+        """
+        return lambda value: setattr(cls, attr, value)
 
 
 class GameContext:
@@ -76,6 +89,10 @@ COLORS = {
     "promotion-ui-btn": "#919191",
     "slider-base-light": "#2e84ca",
     "slider-base-dark": "#224a6c",
+    "slider-marker": "#1b1a44",
+    "checkbox-ticked": "#4790d3",
+    "checkbox-unticked": "#3F3F43",
+    "checkbox-border": "#000000"
 }
 """
 ## dicitonary for colors.
@@ -83,7 +100,8 @@ COLORS = {
 ### current keys are:
 
 ```
-'clear' - color used to clear the screen
+'bg' - color used to fill the screen before each drawing sequence
+'clear' - color used to wipe surfaces clean (transparent black)
 'text' - text color
 'ui-bg' - main background color for ui elements
 'ui-border' - main color for ui elements' borders
@@ -91,6 +109,7 @@ COLORS = {
 'board-border' - color used for the chess boards sides
 'white-square' - color used for the white squares
 'black-square' - color used for the black squares
+'board-highlight' - color for board squares when they are clicked
 'move-circle' - color of circle drawn on squares that a piece can move to
 'winning-sqr-highlight' - color the square of the winning king is highlighted
 'losing-sqr-highlight' - color the square of the losing king is highlighted
@@ -99,6 +118,9 @@ COLORS = {
 'promotion-ui-btn' - color the buttons are in the pawn promotion ui
 'slider-base-light' - color of the right side of the line in a slider ui element
 'slider-base-dark' - color of the left side of the line in a slider ui element
+'checkbox-ticked' - color for ticked checkboxes
+'checkbox-unticked' - color for unticked checkboxes
+'checkbox-border' - color for the checkboxes border
 ```
 """
 SIZE_RATIOS = {
@@ -128,7 +150,10 @@ SIZE_RATIOS = {
 'board-border' - width of the boards border
 ```
 """
-# relative to board square size
+# ratios that are relative to things other than the base window size
+# relative to board square side length
 PIECE_SCALE = 0.95
 MOVE_CIRCLE_SCALE = 0.2
 GAME_END_ICON_SCALE = 0.5
+# relative to checkbox side length
+CHECKBOX_BORDER_SCALE = 0.2

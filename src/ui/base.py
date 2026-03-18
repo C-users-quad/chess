@@ -22,6 +22,13 @@ class UIElement:
     def game(self):
         return GameContext.game
 
+    @property
+    def anchored_pos(self):
+        """
+        returns the screen-relative position on the rect located at the anchor point
+        """
+        return getattr(self.rect, self.anchor)
+
     def update(self):
         pass
 
