@@ -13,8 +13,8 @@ class TestUIElement:
 
         assert element.base_pos == (10, 20)
         assert element.base_size == (100, 50)
-        assert element.anchor == "topleft"
-        assert element.resize_axis == "auto"
+        assert element.anchor == AnchorPoints.TOPLEFT
+        assert element.resize_axis == ResizeAxis.AUTO
 
     def test_uielement_resize(self, mock_game_context):
         """Test UIElement resize method."""
@@ -89,7 +89,7 @@ class TestUIWidget:
         base = UIColoredRect(
             pos=(0, 0),
             size=(100, 100),
-            anchor="topleft",
+            anchor=AnchorPoints.TOPLEFT,
             color="#FFFFFF"
         )
 
@@ -112,7 +112,7 @@ class TestUIColoredRect:
         rect = UIColoredRect(
             pos=(0, 0),
             size=(100, 50),
-            anchor="topleft",
+            anchor=AnchorPoints.TOPLEFT,
             color="#FF0000"
         )
 
@@ -126,7 +126,7 @@ class TestUIColoredRect:
         rect = UIColoredRect(
             pos=(0, 0),
             size=(100, 50),
-            anchor="topleft",
+            anchor=AnchorPoints.TOPLEFT,
             color="#FF0000",
             rounding=True
         )
@@ -147,7 +147,7 @@ class TestUIButton:
         button = UIButton(
             pos=(0, 0),
             size=(100, 50),
-            anchor="topleft",
+            anchor=AnchorPoints.TOPLEFT,
             click_action=dummy_action
         )
 
@@ -164,7 +164,7 @@ class TestUIButton:
         button = UIButton(
             pos=(0, 0),
             size=(100, 50),
-            anchor="topleft",
+            anchor=AnchorPoints.TOPLEFT,
             click_action=dummy_action,
             click_action_args=(1, 2)
         )
@@ -181,7 +181,7 @@ class TestUIButton:
         button = UIButton(
             pos=(0, 0),
             size=(100, 50),
-            anchor="topleft",
+            anchor=AnchorPoints.TOPLEFT,
             click_action=dummy_action
         )
 

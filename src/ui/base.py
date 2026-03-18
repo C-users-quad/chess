@@ -1,3 +1,4 @@
+from core.enums import AnchorPoints, ResizeAxis
 from core.settings import GameContext, pygame
 from core.utils import get_tui_text_box, resize
 
@@ -9,8 +10,8 @@ class UIElement:
         self,
         pos=(0, 0),
         size=(0, 0),
-        anchor="topleft",
-        resize_axis="auto",
+        anchor=AnchorPoints.TOPLEFT,
+        resize_axis=ResizeAxis.AUTO,
         **kwargs,
     ):
         super().__init__(**kwargs)

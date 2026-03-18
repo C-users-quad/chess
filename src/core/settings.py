@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 from typing import Literal
 from rich.console import Console
-from enum import StrEnum
+from core.enums import ResizeAxis
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -65,9 +65,8 @@ STATE_DIM_ALPHA = 100
 MIN_UI_SIZE = 1
 
 # scale axis
-BOARD_SCALE_AXIS = "height"
-UI_SCALE_AXIS = "min"
-TEXT_SCALE_AXIS = "height"
+BOARD_SCALE_AXIS = ResizeAxis.HEIGHT
+TEXT_SCALE_AXIS = ResizeAxis.HEIGHT
 
 COLORS = {
     "bg": "#68f66a",

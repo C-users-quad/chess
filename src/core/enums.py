@@ -1,7 +1,33 @@
-from core.settings import StrEnum
+from enum import StrEnum
+
+
+class ResizeAxis(StrEnum):
+    """resize axis for ui elements"""
+
+    WIDTH = "width"
+    HEIGHT = "height"
+    MIN = "min"
+    MAX = "max"
+    AUTO = "auto"
+
+
+class AnchorPoints(StrEnum):
+    """used when assigning anchor points to ui elements"""
+
+    TOPLEFT = "topleft"
+    TOPRIGHT = "topright"
+    BOTTOMLEFT = "bottomleft"
+    BOTTOMRIGHT = "bottomright"
+    MIDTOP = "midtop"
+    MIDBOTTOM = "midbottom"
+    MIDLEFT = "midleft"
+    MIDRIGHT = "midright"
+    CENTER = "center"
 
 
 class SoundNames(StrEnum):
+    """sound name identifiers"""
+
     CAPTURE = "capture"
     CASTLE = "castle"
     CHECK = "check"

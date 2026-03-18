@@ -1,4 +1,4 @@
-from core.enums import StateNames
+from core.enums import AnchorPoints, StateNames
 from core.settings import BASE_HEIGHT, BASE_WIDTH, COLORS
 from states.base import GameState
 from core.utils import get_ui_elem
@@ -35,7 +35,7 @@ class MainMenu(GameState):
         # make title
         title = UITextBox(
             pos=(BASE_WIDTH / 2, spacing),
-            anchor="midtop",
+            anchor=AnchorPoints.MIDTOP,
             text="CHESS",
             font_size="title",
             do_auto_size=True,
@@ -47,14 +47,14 @@ class MainMenu(GameState):
         bar1 = UIColoredRect(
             pos=(0, 0),
             size=sidebar_size,
-            anchor="topleft",
+            anchor=AnchorPoints.TOPLEFT,
             color=COLORS["white-square"],
         )
         elements.append(bar1)
         bar2 = UIColoredRect(
             pos=(BASE_WIDTH, 0),
             size=sidebar_size,
-            anchor="topright",
+            anchor=AnchorPoints.TOPRIGHT,
             color=COLORS["black-square"],
         )
         elements.append(bar2)
@@ -77,7 +77,7 @@ class MainMenu(GameState):
 
         settings = UITextButton(
             pos=(BASE_WIDTH / 2, BASE_HEIGHT - spacing),
-            anchor="midbottom",
+            anchor=AnchorPoints.MIDBOTTOM,
             text="Settings",
             font_size="subtitle",
             click_action=self.game.push_state,

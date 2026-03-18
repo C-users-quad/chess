@@ -1,9 +1,9 @@
+from core.enums import ResizeAxis
 from core.settings import (
     ANTIALIAS,
     COLORS,
     TEXT_SCALE_AXIS,
     MIN_UI_SIZE,
-    UI_SCALE_AXIS,
     pygame,
 )
 from core.utils import get_ui_elem, resize, scale
@@ -15,13 +15,9 @@ class UITextBox(UIElement):
 
     def __init__(
         self,
-        pos,
-        anchor,
         text,
         font_size: str,
         do_auto_size=False,
-        size=(0, 0),
-        resize_axis="auto",
         **kwargs,
     ):
         """
@@ -31,9 +27,7 @@ class UITextBox(UIElement):
         self.text = text
         self.font_size = font_size
         self.do_auto_size = do_auto_size
-        super().__init__(
-            pos=pos, size=size, anchor=anchor, resize_axis=resize_axis, **kwargs
-        )
+        super().__init__(**kwargs)
         if do_auto_size:
             self.auto_size()
         self.render()
@@ -41,9 +35,9 @@ class UITextBox(UIElement):
     @property
     def font(self):
         # if auto, get font with height that fits perfectly into text rect
-        if self.font_size == "auto":
+        if self.font_size == ResizeAxis.AUTO:
             # get needed ui elements
-            border_width = scale(get_ui_elem("border-width"), axis=UI_SCALE_AXIS)
+            border_width = scale(get_ui_elem("border-width"), axis=ResizeAxis.MIN)
 
             # compute font height from current button size
             btn_height = resize(self.size, self.resize_axis)[1]
@@ -58,8 +52,8 @@ class UITextBox(UIElement):
     def auto_size(self):
         """makes it so that the size is snug around the text"""
         # get needed ui elements
-        border_width = scale(get_ui_elem("border-width"), axis=UI_SCALE_AXIS)
-        padding = scale(get_ui_elem("padding"), axis=UI_SCALE_AXIS)
+        border_width = scale(get_ui_elem("border-width"), axis=ResizeAxis.MIN)
+        padding = scale(get_ui_elem("padding"), axis=ResizeAxis.MIN)
 
         text_width, text_height = self.font.render(self.text, ANTIALIAS, (0, 0, 0)).size
         width = text_width + 2 * border_width + 2 * padding
@@ -76,9 +70,9 @@ class UITextBox(UIElement):
         self.image.fill(COLORS["clear"])
 
         # get needed ui elements
-        rounding = scale(get_ui_elem("rounding"), axis=UI_SCALE_AXIS)
-        border_width = scale(get_ui_elem("border-width"), axis=UI_SCALE_AXIS)
-        padding = scale(get_ui_elem("padding"), axis="height")
+        rounding = scale(get_ui_elem("rounding"), axis=ResizeAxis.MIN)
+        border_width = scale(get_ui_elem("border-width"), axis=ResizeAxis.MIN)
+        padding = scale(get_ui_elem("padding"), axis=ResizeAxis.HEIGHT)
 
         # resize sprite
         if self.do_auto_size:

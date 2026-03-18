@@ -6,9 +6,8 @@ from core.settings import (
     MIN_UI_SIZE,
     SIZE_RATIOS,
     Path,
-    Literal,
 )
-from core.enums import PieceColors
+from core.enums import PieceColors, ResizeAxis
 
 
 def clamp(value: float, min_value: float, max_value: float):
@@ -63,7 +62,7 @@ def get_ui_elem(element, get_exact=False):
     return scaled_ui_elem if get_exact else int(scaled_ui_elem)
 
 
-def resize(point, axis: Literal["width", "height", "min", "max", "auto"] = "auto"):
+def resize(point, axis: ResizeAxis = ResizeAxis.AUTO):
     # get needed info
     x, y = point
     curr_win_w, curr_win_h = GameContext.game.display.get_size()
@@ -72,15 +71,15 @@ def resize(point, axis: Literal["width", "height", "min", "max", "auto"] = "auto
     scale_x = curr_win_w / BASE_WIDTH
     scale_y = curr_win_h / BASE_HEIGHT
     match axis:
-        case "width":
+        case ResizeAxis.WIDTH:
             scale_y = scale_x
-        case "height":
+        case ResizeAxis.HEIGHT:
             scale_x = scale_y
-        case "min":
+        case ResizeAxis.MIN:
             scale_x = scale_y = min(scale_x, scale_y)
-        case "max":
+        case ResizeAxis.MAX:
             scale_x = scale_y = max(scale_x, scale_y)
-        case "auto":
+        case ResizeAxis.AUTO:
             pass
         case _:
             raise ValueError(f'axis argument "{axis}" is invalid')
@@ -92,19 +91,19 @@ def resize(point, axis: Literal["width", "height", "min", "max", "auto"] = "auto
     return (x_resized, y_resized)
 
 
-def scale(
-    scalar, get_exact=False, axis: Literal["width", "height", "min", "max"] = "min"
-):
+def scale(scalar, get_exact=False, axis: ResizeAxis = ResizeAxis.AUTO):
     window_width, window_height = GameContext.game.display.get_size()
 
     match axis:
-        case "min":
+        case ResizeAxis.MIN:
             scale = min(window_width / BASE_WIDTH, window_height / BASE_HEIGHT)
-        case "max":
+        case ResizeAxis.MAX:
             scale = max(window_width / BASE_WIDTH, window_height / BASE_HEIGHT)
-        case "width":
+        case ResizeAxis.WIDTH:
             scale = window_width / BASE_WIDTH
-        case "height":
+        case ResizeAxis.HEIGHT:
+            scale = window_height / BASE_HEIGHT
+        case ResizeAxis.AUTO:
             scale = window_height / BASE_HEIGHT
         case _:
             raise ValueError(f'axis argument "{axis}" is invalid')

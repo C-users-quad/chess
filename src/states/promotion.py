@@ -1,7 +1,7 @@
 from core.settings import BASE_HEIGHT, BASE_WIDTH, COLORS, pygame
 from core.utils import get_ui_elem
 from core.images import PIECE_IMAGES
-from core.enums import PieceNames, StateNames
+from core.enums import AnchorPoints, PieceNames, ResizeAxis, StateNames
 from ui.rects.colored_rect import UIColoredRect
 from ui.buttons.image_button import UIImageButton
 from ui.composites.widget import UIWidget
@@ -27,11 +27,11 @@ def promotion_widget_child_factory(base, move, state):
         ],
         PieceNames.BISHOP: [
             (base_center[0] - padding / 2, base_center[1] + padding / 2),
-            "topright",
+            AnchorPoints.TOPRIGHT,
         ],
         PieceNames.KNIGHT: [
             (base_center[0] + padding / 2, base_center[1] + padding / 2),
-            "topleft",
+            AnchorPoints.TOPLEFT,
         ],
     }
     for name, (pos, anchor) in buttons.items():
@@ -95,7 +95,7 @@ class Promotion(GameState):
     def make_ui(self):
         # get needed info
         elements = []
-        resize_axis = "max"
+        resize_axis = ResizeAxis.MAX
 
         # create bounding box for the promotion ui
         base_side_length = BASE_HEIGHT / 5
@@ -103,7 +103,7 @@ class Promotion(GameState):
         promotion_ui_base = UIColoredRect(
             pos=base_center,
             size=(base_side_length, base_side_length),
-            anchor="center",
+            anchor=AnchorPoints.CENTER,
             color=COLORS["promotion-ui-bg"],
             resize_axis=resize_axis,
             rounding=True,

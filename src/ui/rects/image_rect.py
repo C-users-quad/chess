@@ -1,10 +1,18 @@
+from core.enums import ResizeAxis
 from core.settings import COLORS, pygame
 from ui.base import UIElement
 
 
 class UIImage(UIElement):
     def __init__(
-        self, pos, size, anchor, image, do_auto_size=False, resize_axis="auto", **kwargs
+        self,
+        pos,
+        size,
+        anchor,
+        image,
+        do_auto_size=False,
+        resize_axis=ResizeAxis.AUTO,
+        **kwargs,
     ):
         size = image.size if do_auto_size else size
         super().__init__(

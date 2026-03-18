@@ -7,7 +7,7 @@ from core.settings import (
     MAX_VOLUME,
 )
 from core.utils import get_ui_elem
-from core.enums import StateNames
+from core.enums import AnchorPoints, ResizeAxis, StateNames
 from states.base import GameState
 from ui.misc.checkbox import UICheckbox
 from ui.composites.widget import UIWidget
@@ -25,7 +25,7 @@ def sfx_volume_widget_child_factory(base: UIColoredRect):
     text = UIText(
         pos=(base.base_size[0] / 2, padding),
         font_height=base.base_size[1] / 2 - padding * 1.5,
-        anchor="midtop",
+        anchor=AnchorPoints.MIDTOP,
         resize_axis=base.resize_axis,
         text="SFX Volume",
         text_color="black",
@@ -36,7 +36,7 @@ def sfx_volume_widget_child_factory(base: UIColoredRect):
     slider = UISlider(
         pos=(text.base_pos[0], text.base_size[1] + padding * 2),
         size=(base.base_size[0] - padding * 2, base.base_size[1] / 4),
-        anchor="midtop",
+        anchor=AnchorPoints.MIDTOP,
         resize_axis=base.resize_axis,
         value=VariableSettings.sfx_volume,
         min_value=MIN_VOLUME,
@@ -56,7 +56,7 @@ def flip_board_widget_child_factory(base: UIColoredRect):
     text = UIText(
         pos=(base_size[0] / 2, padding),
         font_height=base_size[1] / 2 - padding * 1.5,
-        anchor="midtop",
+        anchor=AnchorPoints.MIDTOP,
         resize_axis=base.resize_axis,
         text="Flip Board",
         text_color="black",
@@ -68,7 +68,7 @@ def flip_board_widget_child_factory(base: UIColoredRect):
         value=VariableSettings.flip_board,
         change_value=VariableSettings.setter("flip_board"),
         pos=(base_size[0] / 2, base_size[1] / 2 + padding * 0.5),
-        anchor="midtop",
+        anchor=AnchorPoints.MIDTOP,
         side_length=base_size[1] / 2 - padding * 1.5,
         resize_axis=base.resize_axis,
     )
@@ -109,7 +109,7 @@ class SettingsMenu(GameState):
 
         title = UITextBox(
             pos=(BASE_WIDTH / 2, spacing),
-            anchor="midtop",
+            anchor=AnchorPoints.MIDTOP,
             text="Settings",
             font_size="title",
             do_auto_size=True,
@@ -119,9 +119,9 @@ class SettingsMenu(GameState):
         sfx_volume_widget_base = UIColoredRect(
             pos=(BASE_WIDTH / 2, BASE_HEIGHT / 4),
             size=settings_widget_size,
-            anchor="midtop",
+            anchor=AnchorPoints.MIDTOP,
             color="white",
-            resize_axis="width",
+            resize_axis=ResizeAxis.WIDTH,
             rounding=True,
         )
         sfx_volume_widget = UIWidget(
@@ -136,9 +136,9 @@ class SettingsMenu(GameState):
         flip_board_widget_base = UIColoredRect(
             pos=(prev_widget_rect.centerx, prev_widget_rect.bottom + spacing),
             size=settings_widget_size,
-            anchor="midtop",
+            anchor=AnchorPoints.MIDTOP,
             color="white",
-            resize_axis="width",
+            resize_axis=ResizeAxis.WIDTH,
             rounding=True,
         )
         flip_board_widget = UIWidget(

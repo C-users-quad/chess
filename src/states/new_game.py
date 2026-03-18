@@ -1,5 +1,5 @@
 from core.settings import BASE_HEIGHT, BASE_WIDTH, pygame
-from core.enums import StateNames
+from core.enums import AnchorPoints, ResizeAxis, StateNames
 from core.utils import get_ui_elem
 from states.base import GameState
 from ui.buttons.text_button import UITextButton
@@ -17,7 +17,7 @@ def new_game_widget_child_factory(base, state: NewGame):
     # new game button
     new_game_button = UITextButton(
         pos=(base.base_size[0] / 2, base.base_size[1] - padding),
-        anchor="midbottom",
+        anchor=AnchorPoints.MIDBOTTOM,
         text="New Game",
         font_size="text",
         click_action=state.reset_board,
@@ -30,7 +30,7 @@ def new_game_widget_child_factory(base, state: NewGame):
     game_results_text_base = UIColoredRect(
         pos=(base.base_size[0] / 2, padding),
         size=(base.base_size[0] - padding * 2, base.base_size[1] / 4),
-        anchor="midtop",
+        anchor=AnchorPoints.MIDTOP,
         color="#57585e",
         resize_axis=base.resize_axis,
         rounding=True,
@@ -44,7 +44,7 @@ def new_game_widget_child_factory(base, state: NewGame):
     game_results_text = UIText(
         pos=(game_results_text_base.get_base_rect().center),
         font_height=game_results_text_base.base_size[1] - padding * 2,
-        anchor="center",
+        anchor=AnchorPoints.CENTER,
         resize_axis=base.resize_axis,
         text=game_result,
         text_color="white",
@@ -89,13 +89,13 @@ class NewGame(GameState):
 
     def make_ui(self):
         elements = []
-        resize_axis = "height"
+        resize_axis = ResizeAxis.HEIGHT
 
         # make new game widget
         new_game_widget_base = UIColoredRect(
             pos=(BASE_WIDTH / 2, BASE_HEIGHT / 2),
             size=(BASE_WIDTH / 5, BASE_HEIGHT / 3),
-            anchor="center",
+            anchor=AnchorPoints.CENTER,
             rounding=True,
             color="white",
             resize_axis=resize_axis,
