@@ -1,4 +1,5 @@
 from core.settings import (
+    DEFAULT_FADEOUT_TIME,
     pygame,
     join,
     BUTTON_SOUNDS_FILEPATH,
@@ -91,7 +92,7 @@ def playsound(sound_name: str) -> None:
 
 def stopsound(sound_name: str) -> None:
     channel = get_channel(sound_name)
-    channel.stop()
+    channel.fadeout(DEFAULT_FADEOUT_TIME)
 
 
 def is_playing(sound_name: str) -> bool:

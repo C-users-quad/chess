@@ -1,6 +1,9 @@
 from core.enums import AnchorPoints, ResizeAxis
-from core.settings import GameContext, pygame
+from core.settings import GameContext, pygame, TYPE_CHECKING
 from core.utils import get_tui_text_box, resize
+
+if TYPE_CHECKING:
+    from ui.composites.manager import UIManager
 
 
 class UIElement:
@@ -12,6 +15,8 @@ class UIElement:
         size=(0, 0),
         anchor=AnchorPoints.TOPLEFT,
         resize_axis=ResizeAxis.AUTO,
+        z_index=0,
+        draw_below=True,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -21,7 +26,12 @@ class UIElement:
         self.anchor = anchor
         self.resize_axis = resize_axis
         self.rect = self.get_base_rect()
-        self.dirty = False
+        self.z_index = z_index
+        self.draw_below = draw_below
+        """determines if this ui element is drawn when it isnt in the top state"""
+        self.manager: UIManager = None
+        """the manager for this element. should be set in uimanager constructor."""
+        self.dirty = True
         """used for lazily updating """
 
     @property
@@ -34,6 +44,13 @@ class UIElement:
         returns the screen-relative position on the rect located at the anchor point
         """
         return getattr(self.rect, self.anchor)
+
+    def register_highlight_draw(self):
+        """
+        if this element is highlightable, this should draw a highlight in absolute
+        window coordinates. should be drawn with a z-index of self.z_index + 1.
+        """
+        pass
 
     def update(self):
         pass
@@ -58,8 +75,9 @@ class UIElement:
         self.rect = self.image.get_rect()
         setattr(self.rect, self.anchor, new_pos)
 
-    def draw(self):
-        self.game.display.blit(self.image, self.rect)
+    def register_draw_call(self):
+        draw_call = lambda: self.game.display.blit(self.image, self.rect)
+        self.manager.register_draw_call(self.z_index, draw_call)
 
     def __str__(self):
         text = (

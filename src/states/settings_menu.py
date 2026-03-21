@@ -121,7 +121,7 @@ class SettingsMenu(GameState):
             size=settings_widget_size,
             anchor=AnchorPoints.MIDTOP,
             color="white",
-            resize_axis=ResizeAxis.WIDTH,
+            resize_axis=ResizeAxis.HEIGHT,
             rounding=True,
         )
         sfx_volume_widget = UIWidget(
@@ -138,7 +138,7 @@ class SettingsMenu(GameState):
             size=settings_widget_size,
             anchor=AnchorPoints.MIDTOP,
             color="white",
-            resize_axis=ResizeAxis.WIDTH,
+            resize_axis=ResizeAxis.HEIGHT,
             rounding=True,
         )
         flip_board_widget = UIWidget(
@@ -149,4 +149,4 @@ class SettingsMenu(GameState):
         )
         elements.append(flip_board_widget)
 
-        self.ui = UIManager(elements)
+        self.ui = UIManager(elements, self)

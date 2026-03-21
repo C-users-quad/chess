@@ -1,18 +1,23 @@
+import random
+from typing import TYPE_CHECKING
+
 from core.settings import (
-    BOARD_SCALE_AXIS,
+    BOARD_RATIOS,
+    BOARD_SQUARE_RATIOS,
     COLORS,
     GameContext,
     Literal,
     MIN_UI_SIZE,
-    MOVE_CIRCLE_SCALE,
-    PIECE_SCALE,
     VariableSettings,
     pygame,
 )
 from core.enums import PieceColors
 from ui.buttons.clickable import Clickable
-from core.utils import get_tui_text_box, get_ui_elem, scale
+from core.utils import get_tui_text_box
 from chess.move import Move
+
+if TYPE_CHECKING:
+    from chess.board import Board
 
 
 class BoardSquare(Clickable):
@@ -38,7 +43,7 @@ class BoardSquare(Clickable):
         self.piece = None
         self.color = COLORS[color]
         self.pos = pos
-        self.board = board
+        self.board: Board = board
         self.selected = False
         self.valid_square = False
 
@@ -49,11 +54,9 @@ class BoardSquare(Clickable):
 
     def render(self):
         # square size
-        board_width = scale(scalar=get_ui_elem("board"), axis=BOARD_SCALE_AXIS)
+        board_width = self.board.image.get_width()
 
-        board_border_width = scale(
-            scalar=get_ui_elem("board-border"), axis=BOARD_SCALE_AXIS
-        )
+        board_border_width = board_width * BOARD_RATIOS["border"]
 
         square_side_length = max(
             MIN_UI_SIZE, (board_width - 2 * board_border_width) // 8
@@ -75,8 +78,8 @@ class BoardSquare(Clickable):
             piece = pygame.transform.smoothscale(
                 self.piece.image,
                 (
-                    int(square_side_length * PIECE_SCALE),
-                    int(square_side_length * PIECE_SCALE),
+                    int(square_side_length * BOARD_SQUARE_RATIOS["piece"]),
+                    int(square_side_length * BOARD_SQUARE_RATIOS["piece"]),
                 ),
             )
             piece_rect = piece.get_rect(
@@ -138,10 +141,15 @@ class BoardSquare(Clickable):
         image_center = (image_side_length / 2, image_side_length / 2)
 
         # create circle
-        circle_radius = self.image.get_width() * MOVE_CIRCLE_SCALE
+        circle_color = (
+            COLORS["move-circle-dark"]
+            if self.color == COLORS["white-square"]
+            else COLORS["move-circle-light"]
+        )
+        circle_radius = self.image.get_width() * BOARD_SQUARE_RATIOS["move-circle"]
         circle = pygame.Surface((circle_radius * 2, circle_radius * 2), pygame.SRCALPHA)
         pygame.draw.circle(
-            circle, COLORS["move-circle"], (circle_radius, circle_radius), circle_radius
+            circle, circle_color, (circle_radius, circle_radius), circle_radius
         )
         circle_rect = circle.get_rect(center=image_center)
 
@@ -160,6 +168,7 @@ class BoardSquare(Clickable):
         if GameContext.game.debug:
             print(self.piece)
 
+        self.board.dirty = True
         selected_square = self.board.find_selected_square()
         if selected_square:
             if self.valid_square:

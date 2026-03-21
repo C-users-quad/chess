@@ -2,6 +2,8 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
+from core.enums import AnchorPoints, ResizeAxis
+
 class TestUIElement:
     """Tests for UIElement base class."""
 
@@ -47,9 +49,10 @@ class TestUIManager:
         """Test UIManager can be initialized with elements list."""
         from ui.composites.manager import UIManager
         from ui.base import UIElement
+        from states.base import GameState
 
         elements = [UIElement(), UIElement()]
-        manager = UIManager(elements)
+        manager = UIManager(elements, GameState())
 
         assert len(manager.elements) == 2
 
@@ -57,9 +60,10 @@ class TestUIManager:
         """Test UIManager update propagates to elements."""
         from ui.composites.manager import UIManager
         from ui.base import UIElement
+        from states.base import GameState
 
         mock_element = MagicMock(spec=UIElement)
-        manager = UIManager([mock_element])
+        manager = UIManager([mock_element], GameState())
 
         manager.update()
 
@@ -69,9 +73,10 @@ class TestUIManager:
         """Test UIManager draw propagates to elements."""
         from ui.composites.manager import UIManager
         from ui.base import UIElement
+        from states.base import GameState
 
         mock_element = MagicMock(spec=UIElement)
-        manager = UIManager([mock_element])
+        manager = UIManager([mock_element], GameState())
 
         manager.draw()
 

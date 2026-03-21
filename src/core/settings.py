@@ -22,7 +22,7 @@ class VariableSettings:
     """
 
     fps: int = 60
-    sfx_volume: float = 1.0
+    sfx_volume: float = 0.5
     flip_board: bool = True
 
     @classmethod
@@ -47,6 +47,7 @@ class GameContext:
 
 
 # sound stuff
+DEFAULT_FADEOUT_TIME = 250
 MIN_VOLUME, MAX_VOLUME = 0.0, 1.0
 """min and max volume floats for pygame.mixer.Sound's"""
 
@@ -63,10 +64,12 @@ ANTIALIAS = True
 STATE_DIM_ALPHA = 100
 """integer from 0->255 where 0 means no dim to 255 which means black."""
 MIN_UI_SIZE = 1
+Z_MAX = 9999
+"""used to z-order elements that will always be on top of others"""
 
 # scale axis
-BOARD_SCALE_AXIS = ResizeAxis.HEIGHT
-TEXT_SCALE_AXIS = ResizeAxis.HEIGHT
+BOARD_RESIZE_AXIS = ResizeAxis.HEIGHT
+TEXT_RESIZE_AXIS = ResizeAxis.HEIGHT
 
 COLORS = {
     "bg": "#68f66a",
@@ -79,7 +82,8 @@ COLORS = {
     "white-square": "#F1E1D8",
     "black-square": "#311201",
     "board-highlight": "#ffee008e",
-    "move-circle": "#271978A0",
+    "move-circle-dark": "#271978A0",
+    "move-circle-light": "#3B29A09F",
     "state-dim": "#000000",
     "winning-sqr-highlight": "#44ff00cd",
     "losing-sqr-highlight": "#ff0000c1",
@@ -132,7 +136,6 @@ SIZE_RATIOS = {
     "subtitle": (50 / BASE_HEIGHT),
     "text": (25 / BASE_HEIGHT),
     "sidebar-width": (50 / BASE_WIDTH),
-    "board-border": (50 / BASE_HEIGHT),
 }
 """
 ## ratios used in order to determine size of elements drawn
@@ -146,13 +149,12 @@ SIZE_RATIOS = {
 'subtitle' - subtitle font size
 'text' - text font size
 'sidebar-width' - width of sidebar in main menu
-'board-border' - width of the boards border
 ```
 """
 # ratios that are relative to things other than the base window size
 # relative to board square side length
-PIECE_SCALE = 0.95
-MOVE_CIRCLE_SCALE = 0.2
-GAME_END_ICON_SCALE = 0.5
+BOARD_SQUARE_RATIOS = {"piece": 0.95, "move-circle": 0.2, "game-end-icon": 0.5}
 # relative to checkbox side length
-CHECKBOX_BORDER_SCALE = 0.2
+CHECKBOX_RATIOS = {"border": 0.2}
+# relative to board side length
+BOARD_RATIOS = {"border": 0.1}

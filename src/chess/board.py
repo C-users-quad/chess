@@ -1,9 +1,11 @@
 from core.settings import (
-    BOARD_SCALE_AXIS,
+    BOARD_RESIZE_AXIS,
+    BOARD_SQUARE_RATIOS,
     COLORS,
+    MIN_UI_SIZE,
     GameContext,
-    GAME_END_ICON_SCALE,
     pygame,
+    TYPE_CHECKING,
 )
 from core.utils import get_ui_elem, scale, opposite_color
 from core.images import GAME_END_ICONS
@@ -20,6 +22,9 @@ from chess.pieces import (
     get_all_pieces_of_color,
 )
 
+if TYPE_CHECKING:
+    from ui.composites.manager import UIManager
+
 
 class Board:
     """
@@ -27,7 +32,7 @@ class Board:
         - every index has a boardsquare object
     """
 
-    def __init__(self):
+    def __init__(self, z_index=0):
         # make and populate the 2d board array with boardsquares
         self.board = [
             [
@@ -43,15 +48,24 @@ class Board:
         self.stalemate = False
         self.game_end = False
         self.winning_color = None
+        self.manager: UIManager = None
+        self.z_index = z_index
+        self.draw_below = True
+        self.dirty = True
         self.populate_board()  # give board initial pieces
-        self.render()
+
+    @property
+    def game(self):
+        return GameContext.game
 
     def render(self):
-        """re-creates the board's image"""
         # get needed info
-        window_width, window_height = GameContext.game.display.get_size()
-        board_side_length = scale(get_ui_elem("board"), axis=BOARD_SCALE_AXIS)
-        rounding = scale(get_ui_elem("rounding"), axis=BOARD_SCALE_AXIS)
+        window_width, window_height = self.game.display.get_size()
+        spacing = get_ui_elem("spacing")
+        board_side_length = scale(get_ui_elem("board"), axis=BOARD_RESIZE_AXIS)
+        board_side_length -= 2 * spacing
+        board_side_length = max(MIN_UI_SIZE, board_side_length)
+        rounding = scale(get_ui_elem("rounding"), axis=BOARD_RESIZE_AXIS)
 
         # create border image
         self.image = pygame.Surface(
@@ -75,10 +89,10 @@ class Board:
                 square.render()  # creates the squares image
                 square.draw()  # draws the square onto the boards image
 
-    def render_game_end_overlay(self):
+    def draw_game_end_overlay(self):
         white_king_sqr = self.get_square(self.white_king.pos)
         black_king_sqr = self.get_square(self.black_king.pos)
-        icon_length = white_king_sqr.rect.width * GAME_END_ICON_SCALE
+        icon_length = white_king_sqr.rect.width * BOARD_SQUARE_RATIOS["game-end-icon"]
         icon_size = (icon_length, icon_length)
 
         if self.checkmate:
@@ -100,8 +114,10 @@ class Board:
             win_icon_rect = win_icon.get_rect(center=winning_sqr.rect.topright)
             lose_icon_rect = lose_icon.get_rect(center=losing_sqr.rect.topright)
 
-            GameContext.game.display.blit(win_icon, win_icon_rect)
-            GameContext.game.display.blit(lose_icon, lose_icon_rect)
+            draw_win_icon = lambda: self.game.display.blit(win_icon, win_icon_rect)
+            draw_lose_icon = lambda: self.game.display.blit(lose_icon, lose_icon_rect)
+            self.manager.register_draw_call(self.z_index + 1, draw_win_icon)
+            self.manager.register_draw_call(self.z_index + 1, draw_lose_icon)
 
         elif self.stalemate:
             stalemate_icon = GAME_END_ICONS["stalemate"]
@@ -114,8 +130,14 @@ class Board:
                 center=black_king_sqr.rect.topright
             )
 
-            GameContext.game.display.blit(stalemate_icon, icon_rect_white_king)
-            GameContext.game.display.blit(stalemate_icon, icon_rect_black_king)
+            draw_stalemate_icon_1 = lambda: self.game.display.blit(
+                stalemate_icon, icon_rect_white_king
+            )
+            draw_stalemate_icon_2 = lambda: self.game.display.blit(
+                stalemate_icon, icon_rect_black_king
+            )
+            self.manager.register_draw_call(self.z_index + 1, draw_stalemate_icon_1)
+            self.manager.register_draw_call(self.z_index + 1, draw_stalemate_icon_2)
 
     def handle_game_end(self):
         pieces = get_all_pieces_of_color(self.turn_color, self)
@@ -152,7 +174,7 @@ class Board:
 
         if self.game_end:
             self.reset_square_flags()
-            GameContext.game.push_state(StateNames.NEW_GAME)
+            self.game.push_state(StateNames.NEW_GAME)
 
     def find_selected_square(self):
         for row in self.board:
@@ -222,7 +244,7 @@ class Board:
 
         # reset piece
         move.piece.has_moved = move.original_has_moved
-        if hasattr(move, "original_just_moved_forward_two"):
+        if move.original_just_moved_forward_two:
             move.piece.just_moved_forward_two = move.original_just_moved_forward_two
         if move.is_castle:
             rook = self.get_square(move.rook_end).piece
@@ -267,11 +289,11 @@ class Board:
 
         self.handle_game_end()
 
-    def draw(self):
-        self.render()
-        GameContext.game.display.blit(self.image, self.rect)
+    def register_draw_call(self):
+        draw_call = lambda: self.game.display.blit(self.image, self.rect)
+        self.manager.register_draw_call(self.z_index, draw_call)
         if self.game_end:
-            self.render_game_end_overlay()
+            self.draw_game_end_overlay()
 
     def populate_board(self):
         """adds the initial arrangement of chess pieces to the board"""
@@ -370,4 +392,10 @@ class Board:
         if not move.is_promotion:
             return
 
-        GameContext.game.push_state(StateNames.PROMOTION, (move,))
+        self.game.push_state(StateNames.PROMOTION, (move,))
+
+    def register_highlight_draw(self):
+        """
+        no-op so that board is compatible with uimanager. board has no highlight to draw.
+        """
+        pass

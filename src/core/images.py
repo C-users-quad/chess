@@ -29,7 +29,7 @@ key: str -> value: pygame.Surface()
 current keys:
 ```
 'winner' - victory crown icon
-'loser' - losing icons
+'loser' - losing icon
 'stalemate' - \"1/2\" stalemate icon
 ```
 """

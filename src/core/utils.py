@@ -85,8 +85,8 @@ def resize(point, axis: ResizeAxis = ResizeAxis.AUTO):
             raise ValueError(f'axis argument "{axis}" is invalid')
 
     # compute resized point and return
-    x_resized = max(MIN_UI_SIZE, x * scale_x)
-    y_resized = max(MIN_UI_SIZE, y * scale_y)
+    x_resized = clamp(x * scale_x, MIN_UI_SIZE, curr_win_w)
+    y_resized = clamp(y * scale_y, MIN_UI_SIZE, curr_win_h)
 
     return (x_resized, y_resized)
 

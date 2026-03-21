@@ -117,4 +117,4 @@ class Promotion(GameState):
         )
         elements.append(promotion_ui)
 
-        self.ui = UIManager(elements)
+        self.ui = UIManager(elements, self)

@@ -2,7 +2,7 @@ from core.enums import ResizeAxis
 from core.settings import (
     ANTIALIAS,
     COLORS,
-    TEXT_SCALE_AXIS,
+    TEXT_RESIZE_AXIS,
     MIN_UI_SIZE,
     pygame,
 )
@@ -30,7 +30,6 @@ class UITextBox(UIElement):
         super().__init__(**kwargs)
         if do_auto_size:
             self.auto_size()
-        self.render()
 
     @property
     def font(self):
@@ -46,7 +45,7 @@ class UITextBox(UIElement):
             return self.game.get_font(font_height)
 
         return self.game.get_font(
-            scale(get_ui_elem(self.font_size), axis=TEXT_SCALE_AXIS)
+            scale(get_ui_elem(self.font_size), axis=TEXT_RESIZE_AXIS)
         )
 
     def auto_size(self):
@@ -71,7 +70,7 @@ class UITextBox(UIElement):
 
         # get needed ui elements
         rounding = scale(get_ui_elem("rounding"), axis=ResizeAxis.MIN)
-        border_width = scale(get_ui_elem("border-width"), axis=ResizeAxis.MIN)
+        border_width = scale(get_ui_elem("border-width"), axis=ResizeAxis.AUTO)
         padding = scale(get_ui_elem("padding"), axis=ResizeAxis.HEIGHT)
 
         # resize sprite

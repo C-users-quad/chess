@@ -1,3 +1,4 @@
+from core.draw import DrawingManager
 from core.settings import (
     pygame,
     BASE_WIDTH,
@@ -8,6 +9,7 @@ from core.settings import (
     GameContext,
     sys,
     VariableSettings,
+    TYPE_CHECKING,
 )
 from core.utils import get_tui_text_box, asset_path
 from core.enums import StateNames
@@ -16,6 +18,9 @@ from states.settings_menu import SettingsMenu
 from states.chess import Chess
 from states.promotion import Promotion
 from states.new_game import NewGame
+
+if TYPE_CHECKING:
+    from states.base import GameState
 
 
 class Game:
@@ -42,10 +47,11 @@ class Game:
 
         key: StateNames.[some state name] -> value: state class
         """
-        self.state_stack = []
+        self.state_stack: list[GameState] = []
         self.on = True
         self.prev_window_size = self.display.get_size()
         self.debug = False
+        self.drawing_manager = DrawingManager()
         self.render_dim()
 
     def initialize_state_stack(self):
@@ -78,7 +84,7 @@ class Game:
         return state
 
     def pop_state(self):
-        self.state_stack.pop()
+        return self.state_stack.pop()
 
     def power_off(self):
         self.on = False
@@ -135,13 +141,7 @@ def main():
 
         # draw game
         game.display.fill(COLORS["bg"])
-        for state in game.state_stack[0:-1]:
-            if state.draw_below:
-                state.render(force_rendering=True)
-                state.draw()
-                state.draw_dim()
-        top_state.render()
-        top_state.draw()
+        game.drawing_manager.draw()
 
         pygame.display.update()
 

@@ -20,7 +20,6 @@ class UIImage(UIElement):
         )
         self._original_image = image.copy()
         self.image = self._original_image.copy()
-        self.render()
 
     def render(self):
         self.resize()

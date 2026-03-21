@@ -109,4 +109,4 @@ class NewGame(GameState):
         )
         elements.append(new_game_widget)
 
-        self.ui = UIManager(elements)
+        self.ui = UIManager(elements, self)

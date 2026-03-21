@@ -10,7 +10,6 @@ class UIColoredRect(UIElement):
         super().__init__(**kwargs)
         self.color = color
         self.rounding = rounding
-        self.render()
 
     def render(self):
         self.resize()

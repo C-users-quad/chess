@@ -20,12 +20,12 @@ class UIWidget(UIElement):
             size=base.base_size,
             anchor=base.anchor,
             resize_axis=base.resize_axis,
+            draw_below=base.draw_below,
             **kwargs,
         )
         self.base = base
         self.child_factory = child_factory
-        self.children = self.child_factory()
-        self.render()
+        self.children: list[UIElement] = self.child_factory()
 
     def get_child_relative_rect(self, child):
         """
@@ -78,13 +78,13 @@ class UIWidget(UIElement):
             child_rect = self.get_child_relative_rect(child)
             self.base.image.blit(child.image, child_rect)
 
-    def draw(self):
-        # draw base widget
-        self.game.display.blit(self.base.image, self.base.rect)
-        # if widget has buttons, draw their highlights on top
+    def register_draw_call(self):
+        widget_draw_call = lambda: self.game.display.blit(
+            self.base.image, self.base.rect
+        )
+        self.manager.register_draw_call(self.z_index, widget_draw_call)
         for child in self.children:
-            if hasattr(child, "draw_highlight"):
-                child.draw_highlight()
+            child.register_highlight_draw()
 
     def __str__(self):
         lines = (

@@ -35,11 +35,12 @@ class UIButton(UIElement, Clickable):
 
     def draw(self):
         super().draw()
-        self.draw_highlight()
+        self.register_highlight_draw()
 
-    def draw_highlight(self):
+    def register_highlight_draw(self):
         if self.highlight:
-            self.game.display.blit(self.highlight, self.rect)
+            draw_call = lambda: self.game.display.blit(self.highlight, self.rect)
+            self.manager.register_draw_call(self.z_index + 1, draw_call)
 
     def highlight_button(self):
         if self.hover == self.prev_hover:
