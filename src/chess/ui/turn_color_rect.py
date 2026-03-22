@@ -1,4 +1,4 @@
-from core.enums import PieceColors
+from core.enums import PieceColors, StateNames
 from core.settings import COLORS, TYPE_CHECKING
 from ui.rects.colored_rect import UIColoredRect
 
@@ -9,7 +9,10 @@ if TYPE_CHECKING:
 class UITurnColorRect(UIColoredRect):
     def __init__(self, board: Board, **kwargs):
         super().__init__(color=board.turn_color, **kwargs)
-        self.board = board
+
+    @property
+    def board(self) -> Board:
+        return self.game.get_state(StateNames.CHESS).board
 
     def change_color(self):
         self.color = (

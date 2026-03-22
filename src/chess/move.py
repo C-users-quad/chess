@@ -1,6 +1,11 @@
+from core.settings import TYPE_CHECKING
 from core.sounds import playsound
 from core.utils import get_all_pieces_of_color, opposite_color
 from core.enums import PieceNames, SoundNames
+
+if TYPE_CHECKING:
+    from chess.board import Board
+    from chess.pieces import Piece
 
 
 class Move:
@@ -11,12 +16,13 @@ class Move:
     """
 
     def __init__(self, piece, end_pos, board, real_move=True):
+        self.board: Board = board
         self.piece = piece
         self.start = piece.pos
         self.end = end_pos
         self.capture_square = None
         self.promotion_piece = None
-        self.captured_piece = None
+        self.captured_piece: Piece = None
         self.rook_start = None
         self.rook_end = None
         self.original_has_moved = None
@@ -30,7 +36,6 @@ class Move:
         self.double_pawn_push = False
         self.is_promotion = False
         self.real_move = real_move
-        self.board = board
 
     def check_flags_before_move(self):
         from chess.pieces import Pawn, King
@@ -63,6 +68,9 @@ class Move:
             if castling_moves and self.end in castling_moves:
                 self.is_castle = True
 
+        # piece has moved
+        self.piece.has_moved = True
+
     def check_flags_after_move(self):
         if not self.real_move:
             return
@@ -77,6 +85,10 @@ class Move:
             for piece in get_all_pieces_of_color(enemy_color, self.board)
         ):
             self.ends_game = True
+
+        # updates boards list of captured pieces, if its a capture.
+        if self.captured_piece:
+            self.board.captured_pieces.append(self.captured_piece)
 
     def play_move_sound(self):
         if not self.real_move:

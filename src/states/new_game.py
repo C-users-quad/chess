@@ -60,7 +60,7 @@ class NewGame(GameState):
 
     def __init__(self):
         # the chess state is always at the bottom
-        self.chess_state = self.game.state_stack[0]
+        self.chess_state = self.game.get_state(StateNames.CHESS)
         super().__init__()
 
     def handle_events(self, events):

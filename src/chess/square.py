@@ -1,6 +1,3 @@
-import random
-from typing import TYPE_CHECKING
-
 from core.settings import (
     BOARD_RATIOS,
     BOARD_SQUARE_RATIOS,
@@ -10,6 +7,8 @@ from core.settings import (
     MIN_UI_SIZE,
     VariableSettings,
     pygame,
+    TYPE_CHECKING,
+    print,
 )
 from core.enums import PieceColors
 from ui.buttons.clickable import Clickable

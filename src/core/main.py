@@ -74,6 +74,12 @@ class Game:
             )
         return self.fonts[size]
 
+    def get_state(self, name: StateNames):
+        state_type = self.states.get(name)
+        for state in self.state_stack:
+            if isinstance(state, state_type):
+                return state
+
     def push_state(self, state, args=None):
         if args is None:
             state = self.states[state]()

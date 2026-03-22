@@ -13,6 +13,7 @@ from core.enums import PieceColors, StateNames
 from chess.square import BoardSquare
 from chess.move import Move
 from chess.pieces import (
+    Piece,
     King,
     Knight,
     Pawn,
@@ -52,6 +53,7 @@ class Board:
         self.z_index = z_index
         self.draw_below = True
         self.dirty = True
+        self.captured_pieces: list[Piece] = []
         self.populate_board()  # give board initial pieces
 
     @property
@@ -253,7 +255,6 @@ class Board:
             rook.has_moved = False
 
     def _apply_move(self, move: Move):
-        move.piece.has_moved = True
         self.remove_piece(move.start)
         self.place_piece(move.piece, move.end)
         self._capture_pawn_if_en_passant(move)

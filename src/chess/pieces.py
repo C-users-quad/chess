@@ -8,6 +8,7 @@ class Piece:
     """base piece class for logical chess pieces"""
 
     name = None
+    value = 0
 
     def __init__(self, pos, color, board, **kwargs):
         super().__init__(**kwargs)
@@ -103,6 +104,7 @@ class SlidingPiece(Piece):
 
 class Rook(SlidingPiece):
     name = PieceNames.ROOK
+    value = 5
     directions = [
         (0, 1),
         (-1, 0),
@@ -116,6 +118,7 @@ class Rook(SlidingPiece):
 
 class Bishop(SlidingPiece):
     name = PieceNames.BISHOP
+    value = 3
     directions = [(-1, 1), (1, 1), (-1, -1), (1, -1)]
 
     def __init__(self, pos, color, board, **kwargs):
@@ -124,6 +127,7 @@ class Bishop(SlidingPiece):
 
 class Queen(SlidingPiece):
     name = PieceNames.QUEEN
+    value = 9
     directions = Rook.directions.copy()
     directions.extend(Bishop.directions)
 
@@ -133,6 +137,7 @@ class Queen(SlidingPiece):
 
 class Knight(Piece):
     name = PieceNames.KNIGHT
+    value = 3
     directions = [
         (-2, -1),
         (-2, 1),
@@ -169,6 +174,7 @@ class Knight(Piece):
 
 class Pawn(Piece):
     name = PieceNames.PAWN
+    value = 1
 
     def __init__(self, pos, color, board, **kwargs):
         super().__init__(pos=pos, color=color, board=board, **kwargs)

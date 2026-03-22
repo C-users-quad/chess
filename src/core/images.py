@@ -6,7 +6,7 @@ PIECE_IMAGES = {}
 """
 Piece image surfaces
 
-key: (PieceColors(Enum), PieceNames(Enum)) -> value: pygame.Surface()
+key: (PieceColors, PieceNames) -> value: pygame.Surface()
 
 current keys:
 ```

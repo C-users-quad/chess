@@ -1,6 +1,7 @@
+from chess.ui.captured_pieces import UICapturedPieces
 from chess.ui.turn_color_rect import UITurnColorRect
 from core.settings import BASE_HEIGHT, BASE_WIDTH, BOARD_RESIZE_AXIS, pygame
-from core.enums import AnchorPoints, ResizeAxis, StateNames
+from core.enums import AnchorPoints, StateNames
 from chess.board import Board
 from core.utils import get_ui_elem
 from states.base import GameState
@@ -19,30 +20,35 @@ def game_info_widget_child_factory(base: UIColoredRect, state: Chess):
     turn_color_indicator = UITurnColorRect(
         pos=(padding, base_size[1] / 2),
         anchor=AnchorPoints.MIDLEFT,
-        size=(
-            base_size[1] - padding * 2,
-            base_size[1] - padding * 2
-        ),
+        size=(base_size[1] - padding * 2, base_size[1] - padding * 2),
         resize_axis=resize_axis,
         board=state.board,
         rounding=True,
     )
-    print(turn_color_indicator.base_pos)
     children.append(turn_color_indicator)
 
     indicator_text = UIText(
-        font_height = turn_color_indicator.base_size[1],
+        font_height=turn_color_indicator.base_size[1],
         text="to move",
         text_color="black",
         max_width=base_size[0] / 5,
         pos=(
             turn_color_indicator.get_base_rect().right + padding,
-            turn_color_indicator.get_base_rect().centery
+            base.base_size[1] / 2,
         ),
         anchor=AnchorPoints.MIDLEFT,
         resize_axis=resize_axis,
     )
     children.append(indicator_text)
+
+    captured_pieces = UICapturedPieces(
+        pos=(indicator_text.get_base_rect().right + padding, base.base_size[1] / 2),
+        anchor=AnchorPoints.MIDLEFT,
+        side_length=base.get_base_rect().width / 25,
+        resize_axis=resize_axis,
+        board=state.board,
+    )
+    children.append(captured_pieces)
 
     return children
 

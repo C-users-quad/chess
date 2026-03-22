@@ -1,3 +1,4 @@
+from core.enums import StateNames
 from core.settings import Z_MAX, GameContext, pygame, TYPE_CHECKING
 from core.utils import get_tui_text_box
 
@@ -8,7 +9,7 @@ if TYPE_CHECKING:
 class GameState:
     """base game state class, should be inherited by all game state classes"""
 
-    name = None
+    name = StateNames.BASE
 
     def __init__(self):
         self.draw_below = True

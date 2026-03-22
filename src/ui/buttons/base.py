@@ -1,4 +1,4 @@
-from core.settings import COLORS, pygame
+from core.settings import COLORS, pygame, print
 from core.utils import get_tui_text_box
 from core.sounds import playsound
 from core.enums import SoundNames
