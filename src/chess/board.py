@@ -5,11 +5,11 @@ from core.settings import (
     MIN_UI_SIZE,
     GameContext,
     pygame,
-    TYPE_CHECKING,
 )
 from core.utils import get_ui_elem, scale, opposite_color
 from core.images import GAME_END_ICONS
 from core.enums import PieceColors, StateNames
+from ui.base import UIElement
 from chess.square import BoardSquare
 from chess.move import Move
 from chess.pieces import (
@@ -23,18 +23,18 @@ from chess.pieces import (
     get_all_pieces_of_color,
 )
 
-if TYPE_CHECKING:
-    from ui.composites.manager import UIManager
 
-
-class Board:
+class Board(UIElement):
     """
     # The chessboard represented with a 2d array.
         - every index has a boardsquare object
     """
 
     def __init__(self, z_index=0):
-        # make and populate the 2d board array with boardsquares
+        super().__init__(z_index=z_index)
+        self.reset()
+
+    def reset(self):
         self.board = [
             [
                 BoardSquare((r, c), ("white-square", "black-square")[(r + c) % 2], self)
@@ -49,16 +49,8 @@ class Board:
         self.stalemate = False
         self.game_end = False
         self.winning_color = None
-        self.manager: UIManager = None
-        self.z_index = z_index
-        self.draw_below = True
-        self.dirty = True
         self.captured_pieces: list[Piece] = []
         self.populate_board()  # give board initial pieces
-
-    @property
-    def game(self):
-        return GameContext.game
 
     def render(self):
         # get needed info
@@ -394,9 +386,3 @@ class Board:
             return
 
         self.game.push_state(StateNames.PROMOTION, (move,))
-
-    def register_highlight_draw(self):
-        """
-        no-op so that board is compatible with uimanager. board has no highlight to draw.
-        """
-        pass

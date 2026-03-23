@@ -1,4 +1,4 @@
-from core.settings import BASE_HEIGHT, BASE_WIDTH, pygame
+from core.settings import BASE_HEIGHT, BASE_WIDTH, pygame, TYPE_CHECKING
 from core.enums import AnchorPoints, ResizeAxis, StateNames
 from core.utils import get_ui_elem
 from states.base import GameState
@@ -6,8 +6,10 @@ from ui.buttons.text_button import UITextButton
 from ui.rects.colored_rect import UIColoredRect
 from ui.composites.widget import UIWidget
 from ui.composites.manager import UIManager
-from chess.board import Board
 from ui.misc.text import UIText
+
+if TYPE_CHECKING:
+    from states.chess import Chess
 
 
 def new_game_widget_child_factory(base, state: NewGame):
@@ -60,7 +62,7 @@ class NewGame(GameState):
 
     def __init__(self):
         # the chess state is always at the bottom
-        self.chess_state = self.game.get_state(StateNames.CHESS)
+        self.chess_state: Chess = self.game.get_state(StateNames.CHESS)
         super().__init__()
 
     def handle_events(self, events):
@@ -75,7 +77,7 @@ class NewGame(GameState):
                 self.reset_board()
 
     def reset_board(self):
-        self.chess_state.board = Board()
+        self.chess_state.board.reset()
         self.game.pop_state()
 
     def update(self):
