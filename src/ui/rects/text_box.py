@@ -39,8 +39,8 @@ class UITextBox(UIElement):
             border_width = scale(get_ui_elem("border-width"), axis=ResizeAxis.MIN)
 
             # compute font height from current button size
-            btn_height = resize(self.size, self.resize_axis)[1]
-            font_height = btn_height - border_width * 2
+            height = resize(self.base_size, self.resize_axis)[1]
+            font_height = height - border_width * 2
 
             return self.game.get_font(font_height)
 

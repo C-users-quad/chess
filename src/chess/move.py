@@ -124,3 +124,4 @@ class Move:
         self.board.place_piece(
             piece=piece_class(self.end, self.piece.color, self.board), pos=self.end
         )
+        self.board.dirty = True

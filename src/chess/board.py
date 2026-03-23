@@ -180,6 +180,7 @@ class Board(UIElement):
         if not real_move:
             return
 
+        self.dirty = True
         for row in self.board:
             for square in row:
                 if square.selected or square.valid_square:
@@ -194,6 +195,7 @@ class Board(UIElement):
         if not valid_moves:
             return
 
+        self.dirty = True
         for row in self.board:
             for square in row:
                 if square.pos in valid_moves:

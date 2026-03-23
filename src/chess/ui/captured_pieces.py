@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class UICapturedPieces(UIElement):
     def __init__(self, side_length, board: Board, **kwargs):
         """
-        ui element that displays the current pieces captured by black and white
+        ui element that displays the current pieces captured by both black and white
 
         Args:
             side_length (float | int) :
@@ -22,7 +22,7 @@ class UICapturedPieces(UIElement):
         padding = get_ui_elem("padding")
         self.side_length = side_length
         size = (
-            15*side_length / 2,  # 15 = max captureable pieces
+            15*side_length / 1.5,  # 15 = max captureable pieces
             2*side_length + padding,
         )
         super().__init__(size=size, **kwargs)
@@ -71,7 +71,7 @@ class UICapturedPieces(UIElement):
             )
             self.image.blit(
                 source=piece_image,
-                dest=(i * (self.image_side_length/2), 0)
+                dest=(i * (self.image.width / 15), 0)
             )
 
         for i, piece in enumerate(black_captured):
@@ -82,7 +82,7 @@ class UICapturedPieces(UIElement):
             )
             self.image.blit(
                 source=piece_image,
-                dest=(i * (self.image_side_length/2), self.image_side_length + padding),
+                dest=(i * (self.image.width / 15), self.image_side_length + padding),
             )
 
         # draw partition between 2 rows of captured pieces

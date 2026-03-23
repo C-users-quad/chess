@@ -22,8 +22,13 @@ class VariableSettings:
     """
 
     fps: int = 60
+    """[0,inf] fps cap"""
     sfx_volume: float = 0.5
+    """[0,1] the volume of the sound effects"""
     flip_board: bool = True
+    """determines if the board visually flips every turn"""
+    game_time: int = 10*60
+    """the time the game lasts in seconds"""
 
     @classmethod
     def setter(cls, attr):

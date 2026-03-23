@@ -1,7 +1,8 @@
 from chess.ui.captured_pieces import UICapturedPieces
+from chess.ui.clock import UIClock
 from chess.ui.turn_color_rect import UITurnColorRect
-from core.settings import BASE_HEIGHT, BASE_WIDTH, BOARD_RESIZE_AXIS, pygame
-from core.enums import AnchorPoints, StateNames
+from core.settings import BASE_HEIGHT, BASE_WIDTH, BOARD_RESIZE_AXIS, VariableSettings, pygame
+from core.enums import AnchorPoints, ResizeAxis, StateNames
 from chess.board import Board
 from core.utils import get_ui_elem
 from states.base import GameState
@@ -42,13 +43,28 @@ def game_info_widget_child_factory(base: UIColoredRect, state: Chess):
     children.append(indicator_text)
 
     captured_pieces = UICapturedPieces(
-        pos=(indicator_text.get_base_rect().right + padding, base.base_size[1] / 2),
+        pos=(indicator_text.get_base_rect().right + padding, base_size[1] / 2),
         anchor=AnchorPoints.MIDLEFT,
-        side_length=base.get_base_rect().width / 25,
+        side_length=base_size[0] / 25,
         resize_axis=resize_axis,
         board=state.board,
     )
     children.append(captured_pieces)
+
+    clock = UIClock(
+        pos=(
+            captured_pieces.get_base_rect().right + padding,
+            base_size[1] / 2
+        ),
+        size=(
+            base_size[0] - captured_pieces.get_base_rect().right - 2*padding,
+            base_size[1] - 2*padding
+        ),
+        anchor=AnchorPoints.MIDLEFT,
+        resize_axis=resize_axis,
+        font_size=ResizeAxis.AUTO,
+    )
+    children.append(clock)
 
     return children
 
@@ -62,6 +78,9 @@ class Chess(GameState):
         self.board = Board()
         super().__init__()
         self.dim = False
+        self.time_remaining = VariableSettings.game_time
+        self.time_accumulator: float = 0
+        """should accumulate dt across frames."""
 
     def handle_events(self, events):
         super().handle_events(events)
@@ -74,8 +93,15 @@ class Chess(GameState):
             self.board.reset_square_flags()
             self.game.push_state(StateNames.MAIN_MENU)
 
+    def update_game_time(self):
+        self.time_accumulator += self.game.dt
+        if self.time_accumulator >= 1:
+            self.time_remaining -= 1
+            self.time_accumulator = 0
+
     def update(self):
         self.ui.update()
+        self.update_game_time()
 
     def render(self, force_rendering=False):
         self.ui.render(force_rendering)

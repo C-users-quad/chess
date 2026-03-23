@@ -35,6 +35,7 @@ class Game:
         self.fonts = {}
         """dict of font size (int) : font (pygame.Font)"""
         self.dt = 0
+        """time between frames in seconds"""
         self.states = {
             StateNames.MAIN_MENU: MainMenu,
             StateNames.CHESS: Chess,
