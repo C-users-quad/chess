@@ -1,4 +1,4 @@
-from core.settings import GameContext
+from core.settings import GameContext, print
 
 
 class DrawingManager:
@@ -47,7 +47,7 @@ class DrawingManager:
         """
         draws every state, z-ordered.
         """
-        # populate self.draw_calls
+        # poll states for draw calls
         self.construct_draw_calls()
 
         # iterate draw_calls with respect to the z-ordering and draw

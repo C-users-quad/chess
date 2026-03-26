@@ -13,7 +13,6 @@ class UICapturedPieces(UIElement):
     def __init__(self, side_length, board: Board, **kwargs):
         """
         ui element that displays the current pieces captured by both black and white
-
         Args:
             side_length (float | int) :
                 the side length in base-space of each individual captured piece's
@@ -22,8 +21,8 @@ class UICapturedPieces(UIElement):
         padding = get_ui_elem("padding")
         self.side_length = side_length
         size = (
-            15*side_length / 1.5,  # 15 = max captureable pieces
-            2*side_length + padding,
+            15 * side_length / 1.5,  # 15 = max captureable pieces
+            2 * side_length + padding,
         )
         super().__init__(size=size, **kwargs)
         self.prev_captured_pieces = board.captured_pieces
@@ -69,10 +68,7 @@ class UICapturedPieces(UIElement):
                 surface=piece_image,
                 size=(self.image_side_length, self.image_side_length),
             )
-            self.image.blit(
-                source=piece_image,
-                dest=(i * (self.image.width / 15), 0)
-            )
+            self.image.blit(source=piece_image, dest=(i * (self.image.width / 15), 0))
 
         for i, piece in enumerate(black_captured):
             piece_image = PIECE_IMAGES.get((piece.color, piece.name))
@@ -89,7 +85,7 @@ class UICapturedPieces(UIElement):
         pygame.draw.line(
             surface=self.image,
             color="gray",
-            start_pos=(0,self.image.get_height() / 2),
+            start_pos=(0, self.image.get_height() / 2),
             end_pos=(self.image.get_width(), self.image.get_height() / 2),
-            width=self.image.get_height() // 15
+            width=self.image.get_height() // 15,
         )

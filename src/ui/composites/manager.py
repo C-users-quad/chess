@@ -9,13 +9,12 @@ if TYPE_CHECKING:
 class UIManager:
     """manages all ui elements in a particular state"""
 
-    def __init__(self, elements: list[UIElement], state: GameState):
+    def __init__(self, state: GameState, elements: list[UIElement] = []):
         """
         manages a collection of ui elements
         """
         self.elements = elements
         self.state = state
-        self.assign_manager_to_elements()
         self.draw_calls: dict[int, list[callable]] = {}
         """draw calls for this specific ui manager/state."""
 
@@ -43,7 +42,6 @@ class UIManager:
             if not self.state.is_top_state and not element.draw_below:
                 continue
             element.register_draw_call()
-            element.register_highlight_draw()
 
     def register_draw_call(self, z_index: int, draw_call: callable):
         self.draw_calls.setdefault(z_index, []).append(draw_call)
@@ -52,6 +50,7 @@ class UIManager:
         self.draw_calls.clear()
 
     def update(self):
+        self.assign_manager_to_elements()
         for element in self.elements:
             element.update()
 

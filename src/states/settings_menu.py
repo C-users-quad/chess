@@ -149,4 +149,4 @@ class SettingsMenu(GameState):
         )
         elements.append(flip_board_widget)
 
-        self.ui = UIManager(elements, self)
+        self.ui.elements = elements

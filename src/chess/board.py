@@ -47,9 +47,11 @@ class Board(UIElement):
         self.black_king = None
         self.checkmate = False
         self.stalemate = False
+        self.timeout = False
         self.game_end = False
         self.winning_color = None
         self.captured_pieces: list[Piece] = []
+        self.dirty = True
         self.populate_board()  # give board initial pieces
 
     def render(self):
@@ -89,7 +91,7 @@ class Board(UIElement):
         icon_length = white_king_sqr.rect.width * BOARD_SQUARE_RATIOS["game-end-icon"]
         icon_size = (icon_length, icon_length)
 
-        if self.checkmate:
+        if self.checkmate or self.timeout:
             winning_sqr = (
                 white_king_sqr
                 if self.winning_color == PieceColors.WHITE
@@ -141,13 +143,15 @@ class Board(UIElement):
                 player_can_move = True
                 break
 
-        if not player_can_move:
+        if not player_can_move or self.timeout:
+            self.game_end = True
+
+        if self.game_end:
             white_king_sqr = self.get_square(self.white_king.pos)
             black_king_sqr = self.get_square(self.black_king.pos)
-            self.game_end = True
             king = getattr(self, f"{piece.color}_king")
-            if king.in_check():
-                self.checkmate = True
+
+            if self.timeout or king.in_check():
                 self.winning_color = opposite_color(self.turn_color)
                 winning_sqr = (
                     white_king_sqr
@@ -161,7 +165,10 @@ class Board(UIElement):
                 )
                 winning_sqr.winning_square = True
                 losing_sqr.losing_square = True
-            else:
+
+            if king.in_check():
+                self.checkmate = True
+            elif not king.in_check() and not player_can_move:
                 white_king_sqr.stalemate_square = True
                 black_king_sqr.stalemate_square = True
                 self.stalemate = True

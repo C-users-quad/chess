@@ -1,8 +1,14 @@
 from chess.ui.captured_pieces import UICapturedPieces
 from chess.ui.clock import UIClock
 from chess.ui.turn_color_rect import UITurnColorRect
-from core.settings import BASE_HEIGHT, BASE_WIDTH, BOARD_RESIZE_AXIS, VariableSettings, pygame
-from core.enums import AnchorPoints, ResizeAxis, StateNames
+from core.settings import (
+    BASE_HEIGHT,
+    BASE_WIDTH,
+    BOARD_RESIZE_AXIS,
+    VariableSettings,
+    pygame,
+)
+from core.enums import AnchorPoints, PieceColors, ResizeAxis, StateNames
 from chess.board import Board
 from core.utils import get_ui_elem
 from states.base import GameState
@@ -52,13 +58,10 @@ def game_info_widget_child_factory(base: UIColoredRect, state: Chess):
     children.append(captured_pieces)
 
     clock = UIClock(
-        pos=(
-            captured_pieces.get_base_rect().right + padding,
-            base_size[1] / 2
-        ),
+        pos=(captured_pieces.get_base_rect().right + padding, base_size[1] / 2),
         size=(
-            base_size[0] - captured_pieces.get_base_rect().right - 2*padding,
-            base_size[1] - 2*padding
+            base_size[0] - captured_pieces.get_base_rect().right - 2 * padding,
+            base_size[1] - 2 * padding,
         ),
         anchor=AnchorPoints.MIDLEFT,
         resize_axis=resize_axis,
@@ -78,9 +81,17 @@ class Chess(GameState):
         self.board = Board()
         super().__init__()
         self.dim = False
-        self.time_remaining = VariableSettings.game_time
+        self.white_time = VariableSettings.player_time
+        """the current amount of time white has remaining"""
+        self.black_time = VariableSettings.player_time
+        """the current amount of time black has remaining"""
         self.time_accumulator: float = 0
-        """should accumulate dt across frames."""
+        """should accumulate dt across frames. used for player clocks."""
+
+    def reset_game(self):
+        self.board.reset()
+        self.white_time = VariableSettings.player_time
+        self.black_time = VariableSettings.player_time
 
     def handle_events(self, events):
         super().handle_events(events)
@@ -94,14 +105,33 @@ class Chess(GameState):
             self.game.push_state(StateNames.MAIN_MENU)
 
     def update_game_time(self):
+        """
+        updates the time each player has remaining based on
+        whose turn it is and the passing of time while the chess state is active.
+        """
+        # accumulate dt across frames
         self.time_accumulator += self.game.dt
+
+        # updates player's clocks every second
         if self.time_accumulator >= 1:
-            self.time_remaining -= 1
+            match self.board.turn_color:
+                case PieceColors.WHITE:
+                    self.white_time -= 1
+                case PieceColors.BLACK:
+                    self.black_time -= 1
             self.time_accumulator = 0
+
+    def handle_loss_on_time(self):
+        """
+        detects and handles players running out of time.
+        """
+        if self.black_time <= 0 or self.white_time <= 0:
+            self.board.timeout = True
 
     def update(self):
         self.ui.update()
         self.update_game_time()
+        self.handle_loss_on_time()
 
     def render(self, force_rendering=False):
         self.ui.render(force_rendering)
@@ -136,4 +166,4 @@ class Chess(GameState):
         elements.append(game_info_widget)
         elements.append(self.board)
 
-        self.ui = UIManager(elements, self)
+        self.ui.elements = elements

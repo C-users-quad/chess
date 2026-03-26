@@ -22,7 +22,7 @@ def new_game_widget_child_factory(base, state: NewGame):
         anchor=AnchorPoints.MIDBOTTOM,
         text="New Game",
         font_size="text",
-        click_action=state.reset_board,
+        click_action=state.new_game,
         size=(base.base_size[0] - padding * 2, base.base_size[1] / 5),
         resize_axis=base.resize_axis,
     )
@@ -76,8 +76,8 @@ class NewGame(GameState):
             case pygame.K_ESCAPE:
                 self.reset_board()
 
-    def reset_board(self):
-        self.chess_state.board.reset()
+    def new_game(self):
+        self.chess_state.reset_game()
         self.game.pop_state()
 
     def update(self):
@@ -111,4 +111,4 @@ class NewGame(GameState):
         )
         elements.append(new_game_widget)
 
-        self.ui = UIManager(elements, self)
+        self.ui.elements = elements

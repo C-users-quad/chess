@@ -83,8 +83,6 @@ class UIWidget(UIElement):
             self.base.image, self.base.rect
         )
         self.manager.register_draw_call(self.z_index, widget_draw_call)
-        for child in self.children:
-            child.register_highlight_draw()
 
     def __str__(self):
         lines = (

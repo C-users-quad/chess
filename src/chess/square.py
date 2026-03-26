@@ -41,6 +41,8 @@ class BoardSquare(Clickable):
         # logical attributes and flags of board square
         self.piece = None
         self.color = COLORS[color]
+        self.image = pygame.Surface((0,0))
+        self.rect = self.image.get_rect()
         self.pos = pos
         self.board: Board = board
         self.selected = False

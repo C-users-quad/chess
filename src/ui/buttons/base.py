@@ -18,39 +18,31 @@ class UIButton(UIElement, Clickable):
         super().__init__(**kwargs)
         self.click_action = click_action
         self.click_action_args = click_action_args
-        self.highlight = None
+        self.highlight = False
 
     def render_highlight(self):
-        overlay = pygame.Surface(self.image.get_size(), pygame.SRCALPHA)
-        overlay.fill(COLORS["button-highlight"])
-
-        # multiply overlay by the button image
-        overlay.blit(self.image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-
-        self.highlight = overlay
+        if self.highlight:
+            overlay = self.image.copy()
+            overlay.fill(
+                COLORS["button-highlight"],
+                special_flags=pygame.BLEND_RGBA_MULT
+            )
+            self.image.blit(overlay)
 
     def render(self):
         super().render()
-        self.highlight = None
-
-    def draw(self):
-        super().draw()
-        self.register_highlight_draw()
-
-    def register_highlight_draw(self):
-        if self.highlight:
-            draw_call = lambda: self.game.display.blit(self.highlight, self.rect)
-            self.manager.register_draw_call(self.z_index + 1, draw_call)
+        self.render_highlight()
 
     def highlight_button(self):
         if self.hover == self.prev_hover:
             return
+
         if not self.hover:
-            # remove highlight
-            self.highlight = None
+            self.highlight = False
+            self.dirty = True
         else:
-            # render highlight
-            self.render_highlight()
+            self.highlight = True
+            self.dirty = True
 
     def do_click_action(self):
         if not self.detect_release():

@@ -45,13 +45,6 @@ class UIElement:
         """
         return getattr(self.rect, self.anchor)
 
-    def register_highlight_draw(self):
-        """
-        if this element is highlightable, this should draw a highlight in absolute
-        window coordinates. should be drawn with a z-index of self.z_index + 1.
-        """
-        pass
-
     def update(self):
         pass
 

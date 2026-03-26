@@ -27,8 +27,8 @@ class VariableSettings:
     """[0,1] the volume of the sound effects"""
     flip_board: bool = True
     """determines if the board visually flips every turn"""
-    game_time: int = 10*60
-    """the time the game lasts in seconds"""
+    player_time: int = 10
+    """the time each player has in seconds"""
 
     @classmethod
     def setter(cls, attr):
@@ -82,7 +82,7 @@ COLORS = {
     "text": "#FFFFFF",
     "ui-bg": "#220A0A",
     "ui-border": "#32c38b",
-    "button-highlight": "#0000008C",
+    "button-highlight": "#00000055",
     "board-border": "#6F3110",
     "white-square": "#F1E1D8",
     "black-square": "#311201",

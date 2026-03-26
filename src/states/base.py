@@ -1,9 +1,7 @@
 from core.enums import StateNames
-from core.settings import Z_MAX, GameContext, pygame, TYPE_CHECKING
+from core.settings import Z_MAX, GameContext, pygame
 from core.utils import get_tui_text_box
-
-if TYPE_CHECKING:
-    from ui.composites.manager import UIManager
+from ui.composites.manager import UIManager
 
 
 class GameState:
@@ -14,11 +12,12 @@ class GameState:
     def __init__(self):
         self.draw_below = True
         """determines whether this game state can be drawn below the active one"""
-        self.ui: UIManager = None
+        self.ui = UIManager(state=self)
         """a ui manager that updates a collection of ui elements"""
         self.dim = True
         """"determine if the state is dimmed when drawn below others"""
         self.make_ui()
+        self.ui.assign_manager_to_elements()
 
     @property
     def game(self):
@@ -39,7 +38,7 @@ class GameState:
     def make_ui(self):
         """
         creates a list of all ui elements present in this game state
-        and puts them in a ui manager to be assigned to self.ui
+        and puts them in self.ui.elements
         """
         pass
 

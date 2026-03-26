@@ -96,4 +96,4 @@ class MainMenu(GameState):
         )
         elements.append(quit_game)
 
-        self.ui = UIManager(elements, self)
+        self.ui.elements = elements
