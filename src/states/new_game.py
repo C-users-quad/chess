@@ -74,7 +74,7 @@ class NewGame(GameState):
     def handle_input(self, key):
         match key:
             case pygame.K_ESCAPE:
-                self.reset_board()
+                self.new_game()
 
     def new_game(self):
         self.chess_state.reset_game()
