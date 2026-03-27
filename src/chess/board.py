@@ -8,7 +8,7 @@ from core.settings import (
 )
 from core.utils import get_ui_elem, scale, opposite_color
 from core.images import GAME_END_ICONS
-from core.enums import PieceColors, StateNames
+from core.enums import PieceColors, PieceNames, StateNames
 from ui.base import UIElement
 from chess.square import BoardSquare
 from chess.move import Move
@@ -299,9 +299,8 @@ class Board(UIElement):
 
     def populate_board(self):
         """adds the initial arrangement of chess pieces to the board"""
-        colors = list(PieceColors)
         # make back rows
-        for color in colors:
+        for color in PieceColors:
             row = 0 if color == PieceColors.BLACK else 7
             col = 0
             for piece_class in [
@@ -322,7 +321,7 @@ class Board(UIElement):
                 col += 1
 
         # make pawns
-        for color in colors:
+        for color in PieceColors:
             row = 1 if color == PieceColors.BLACK else 6
             col = 0
             for _ in range(8):
