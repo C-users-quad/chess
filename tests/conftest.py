@@ -28,7 +28,7 @@ def empty_board():
 
     with patch.object(Board, "populate_board"):
         board = Board()
-        for row in board.board:
+        for row in board.squares:
             for square in row:
                 square.piece = None
         return board

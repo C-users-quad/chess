@@ -1,3 +1,4 @@
+from chess.ui.board import UIBoard
 from chess.ui.captured_pieces import UICapturedPieces
 from chess.ui.clock import UIClock
 from chess.ui.turn_color_rect import UITurnColorRect
@@ -79,6 +80,7 @@ class Chess(GameState):
 
     def __init__(self):
         self.board = Board()
+        self.ui_board = UIBoard(self.board)
         super().__init__()
         self.dim = False
         self.white_time = VariableSettings.player_time
@@ -90,6 +92,7 @@ class Chess(GameState):
 
     def reset_game(self):
         self.board.reset()
+        self.ui_board.reset()
         self.white_time = VariableSettings.player_time
         self.black_time = VariableSettings.player_time
 
@@ -101,7 +104,7 @@ class Chess(GameState):
 
     def handle_input(self, key):
         if key == pygame.K_ESCAPE:
-            self.board.reset_square_flags()
+            self.ui_board.reset_square_flags()
             self.game.push_state(StateNames.MAIN_MENU)
 
     def update_game_time(self):
@@ -164,6 +167,6 @@ class Chess(GameState):
             ),
         )
         elements.append(game_info_widget)
-        elements.append(self.board)
+        elements.append(self.ui_board)
 
         self.ui.elements = elements

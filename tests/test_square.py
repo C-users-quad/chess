@@ -12,14 +12,14 @@ class TestBoardSquare:
     def test_square_is_empty_initially(self):
         board = type("MockBoard", (), {"image": None, "rect": None})()
         square = BoardSquare((0, 0), "white-square", board)
-        assert square.empty() is True
+        assert square.is_empty() is True
 
     def test_square_place_piece(self):
         board = type("MockBoard", (), {"image": None, "rect": None})()
         square = BoardSquare((0, 0), "white-square", board)
         rook = Rook((0, 0), PieceColors.WHITE, board)
         square.place(rook)
-        assert square.empty() is False
+        assert square.is_empty() is False
         assert square.piece == rook
 
     def test_square_remove_piece(self):
@@ -28,7 +28,7 @@ class TestBoardSquare:
         rook = Rook((0, 0), PieceColors.WHITE, board)
         square.place(rook)
         square.remove_piece()
-        assert square.empty() is True
+        assert square.is_empty() is True
         assert square.piece is None
 
     def test_square_selected_flag(self):

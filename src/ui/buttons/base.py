@@ -24,8 +24,7 @@ class UIButton(UIElement, Clickable):
         if self.highlight:
             overlay = self.image.copy()
             overlay.fill(
-                COLORS["button-highlight"],
-                special_flags=pygame.BLEND_RGBA_MULT
+                COLORS["button-highlight"], special_flags=pygame.BLEND_RGBA_MULT
             )
             self.image.blit(overlay)
 

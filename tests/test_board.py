@@ -62,7 +62,7 @@ class TestBoardPlaceAndRemovePieces:
         rook = Rook((0, 0), PieceColors.WHITE, empty_board)
         empty_board.place_piece(rook, (0, 0))
         empty_board.remove_piece((0, 0))
-        assert empty_board.get_square((0, 0)).empty() is True
+        assert empty_board.get_square((0, 0)).is_empty() is True
 
     def test_place_and_remove_preserves_piece_pos(self, empty_board):
         rook = Rook((5, 5), PieceColors.WHITE, empty_board)
@@ -148,7 +148,7 @@ class TestBoardMakeMove:
         empty_board.black_king = black_king
         move = Move(white_rook, (7, 5), empty_board)
         empty_board.make_move(move)
-        assert empty_board.get_square((7, 7)).empty()
+        assert empty_board.get_square((7, 7)).is_empty()
         assert empty_board.get_square((7, 5)).piece == white_rook
 
     def test_make_move_updates_has_moved(self, empty_board):
