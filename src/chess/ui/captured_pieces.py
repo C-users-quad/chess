@@ -21,7 +21,7 @@ class UICapturedPieces(UIElement):
         padding = get_ui_elem("padding")
         self.side_length = side_length
         size = (
-            15 * side_length / 1.5,  # 15 = max captureable pieces
+            15 * side_length,  # 15 = max captureable pieces
             2 * side_length + padding,
         )
         super().__init__(size=size, **kwargs)
