@@ -25,6 +25,13 @@ TESTS_DIR := "tests"
 # export pythonpath
 export PYTHONPATH := SRC_DIR
 
+# export vars
+EXPORT_NAME := "chess"
+ASSETS_DIR := "assets"
+PYINSTALLER := if os() == "windows" { VENV_DIR + "/Scripts/pyinstaller" } \
+               else { VENV_DIR + "/bin/pyinstaller" }
+DATA_SEP := if os() == "windows" { ";" } else { ":" }
+
 help:
 	@{{SYSTEM_PYTHON}} -c " \
 		print('\033[35mjust\033[0m Command Help:'); \
@@ -35,7 +42,17 @@ help:
 		print('    \033[36mpristine:\033[0m cleans code cache, test cache, removes environment.'); \
 		print('    \033[36mtest:\033[0m run unit tests'); \
 		print('    \033[36mlint:\033[0m lint source code'); \
+		print('    \033[36mexport:\033[0m builds a standalone executable with 		PyInstaller'); \
+
 	"
+
+export: install
+	@{{SYSTEM_PYTHON}} -c "print('Building executable with PyInstaller...')"
+	{{PYINSTALLER}} --onefile --windowed \
+		--name {{EXPORT_NAME}} \
+		--paths {{SRC_DIR}} \
+		--add-data "{{ASSETS_DIR}}{{DATA_SEP}}{{ASSETS_DIR}}" \
+		{{SRC_DIR}}/core/main.py
 
 venv:
 	@{{SYSTEM_PYTHON}} -c "print('Creating virtual environment...')"
