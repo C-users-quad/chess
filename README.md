@@ -1,7 +1,7 @@
 
 # Chess
 
-[Download](https://github.com/C-users-quad/chess/releases/latest)
+### [Download](https://github.com/C-users-quad/chess/releases/latest)
 
 <p align="center">
     <img width="300" height= "300" alt="chess board" src="assets/images/readme/board.png">
