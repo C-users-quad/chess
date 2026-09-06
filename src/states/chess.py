@@ -1,5 +1,4 @@
 from chess.ui.captured_pieces import UICapturedPieces
-from chess.ui.clock import UIClock
 from chess.ui.turn_color_rect import UITurnColorRect
 from core.settings import (
     BASE_HEIGHT,

@@ -118,9 +118,9 @@ def scale(scalar, get_exact=False, axis: ResizeAxis = ResizeAxis.AUTO):
 
 def get_all_pieces_of_color(color, board):
     pieces = []
-    for row in board.squares:
+    for row in board.board:
         for square in row:
-            if square.is_empty():
+            if square.empty():
                 continue
             if square.piece.color == color:
                 pieces.append(square.piece)

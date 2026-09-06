@@ -15,6 +15,7 @@ class Piece:
         self.pos = pos
         self.color = color
         self.has_moved = False
+        self.image = PIECE_IMAGES[(color, self.name)]
         self.board = board
 
     def get_attack_moves(self):
@@ -87,7 +88,7 @@ class SlidingPiece(Piece):
             row, col = row + dr, col + dc
             while self.board.pos_on_board((row, col)):
                 curr_square = self.board.get_square((row, col))
-                if curr_square.is_empty():
+                if curr_square.empty():
                     pseudo_moves.append((row, col))
                     row += dr
                     col += dc
@@ -163,7 +164,7 @@ class Knight(Piece):
                 continue
 
             curr_square = self.board.get_square((row, col))
-            if curr_square.is_empty():
+            if curr_square.empty():
                 pseudo_moves.append((row, col))
             elif curr_square.piece.color != self.color:
                 pseudo_moves.append((row, col))
@@ -211,9 +212,9 @@ class Pawn(Piece):
                 continue
 
             curr_square = self.board.get_square((row, col))
-            if curr_square.is_empty():
+            if curr_square.empty():
                 square_adjacent = self.board.get_square((row - self.dir, col))
-                if square_adjacent.is_empty():
+                if square_adjacent.empty():
                     continue
                 # adjacent square must have a pawn
                 if not square_adjacent.piece.name == self.name:
@@ -236,7 +237,7 @@ class Pawn(Piece):
                 continue
 
             curr_square = self.board.get_square((row, col))
-            if curr_square.is_empty():
+            if curr_square.empty():
                 continue
 
             if curr_square.piece.color != self.color:
@@ -250,7 +251,7 @@ class Pawn(Piece):
         pos_infront = (row + self.dir, col)
         if self.board.pos_on_board(pos_infront):
             square_infront = self.board.get_square(pos_infront)
-            if square_infront.is_empty():
+            if square_infront.empty():
                 pseudo_moves.append(pos_infront)
 
         # check moving 2 squares forward
@@ -258,7 +259,7 @@ class Pawn(Piece):
             pos_2_infront = (row + self.dir * 2, col)
             square_infront = self.board.get_square(pos_infront)
             square_2_infront = self.board.get_square(pos_2_infront)
-            if square_infront.is_empty() and square_2_infront.is_empty():
+            if square_infront.empty() and square_2_infront.empty():
                 pseudo_moves.append(pos_2_infront)
 
         return pseudo_moves
@@ -298,11 +299,11 @@ class King(Piece):
             # check if rook has moved
             rook_col = 7 if side == "kingside" else 0
             rook_square = self.board.get_square((row, rook_col))
-            if rook_square.is_empty() or rook_square.piece.has_moved:
+            if rook_square.empty() or rook_square.piece.has_moved:
                 continue
 
             # check if no pieces in the way
-            if any(not self.board.get_square(sqr).is_empty() for sqr in squares):
+            if any(not self.board.get_square(sqr).empty() for sqr in squares):
                 continue
 
             # check if castling side is under attack
@@ -340,7 +341,7 @@ class King(Piece):
                 continue
 
             curr_square = self.board.get_square((row, col))
-            if curr_square.is_empty() or curr_square.piece.color != self.color:
+            if curr_square.empty() or curr_square.piece.color != self.color:
                 pseudo_moves.append((row, col))
 
         castling_moves = self.get_castling_moves()

@@ -36,7 +36,6 @@ class Move:
         self.double_pawn_push = False
         self.is_promotion = False
         self.real_move = real_move
-        self.completed = True
 
     def check_flags_before_move(self):
         from chess.pieces import Pawn, King
@@ -46,7 +45,7 @@ class Move:
 
         # capture
         end_sqr = self.board.get_square(self.end)
-        if not end_sqr.is_empty():
+        if not end_sqr.empty():
             self.captured_piece = end_sqr.piece
             self.capture_square = end_sqr.piece.pos
 
@@ -73,7 +72,6 @@ class Move:
         self.piece.has_moved = True
 
     def check_flags_after_move(self):
-        self.completed = True
         if not self.real_move:
             return
 
