@@ -1,5 +1,14 @@
-from core.utils import opposite_color
-from core.enums import PieceColors
+from core.settings import (
+    BOARD_RESIZE_AXIS,
+    BOARD_SQUARE_RATIOS,
+    COLORS,
+    MIN_UI_SIZE,
+    GameContext,
+    pygame,
+)
+from core.utils import get_ui_elem, scale, opposite_color
+from core.images import GAME_END_ICONS
+from core.enums import PieceColors, StateNames
 from ui.base import UIElement
 from chess.square import BoardSquare
 from chess.move import Move
@@ -15,58 +24,74 @@ from chess.pieces import (
 )
 
 
-class Board:
+class Board(UIElement):
     """
-    logical chess board.
+    # The chessboard represented with a 2d array.
+        - every index has a boardsquare object
     """
 
-    def __init__(self):
+    def __init__(self, z_index=0):
+        super().__init__(z_index=z_index)
         self.reset()
 
     def reset(self):
-        self.squares = [[BoardSquare((r, c), self) for c in range(8)] for r in range(8)]
+        self.board = [
+            [
+                BoardSquare((r, c), ("white-square", "black-square")[(r + c) % 2], self)
+                for c in range(8)
+            ]
+            for r in range(8)
+        ]
         self.turn_color = PieceColors.WHITE  # whos turn it is
         self.white_king = None
         self.black_king = None
         self.checkmate = False
         self.stalemate = False
-        self.timeout = False
+        # self.timeout = False
         self.game_end = False
         self.winning_color = None
         self.captured_pieces: list[Piece] = []
-        self.current_move: Move = None
+        self.dirty = True
         self.populate_board()  # give board initial pieces
 
-    def detect_game_end(self):
-        """
-        detects game end and if it has ended also
-        adjusts the values of related flags like checkmate or stalemate
-        """
+    def render(self):
+        # get needed info
+        window_width, window_height = self.game.display.get_size()
+        spacing = get_ui_elem("spacing")
+        board_side_length = scale(get_ui_elem("board"), axis=BOARD_RESIZE_AXIS)
+        board_side_length -= 2 * spacing
+        board_side_length = max(MIN_UI_SIZE, board_side_length)
+        rounding = scale(get_ui_elem("rounding"), axis=BOARD_RESIZE_AXIS)
 
-        pieces = get_all_pieces_of_color(self.turn_color, self)
-        player_can_move = False
-        for piece in pieces:
-            if piece.get_legal_moves():
-                player_can_move = True
-                break
+        # create border image
+        self.image = pygame.Surface(
+            size=(board_side_length, board_side_length), flags=pygame.SRCALPHA
+        )
 
-        if not player_can_move or self.timeout:
-            self.game_end = True
-        else:
-            return  # if the game hasnt ended, further checks arent necessary.
+        # center board on screen
+        self.rect = self.image.get_rect(center=(window_width / 2, window_height / 2))
 
-        king = getattr(self, f"{self.turn_color}_king")
-        if king.in_check():
-            self.checkmate = True
-        elif not king.in_check() and not player_can_move:
-            self.stalemate = True
+        # draw boards border
+        pygame.draw.rect(
+            surface=self.image,
+            color=COLORS["board-border"],
+            rect=(0, 0, board_side_length, board_side_length),
+            border_radius=rounding,
+        )
 
+        # draw squares onto board
+        for row in self.board:
+            for square in row:
+                square.render()  # creates the squares image
+                square.draw()  # draws the square onto the boards image
+
+    def draw_game_end_overlay(self):
         white_king_sqr = self.get_square(self.white_king.pos)
         black_king_sqr = self.get_square(self.black_king.pos)
-        king = getattr(self, f"{self.turn_color}_king")
+        icon_length = white_king_sqr.rect.width * BOARD_SQUARE_RATIOS["game-end-icon"]
+        icon_size = (icon_length, icon_length)
 
-        if self.timeout or king.in_check():
-            self.winning_color = opposite_color(self.turn_color)
+        if self.checkmate:
             winning_sqr = (
                 white_king_sqr
                 if self.winning_color == PieceColors.WHITE
@@ -77,12 +102,122 @@ class Board:
                 if self.winning_color != PieceColors.WHITE
                 else black_king_sqr
             )
-            winning_sqr.winning_square = True
-            losing_sqr.losing_square = True
+            win_icon, lose_icon = GAME_END_ICONS["winner"], GAME_END_ICONS["loser"]
+
+            win_icon = pygame.transform.smoothscale(win_icon, icon_size)
+            lose_icon = pygame.transform.smoothscale(lose_icon, icon_size)
+
+            win_icon_rect = win_icon.get_rect(center=winning_sqr.rect.topright)
+            lose_icon_rect = lose_icon.get_rect(center=losing_sqr.rect.topright)
+
+            draw_win_icon = lambda: self.game.display.blit(win_icon, win_icon_rect)
+            draw_lose_icon = lambda: self.game.display.blit(lose_icon, lose_icon_rect)
+            self.manager.register_draw_call(self.z_index + 1, draw_win_icon)
+            self.manager.register_draw_call(self.z_index + 1, draw_lose_icon)
+
+        elif self.stalemate:
+            stalemate_icon = GAME_END_ICONS["stalemate"]
+            stalemate_icon = pygame.transform.smoothscale(stalemate_icon, icon_size)
+
+            icon_rect_white_king = stalemate_icon.get_rect(
+                center=white_king_sqr.rect.topright
+            )
+            icon_rect_black_king = stalemate_icon.get_rect(
+                center=black_king_sqr.rect.topright
+            )
+
+            draw_stalemate_icon_1 = lambda: self.game.display.blit(
+                stalemate_icon, icon_rect_white_king
+            )
+            draw_stalemate_icon_2 = lambda: self.game.display.blit(
+                stalemate_icon, icon_rect_black_king
+            )
+            self.manager.register_draw_call(self.z_index + 1, draw_stalemate_icon_1)
+            self.manager.register_draw_call(self.z_index + 1, draw_stalemate_icon_2)
+
+    def handle_game_end(self):
+        pieces = get_all_pieces_of_color(self.turn_color, self)
+        player_can_move = False
+        for piece in pieces:
+            if piece.get_legal_moves():
+                player_can_move = True
+                break
+
+        if not player_can_move:
+            self.game_end = True
+
+        if self.game_end:
+            white_king_sqr = self.get_square(self.white_king.pos)
+            black_king_sqr = self.get_square(self.black_king.pos)
+            king = getattr(self, f"{piece.color}_king")
+
+            if king.in_check():
+                self.winning_color = opposite_color(self.turn_color)
+                winning_sqr = (
+                    white_king_sqr
+                    if self.winning_color == PieceColors.WHITE
+                    else black_king_sqr
+                )
+                losing_sqr = (
+                    white_king_sqr
+                    if self.winning_color != PieceColors.WHITE
+                    else black_king_sqr
+                )
+                winning_sqr.winning_square = True
+                losing_sqr.losing_square = True
+
+            if king.in_check():
+                self.checkmate = True
+            elif not king.in_check() and not player_can_move:
+                white_king_sqr.stalemate_square = True
+                black_king_sqr.stalemate_square = True
+                self.stalemate = True
+
+        if self.game_end:
+            self.reset_square_flags()
+            self.game.push_state(StateNames.NEW_GAME)
+
+    def find_selected_square(self):
+        for row in self.board:
+            for square in row:
+                if square.selected:
+                    return square
+
+    def reset_square_flags(self, real_move=True):
+        if not real_move:
+            return
+
+        self.dirty = True
+        for row in self.board:
+            for square in row:
+                if square.selected or square.valid_square:
+                    square.selected = False
+                    square.valid_square = False
+
+    def show_valid_moves(self, selected_square):
+        if selected_square.empty():
+            return
+
+        valid_moves = selected_square.piece.get_legal_moves()
+        if not valid_moves:
+            return
+
+        self.dirty = True
+        for row in self.board:
+            for square in row:
+                if square.pos in valid_moves:
+                    square.valid_square = True
+
+    def clicked_outside(self):
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            return False
+        if not pygame.mouse.get_just_released()[0]:
+            return False
+        return True
 
     def get_square(self, pos):
         row, col = pos
-        return self.squares[row][col]
+        return self.board[row][col]
 
     def pos_on_board(self, pos):
         row, col = pos
@@ -94,11 +229,10 @@ class Board:
 
         precondition: move is legal.
         """
-        if move.real_move:
-            self.current_move = move
         move.check_flags_before_move()
         self._apply_move(move)
         move.check_flags_after_move()
+        move.play_move_sound()
 
     def unmake_move(self, move: Move):
         # reset squares
@@ -126,6 +260,8 @@ class Board:
         self.place_piece(move.piece, move.end)
         self._capture_pawn_if_en_passant(move)
         self._move_rook_if_castling(move)
+        self.handle_pawn_promotion(move)
+        self.reset_square_flags(move.real_move)
         self.reset_pawn_flags()
         self.change_turn()
 
@@ -145,10 +281,27 @@ class Board:
     def change_turn(self):
         self.turn_color = opposite_color(self.turn_color)
 
+    def update(self):
+        if self.game_end:
+            return
+
+        for row in self.board:
+            for square in row:
+                square.update()
+
+        self.handle_game_end()
+
+    def register_draw_call(self):
+        draw_call = lambda: self.game.display.blit(self.image, self.rect)
+        self.manager.register_draw_call(self.z_index, draw_call)
+        if self.game_end:
+            self.draw_game_end_overlay()
+
     def populate_board(self):
         """adds the initial arrangement of chess pieces to the board"""
+        colors = list(PieceColors)
         # make back rows
-        for color in PieceColors:
+        for color in colors:
             row = 0 if color == PieceColors.BLACK else 7
             col = 0
             for piece_class in [
@@ -169,7 +322,7 @@ class Board:
                 col += 1
 
         # make pawns
-        for color in PieceColors:
+        for color in colors:
             row = 1 if color == PieceColors.BLACK else 6
             col = 0
             for _ in range(8):
@@ -224,12 +377,21 @@ class Board:
         make the previous mover's pawns' reset their en passant flags
         """
         previous_move_color = opposite_color(self.turn_color)
-        for row in self.squares:
+        for row in self.board:
             for square in row:
-                if square.is_empty():
+                if square.empty():
                     continue
                 if not isinstance(square.piece, Pawn):
                     continue
                 if square.piece.color != previous_move_color:
                     continue
                 square.piece.just_moved_forward_two = False
+
+    def handle_pawn_promotion(self, move: Move):
+        if not move.real_move:
+            return
+
+        if not move.is_promotion:
+            return
+
+        self.game.push_state(StateNames.PROMOTION, (move,))
