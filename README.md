@@ -22,5 +22,4 @@ A simple pass-n-play style chess game in python + pygame.
 
  1. Download source files from latest release
  2. Change directory to project directory
- 3. run `just install
-        just run`
+ 3. run `just install\n just run`
