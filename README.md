@@ -10,8 +10,6 @@
 
 A simple pass-n-play style chess game in python + pygame.
 
----
-
 ## Controls
 
  - ESC to exit menus
