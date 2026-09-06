@@ -27,8 +27,8 @@ class VariableSettings:
     """[0,1] the volume of the sound effects"""
     flip_board: bool = True
     """determines if the board visually flips every turn"""
-    player_time: int = 10 * 60
-    """the time each player has in seconds"""
+    # player_time: int = 10 * 60
+    # """the time each player has in seconds"""
 
     @classmethod
     def setter(cls, attr):
