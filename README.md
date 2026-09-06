@@ -20,8 +20,8 @@ A simple pass-n-play style chess game in python + pygame.
 
 ## Build instructions
 
- 1. Download source files from latest release
- 2. Change directory to project directory
+ 1. Download source files from latest release and extract
+ 2. Change directory to extracted project folder
  3. run `just install` then
      - if u wanna just compile and run: `just run`
      - if u wanna make executable: `just export`
